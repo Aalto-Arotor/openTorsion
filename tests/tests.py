@@ -1,17 +1,11 @@
-import sys
-
-sys.path.append('../')
-sys.path.append('../motors')
-
 import numpy as np
 import unittest
 import matplotlib.pyplot as plt
 
-from shaft_element import Shaft
-from disk_element import Disk
-from gear_element import Gear
-# from motor_hauptmann import Motor_hauptmann
-from assembly import Rotor
+from opentorsion.shaft_element import Shaft
+from opentorsion.disk_element import Disk
+from opentorsion.gear_element import Gear
+from opentorsion.assembly import Rotor
 
 
 class Test(unittest.TestCase):
