@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 from scipy import linalg as LA
 from scipy.sparse import linalg as las
 
-from disk_element import Disk
-from shaft_element import Shaft
-from gear_element import Gear
-from errors import DOF_mismatch_error
+from opentorsion.disk_element import Disk
+from opentorsion.shaft_element import Shaft
+from opentorsion.gear_element import Gear
+from opentorsion.errors import DOF_mismatch_error
 
 
 class Rotor():
