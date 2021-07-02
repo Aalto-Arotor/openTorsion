@@ -2,10 +2,10 @@ import numpy as np
 import unittest
 import matplotlib.pyplot as plt
 
-from src.opentorsion.shaft_element import Shaft
-from src.opentorsion.disk_element import Disk
-from src.opentorsion.gear_element import Gear
-from src.opentorsion.assembly import Rotor
+from opentorsion.shaft_element import Shaft
+from opentorsion.disk_element import Disk
+from opentorsion.gear_element import Gear
+from opentorsion.assembly import Rotor
 
 
 class Test(unittest.TestCase):

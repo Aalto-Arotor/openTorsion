@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="opentorsion",
-    version="0.0.3",
+    version="0.0.4",
     author="Aalto ARotor",
     author_email="todo@aalto.fi",
     description="Open source library for creating torsional finite element models",
@@ -20,8 +20,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    package_dir={"opentorsion": "opentorsion"},
+    packages=setuptools.find_packages(),
     python_requires=">=3.6",
     install_requires=[
         "matplotlib",
