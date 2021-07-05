@@ -3,6 +3,10 @@
 
 Open source library for creating torsional finite element models.
 
+## Documentation
+
+https://aalto-arotor.github.io/openTorsion/
+
 ## Quickstart
 Make sure you have pip3 & pipenv installed in your system. Then simply running ```pipenv install``` will invoke the config files and install the necessary files in your pipenv.
 
