@@ -1,7 +1,8 @@
 import numpy as np
 
-class Shaft():
-    '''A 2-degree of freedom shaft object
+
+class Shaft:
+    """A 2-degree of freedom shaft object
     A shaft with a constant circular cross-section can be defined using length and diameter values. Other types of shafts are defined using stiffness and moment of inertia values. Giving either the stiffness or inertia value overrides all stiffness and inertia calculations.
 
     Arguments:
@@ -31,37 +32,26 @@ class Shaft():
         Moment of inertia of the shaft [kgm^2]
     c: float
         Damping coefficient of the shaft [Nms/rad]
-    '''
+    """
 
     def __init__(
-        self,
-        nl,
-        nr,
-        L,
-        odl,
-        idl=0,
-        G=78e9,
-        E=200e9,
-        rho=8000,
-        k=None,
-        I=0.0,
-        c=0.0
+        self, nl, nr, L, odl, idl=0, G=78e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
     ):
 
         if k is None:
-            self.L = L*1e-3
-            self.idl = float(idl)*1e-3
-            self.odl = float(odl)*1e-3
+            self.L = L * 1e-3
+            self.idl = float(idl) * 1e-3
+            self.odl = float(odl) * 1e-3
 
             # Calculate polar of inertia
-            A = np.pi*((self.odl**4)-(self.idl**4))
-            J = np.pi*((self.odl**4)-(self.idl**4))/32
+            A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
+            J = np.pi * ((self.odl ** 4) - (self.idl ** 4)) / 32
 
             # Calculate mass moment of inertia
-            self.mass = rho*J*self.L/6
+            self.mass = rho * J * self.L / 6
 
             # Calculate torsional stiffness
-            self.k = G*J/self.L
+            self.k = G * J / self.L
 
         else:
             self.k = k
@@ -75,30 +65,21 @@ class Shaft():
 
     def M(self):
         """Mass matrix of a shaft element"""
-        A = np.array([
-            [2, 1],
-            [1, 2]
-        ], dtype=np.float64)
+        A = np.array([[2, 1], [1, 2]], dtype=np.float64)
 
-        M = A*self.mass
+        M = A * self.mass
 
         return M
 
     def K(self):
         """Stiffness matrix of a shaft element"""
 
-        K = np.array([
-            [1, -1],
-            [-1, 1]
-        ], dtype=np.float64) * self.k
+        K = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.k
 
         return K
 
     def C(self):
         """Damping matrix of a shaft element"""
-        C = np.array([
-            [1, -1],
-            [-1, 1]
-        ], dtype=np.float64)*self.c
+        C = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.c
 
         return C

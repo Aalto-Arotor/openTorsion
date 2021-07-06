@@ -6,9 +6,7 @@
 [![PyPi downloads](https://img.shields.io/pypi/dm/opentorsion.svg)](https://pypistats.org/packages/opentorsion)
 
 [![main branch unittests](https://github.com/aalto-arotor/opentorsion/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/Aalto-Arotor/openTorsion/tree/main/opentorsion/tests)
-<!--
-[![codecov](https://img.shields.io/codecov/c/github/Aalto-Arotor/openTorsion.svg)](https://codecov.io/gh/Aalto-Arotor/openTorsion)
--->
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Aalto-Arotor/openTorsion/blob/main/LICENSE)
 
@@ -30,3 +28,8 @@ First generate the ```.coverage``` file by running ```pipenv run coverage run -m
 
 ## TODO
 The coverage reports should be ran automatically as a workflow. [Additional information](https://about.codecov.io/blog/python-code-coverage-using-github-actions-and-codecov/)
+
+<!--
+badge for coverage
+[![codecov](https://img.shields.io/codecov/c/github/Aalto-Arotor/openTorsion.svg)](https://codecov.io/gh/Aalto-Arotor/openTorsion)
+-->

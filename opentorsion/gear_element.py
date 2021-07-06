@@ -1,7 +1,8 @@
 import numpy as np
 
-class Gear():
-    '''A gear object
+
+class Gear:
+    """A gear object
     Gears consist of two parts, parent gear and child gear.
     One gear can have multiple children, but only one parent.
     Either radius or teeth count can be used, as long as the
@@ -20,8 +21,15 @@ class Gear():
     ------------------
     Parent: Int
         Node value of the parent gear element
-    '''
-    def __init__(self, node, I, R, parent=None,):
+    """
+
+    def __init__(
+        self,
+        node,
+        I,
+        R,
+        parent=None,
+    ):
 
         self.node = node
         self.I = I
@@ -32,7 +40,6 @@ class Gear():
         else:
             self.stages = []
             self.stages.append([[parent.node, parent.R], [self.node, self.R]])
-
 
     def M(self):
         """Mass Matrix of 1 DOF gear element

@@ -3,5 +3,5 @@ class DOF_mismatch_error(Exception):
         self.message = message
 
 
-if __name__ == '__main__':
-    raise DOF_mismatch_error('Mismatched degrees of freedom')
+if __name__ == "__main__":
+    raise DOF_mismatch_error("Mismatched degrees of freedom")

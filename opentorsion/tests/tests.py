@@ -9,7 +9,7 @@ from opentorsion.assembly import Rotor
 
 
 class Test(unittest.TestCase):
-    '''Unittests for the FEM'''
+    """Unittests for the FEM"""
 
     # def test_induction_motor(self):
     #     f = 60
@@ -67,8 +67,9 @@ class Test(unittest.TestCase):
 
         omegas_damped, freqs, damping_ratios = assembly.modal_analysis()
 
-        self.assertEqual(freqs.round(1).tolist(), [0, 176.1], "shaft gives the wrong result")
-
+        self.assertEqual(
+            freqs.round(1).tolist(), [0, 176.1], "shaft gives the wrong result"
+        )
 
     def test_friswell_pagex(self):
         correct = [0.0, 425.4, 634.1, 3247.2]
@@ -80,7 +81,11 @@ class Test(unittest.TestCase):
         k_R = 5000
 
         disks = [Disk(0, Im), Disk(3, Ir), Disk(4, Ir)]
-        shafts = [Shaft(0, 1, 0, 0, k=k_m), Shaft(2, 3, 0, 0, k=k_R), Shaft(1, 4, 0, 0, k=k_R)]
+        shafts = [
+            Shaft(0, 1, 0, 0, k=k_m),
+            Shaft(2, 3, 0, 0, k=k_R),
+            Shaft(1, 4, 0, 0, k=k_R),
+        ]
         gear1 = Gear(1, Ig, 1)
         gear2 = Gear(2, Ig, 1, parent=gear1)
         gears = [gear1, gear2]
@@ -88,7 +93,6 @@ class Test(unittest.TestCase):
         rotor = Rotor(shafts, disk_elements=disks, gear_elements=gears)
 
         _, freqs, _ = rotor.modal_analysis()
-
 
         self.assertEqual(freqs.round(1).tolist(), correct, "geared system incorrect")
 
@@ -107,20 +111,20 @@ class Test(unittest.TestCase):
         disks = []
         n = 0
         disks.append(Disk(n, Ip1to3))
-        shafts.append(Shaft(n, n+1, 0, 0, k=k1))
-        n+=1
+        shafts.append(Shaft(n, n + 1, 0, 0, k=k1))
+        n += 1
 
         disks.append(Disk(n, Ip1to3))
-        shafts.append(Shaft(n, n+1, 0, 0, k=k2))
-        n+=1
+        shafts.append(Shaft(n, n + 1, 0, 0, k=k2))
+        n += 1
 
         disks.append(Disk(n, Ip1to3))
-        shafts.append(Shaft(n, n+1, 0, 0, k=k3))
-        n+=1
+        shafts.append(Shaft(n, n + 1, 0, 0, k=k3))
+        n += 1
 
         disks.append(Disk(n, Ip4))
-        shafts.append(Shaft(n, n+1, 0, 0, k=k4))
-        n+=1
+        shafts.append(Shaft(n, n + 1, 0, 0, k=k4))
+        n += 1
 
         disks.append(Disk(n, Ip5))
 
@@ -130,7 +134,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(freqs.round(2).tolist(), correct, "geared system incorrect")
 
-    # def friswell_9_6_3(self):
+        # def friswell_9_6_3(self):
         correct = [0, 10.304, 20.479, 24.423]
         Ip0 = 3200
         Ip1 = 200
@@ -184,13 +188,13 @@ class Test(unittest.TestCase):
         G = 75e9
         rho = 8000
 
-        freqs = [[0],[0],[0]]
+        freqs = [[0], [0], [0]]
         for j, ne in enumerate([5, 8, 50]):
-            le = L/ne
-            disks=[]
+            le = L / ne
+            disks = []
             shafts = []
             for i in range(0, ne):
-                shafts.append(Shaft(i, i+1, le, od, idl=idl, G=G, rho=rho))
+                shafts.append(Shaft(i, i + 1, le, od, idl=idl, G=G, rho=rho))
 
             disks.append(Disk(0, mt))
             disks.append(Disk(ne, m))
@@ -198,11 +202,14 @@ class Test(unittest.TestCase):
             a, freq, b = assembly.modal_analysis()
             freqs[j] = freq.round(4)[0:5].tolist()
 
-        correct = [[0.0000, 1.9417, 4.0719, 6.5437, 9.1547],
-                   [0.0000, 1.9225, 3.9187, 6.0625, 8.4185],
-                   [0.0000, 1.9106, 3.8232, 5.7394, 7.6613]]
+        correct = [
+            [0.0000, 1.9417, 4.0719, 6.5437, 9.1547],
+            [0.0000, 1.9225, 3.9187, 6.0625, 8.4185],
+            [0.0000, 1.9106, 3.8232, 5.7394, 7.6613],
+        ]
 
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
