@@ -14,20 +14,25 @@ from opentorsion.gear_element import Gear
 from opentorsion.errors import DOF_mismatch_error
 
 
-class Rotor():
-    '''Powertrain assembly'''
-    def __init__(self,
-                 shaft_elements,
-                 disk_elements=None,
-                 gear_elements=None,
-                 motor_elements=None):
+class Rotor:
+    """Powertrain assembly"""
+
+    def __init__(
+        self,
+        shaft_elements,
+        disk_elements=None,
+        gear_elements=None,
+        motor_elements=None,
+    ):
 
         ## Initiate shaft elements
         if shaft_elements is None:
-            raise DOF_mismatch_error('Shaft elements == None')
+            raise DOF_mismatch_error("Shaft elements == None")
             self.shaft_elements = None
         else:
-            self.shaft_elements = [copy(shaft_element) for shaft_element in shaft_elements]
+            self.shaft_elements = [
+                copy(shaft_element) for shaft_element in shaft_elements
+            ]
 
         ## Initiate gear elements
         if gear_elements is None:
@@ -39,7 +44,9 @@ class Rotor():
         if motor_elements is None:
             self.motor_elements = None
         else:
-            self.motor_elements = [copy(motor_element) for motor_element in motor_elements]
+            self.motor_elements = [
+                copy(motor_element) for motor_element in motor_elements
+            ]
 
         self.disk_elements = disk_elements
 
@@ -49,7 +56,7 @@ class Rotor():
         pass
 
     def __str__(self):
-       return f"rotor"
+        return f"rotor"
 
     def M(self):
         """Assembles the mass matrix"""
@@ -159,18 +166,12 @@ class Rotor():
 
         Z = np.zeros(M.shape, dtype=np.float64)
 
-        A = np.vstack([
-            np.hstack([C, K]),
-            np.hstack([-M, Z])
-        ])
+        A = np.vstack([np.hstack([C, K]), np.hstack([-M, Z])])
 
-        B = np.vstack([
-            np.hstack([M, Z]),
-            np.hstack([Z, M])
-        ])
+        B = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
 
         # A = np.vstack(
-             # np.hstack([la.solve(-self.M(), self.K(frequency)), la.solve(-self.M(), (self.C(frequency))])])
+        # np.hstack([la.solve(-self.M(), self.K(frequency)), la.solve(-self.M(), (self.C(frequency))])])
 
         return A, B
 
@@ -181,13 +182,13 @@ class Rotor():
 
         # Sort and delete complex conjugates
         lam = np.sort(lam)
-        lam = np.delete(lam, [i*2+1 for i in range(len(lam)//2)])
+        lam = np.delete(lam, [i * 2 + 1 for i in range(len(lam) // 2)])
 
         omegas = np.sort(np.absolute(lam))
         omegas_damped = np.sort(np.imag(lam))
-        freqs = omegas/(2*np.pi)
+        freqs = omegas / (2 * np.pi)
 
-        damping_ratios = -np.real(lam)/(np.absolute(lam))
+        damping_ratios = -np.real(lam) / (np.absolute(lam))
 
         return omegas_damped, freqs, damping_ratios
 
@@ -198,7 +199,7 @@ class Rotor():
         return lam, vec
 
     def _check_dof(self):
-        '''Returns the number of degrees of freedom in the model'''
+        """Returns the number of degrees of freedom in the model"""
         nodes = set()
         if self.shaft_elements is not None:
             for element in self.shaft_elements:
@@ -218,10 +219,10 @@ class Rotor():
                 nodes.add(element.nl)
                 nodes.add(element.nr)
 
-        return max(nodes)+1
+        return max(nodes) + 1
 
     def T(self, E):
-        ''' Method for determining gear constraint transformation matrix'''
+        """Method for determining gear constraint transformation matrix"""
         r, c = E.shape
         T = np.eye(r)
         for i in range(c):
@@ -231,13 +232,13 @@ class Rotor():
             T_i = np.eye(r)
 
             # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1
-            k = np.argmax(np.abs(E_i[:,i]))
+            k = np.argmax(np.abs(E_i[:, i]))
 
             # (3) Replace row k of T_i with the transpose of column i from E_(i-1)
-            T_i[k] = E_i[:,i]
+            T_i[k] = E_i[:, i]
 
             # (4) Divide this row by the negative of its kth element
-            T_i[k] = T_i[k]/(-1*T_i[k][k])
+            T_i[k] = T_i[k] / (-1 * T_i[k][k])
 
             # (5) Strike out column k from the matrix
             T_i = np.delete(T_i, k, axis=1)
@@ -247,6 +248,7 @@ class Rotor():
 
         return T
 
-if __name__ == '__main__':
 
-    assembly = Rotor([Shaft(0,1, 1, 30)], disk_elements=[Disk(0, 4), Disk(1, 3)])
+if __name__ == "__main__":
+
+    assembly = Rotor([Shaft(0, 1, 1, 30)], disk_elements=[Disk(0, 4), Disk(1, 3)])

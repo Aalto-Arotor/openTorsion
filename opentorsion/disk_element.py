@@ -1,7 +1,8 @@
 import numpy as np
 
-class Disk():
-    '''A disk object
+
+class Disk:
+    """A disk object
 
     Arguments:
     ----------
@@ -11,7 +12,7 @@ class Disk():
         Moment of inertia of the disk [kgm^2]
     c: float
         Damping coefficient of the disk [Nms/rad]
-    '''
+    """
 
     def __init__(self, node, I, c=0):
         self.node = node
@@ -20,8 +21,7 @@ class Disk():
 
     def __repr__(self):
         """String representation of a disk element"""
-        return(str(self.n), str(self.m), str(self.I), str(self.I))
-
+        return (str(self.n), str(self.m), str(self.I), str(self.I))
 
     def M(self):
         """Mass Matrix of 1 DOF disk element
@@ -45,7 +45,7 @@ class Disk():
             Damping matrix of disk element
         """
 
-        return np.array([self.damping], dtype=np.float64)*self.damping
+        return np.array([self.damping], dtype=np.float64) * self.damping
 
     def K(self):
         """Stiffness matrix of a disk element
