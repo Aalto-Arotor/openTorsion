@@ -11,8 +11,8 @@ from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
 
-# from induction_motor import Induction_motor
-from errors import DOF_mismatch_error
+# from opentorsion.induction_motor import Induction_motor
+from opentorsion.errors import DOF_mismatch_error
 
 
 class Assembly:
