@@ -13,24 +13,30 @@ from scipy.signal import lsim
 from disk_element import Disk
 from shaft_element import Shaft
 from gear_element import Gear
+
 # from induction_motor2 import Induction_motor
 from errors import DOF_mismatch_error
 
 
-class Rotor():
-    '''Powertrain assembly'''
-    def __init__(self,
-                 shaft_elements,
-                 disk_elements=None,
-                 gear_elements=None,
-                 motor_elements=None):
+class Rotor:
+    """Powertrain assembly"""
+
+    def __init__(
+        self,
+        shaft_elements,
+        disk_elements=None,
+        gear_elements=None,
+        motor_elements=None,
+    ):
 
         ## Initiate shaft elements
         if shaft_elements is None:
-            raise DOF_mismatch_error('Shaft elements == None')
+            raise DOF_mismatch_error("Shaft elements == None")
             self.shaft_elements = None
         else:
-            self.shaft_elements = [copy(shaft_element) for shaft_element in shaft_elements]
+            self.shaft_elements = [
+                copy(shaft_element) for shaft_element in shaft_elements
+            ]
 
         ## Initiate gear elements
         if gear_elements is None:
@@ -42,7 +48,9 @@ class Rotor():
         if motor_elements is None:
             self.motor_elements = None
         else:
-            self.motor_elements = [copy(motor_element) for motor_element in motor_elements]
+            self.motor_elements = [
+                copy(motor_element) for motor_element in motor_elements
+            ]
 
         self.disk_elements = disk_elements
 
@@ -52,7 +60,7 @@ class Rotor():
         pass
 
     def __str__(self):
-       return f"rotor"
+        return f"rotor"
 
     def M(self):
         """Assembles the mass matrix"""
@@ -167,44 +175,32 @@ class Rotor():
         if self.motor_elements is not None:
             motor = self.motor_elements[0]
 
-            if motor.small_signal: # Different versions for linear and nonlinear models
+            if motor.small_signal:  # Different versions for linear and nonlinear models
                 R, L = motor.R_linear(), motor.L_linear()
             else:
                 R, L = motor.R(), motor.L()
 
             # print(R)
-            A = np.zeros((self.dofs*2+4, self.dofs*2+4))
+            A = np.zeros((self.dofs * 2 + 4, self.dofs * 2 + 4))
             B = np.zeros(A.shape)
 
-            dof = np.array([0,1,2,3,4])
+            dof = np.array([0, 1, 2, 3, 4])
 
             A[np.ix_(dof, dof)] += R
             B[np.ix_(dof, dof)] += L
 
-            K_m = np.vstack([
-                np.hstack([C, K]),
-                np.hstack([-M, Z])
-            ])
+            K_m = np.vstack([np.hstack([C, K]), np.hstack([-M, Z])])
 
-            M_m = np.vstack([
-                np.hstack([M, Z]),
-                np.hstack([Z, M])
-            ])
+            M_m = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
 
-            dof = np.array(range(4, self.dofs*2+4))
+            dof = np.array(range(4, self.dofs * 2 + 4))
             A[np.ix_(dof, dof)] += K_m
             B[np.ix_(dof, dof)] += M_m
 
         else:
-            A = np.vstack([
-                np.hstack([C, K]),
-                np.hstack([-M, Z])
-            ])
+            A = np.vstack([np.hstack([C, K]), np.hstack([-M, Z])])
 
-            B = np.vstack([
-                np.hstack([M, Z]),
-                np.hstack([Z, M])
-            ])
+            B = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
 
             # Solved versions
             # A = np.vstack([
@@ -226,8 +222,8 @@ class Rotor():
 
         omegas = np.sort(np.absolute(lam))
         omegas_damped = np.sort(np.abs(np.imag(lam)))
-        freqs = omegas/(2*np.pi)
-        damping_ratios = -np.real(lam)/(np.absolute(lam))
+        freqs = omegas / (2 * np.pi)
+        damping_ratios = -np.real(lam) / (np.absolute(lam))
 
         return omegas_damped, freqs, damping_ratios
 
@@ -238,7 +234,7 @@ class Rotor():
         return lam, vec
 
     def _check_dof(self):
-        '''Returns the number of degrees of freedom in the model'''
+        """Returns the number of degrees of freedom in the model"""
         nodes = set()
         if self.shaft_elements is not None:
             for element in self.shaft_elements:
@@ -257,10 +253,10 @@ class Rotor():
             for element in self.motor_elements:
                 nodes.add(element.n)
 
-        return max(nodes)+1
+        return max(nodes) + 1
 
     def T(self, E):
-        ''' Method for determining gear constraint transformation matrix'''
+        """Method for determining gear constraint transformation matrix"""
         r, c = E.shape
         T = np.eye(r)
         for i in range(c):
@@ -270,13 +266,13 @@ class Rotor():
             T_i = np.eye(r)
 
             # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1
-            k = np.argmax(np.abs(E_i[:,i]))
+            k = np.argmax(np.abs(E_i[:, i]))
 
             # (3) Replace row k of T_i with the transpose of column i from E_(i-1)
-            T_i[k] = E_i[:,i]
+            T_i[k] = E_i[:, i]
 
             # (4) Divide this row by the negative of its kth element
-            T_i[k] = T_i[k]/(-1*T_i[k][k])
+            T_i[k] = T_i[k] / (-1 * T_i[k][k])
 
             # (5) Strike out column k from the matrix
             T_i = np.delete(T_i, k, axis=1)
@@ -287,16 +283,16 @@ class Rotor():
         return T
 
     def U(self, u1, u2):
-        '''Input matrix of the state-space model '''
+        """Input matrix of the state-space model"""
         # u1 at node '0', u2 at node 'n'
 
         if np.array([u2]).all() == None:
             u2 = np.zeros((1, np.size(u1)))
 
-        return np.vstack([[u1], np.zeros((self.M().shape[1]-2, np.size(u1))), [u2]]).T
+        return np.vstack([[u1], np.zeros((self.M().shape[1] - 2, np.size(u1))), [u2]]).T
 
     def time_domain(self, t_in, u1, u2=None, U=None, system=None, x_in=None):
-        '''Time-domain analysis of the powertrain'''
+        """Time-domain analysis of the powertrain"""
 
         if system == None:
             system = self.system()
@@ -311,17 +307,14 @@ class Rotor():
         return tout, torques, omegas, thetas
 
     def system(self):
-        '''System model in the ltis-format'''
-        M, K, C  = self.M(), self.K(), self.C()
+        """System model in the ltis-format"""
+        M, K, C = self.M(), self.K(), self.C()
 
         Z = np.zeros(M.shape, dtype=np.float64)
         I = np.eye(M.shape[0])
         M_inv = LA.inv(M)
 
-        A = np.vstack([
-            np.hstack([-M_inv @ C, -M_inv @ K]),
-            np.hstack([         I,          Z])
-        ])
+        A = np.vstack([np.hstack([-M_inv @ C, -M_inv @ K]), np.hstack([I, Z])])
 
         B = np.vstack([M_inv, Z])
 
@@ -330,31 +323,36 @@ class Rotor():
         return lti(A, B, C, D)
 
     def torque(self, yout):
-        '''Calculate torque between every node'''
+        """Calculate torque between every node"""
 
         omegas, thetas = np.hsplit(yout, 2)
 
-        k_val = np.diag(self.K(), 1)*(-1)
+        k_val = np.diag(self.K(), 1) * (-1)
         K = np.diag(k_val, 1)
-        K -= np.vstack([
-            np.hstack([np.diag(k_val), np.transpose([np.zeros(K.shape[1]-1)])]),
-            [np.zeros(K.shape[0])]
-        ])
+        K -= np.vstack(
+            [
+                np.hstack([np.diag(k_val), np.transpose([np.zeros(K.shape[1] - 1)])]),
+                [np.zeros(K.shape[0])],
+            ]
+        )
         K = K[:-1, :]
 
         if self.gear_elements is not None:
             i = 0
             for element in self.gear_elements:
                 if element.stages is not None:
-                    K[(element.stages[0][0][0]-i)] = [
-                        np.abs(element.stages[0][0][1]/element.stages[0][1][1])*x
-                        if x < 0 else x for x in K[element.stages[0][0][0]-i]
+                    K[(element.stages[0][0][0] - i)] = [
+                        np.abs(element.stages[0][0][1] / element.stages[0][1][1]) * x
+                        if x < 0
+                        else x
+                        for x in K[element.stages[0][0][0] - i]
                     ]
                     i += 1
 
         torques = [np.dot(K, x) for x in thetas]
 
         return torques, omegas, thetas
+
 
 # if __name__ == '__main__':
 
