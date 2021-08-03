@@ -1,24 +1,21 @@
 from copy import copy
+import numpy as np
 import matplotlib
-
-import numpy as np
-
-import numpy as np
 import matplotlib.pyplot as plt
 from scipy import linalg as LA
 from scipy.sparse import linalg as las
 from scipy.signal import lti
 from scipy.signal import lsim
 
-from disk_element import Disk
-from shaft_element import Shaft
-from gear_element import Gear
+from opentorsion.disk_element import Disk
+from opentorsion.shaft_element import Shaft
+from opentorsion.gear_element import Gear
 
-# from induction_motor2 import Induction_motor
+# from induction_motor import Induction_motor
 from errors import DOF_mismatch_error
 
 
-class Rotor:
+class Assembly:
     """Powertrain assembly"""
 
     def __init__(
@@ -180,7 +177,6 @@ class Rotor:
             else:
                 R, L = motor.R(), motor.L()
 
-            # print(R)
             A = np.zeros((self.dofs * 2 + 4, self.dofs * 2 + 4))
             B = np.zeros(A.shape)
 
@@ -352,75 +348,3 @@ class Rotor:
         torques = [np.dot(K, x) for x in thetas]
 
         return torques, omegas, thetas
-
-
-# if __name__ == '__main__':
-
-#     #Induction motor inertia
-#     J_IM=0.196
-#     # Synchronous reluctance motor inertia
-#     J_SRM=0.575
-
-#     M_c=30                                  #kg
-#     J_hub1=17e-3                            #kgm^2
-#     J_hub2=17e-3                            #kgm^2
-#     J_tube=37e-3*(0.55-2*0.128)             #kgm^2
-#     J_coupling=J_hub1+J_hub2+J_tube         #kgm^2
-#     K_insert1=41300                        #Nm/rad
-#     K_insert2=41300                        #Nm/rad
-#     K_tube=389000*(0.55-2*0.128)            #Nm/rad
-#     K_coupling=1/(1/K_insert1+1/K_tube) #Nm/rad
-
-#     shafts = []
-#     disks = []
-#     gears = []
-#     motors = []
-
-#     rho = 7850
-#     G = 81e9
-#     J_rotor = 13094740e-6
-
-#     Ig = 0
-
-#     n = 0 # edellisen elementin viimeinen arvo
-
-#     f = 50
-#     p = 1
-#     omega = 2957
-#     voltage = 400
-#     operating = [0.024910, 0.018530, 0.016077, 0.015782, 0.014726]
-#     motor_arotor = Induction_motor(0, 1, omega, f, p, voltage=voltage, circuit_parameters=operating)
-
-#     motors.append(Induction_motor())
-
-#     disks.append(Disk(0, J_IM)) # Moottori
-#     gears.append(gear1 := Gear(0, Ig, 1.95)) #vaihde
-#     gears.append(Gear(1, Ig, 1, parent=gear1)) # vaihde
-
-#     shafts.append(Shaft(1, 2, None,None, k=K_coupling, I=J_coupling)) # Kytkin
-
-#     # TELA
-#     shafts.append(Shaft(2, 3, 185, 100))
-#     shafts.append(Shaft(3, 4, 335, 119))
-#     shafts.append(Shaft(4, 5, 72, 125))
-#     shafts.append(Shaft(5, 6, 150, 320))
-#     shafts.append(Shaft(6, 7, 3600, 320, idl=287))
-#     shafts.append(Shaft(7, 8, 150, 320))
-#     shafts.append(Shaft(8, 9, 72, 125))
-#     shafts.append(Shaft(9, 10, 335, 119))
-#     shafts.append(Shaft(10, 11, 185, 100))
-#     ##
-
-#     shafts.append(Shaft(11, 12, None, None, k=180e3, I=15e-4)) # Momenttianturi
-#     # shafts.append(Shaft(12, 13, None,None, k=K_coupling, I=J_coupling)) # Kytkin
-#     shafts.append(Shaft(12, 13, None,None, k=K_coupling, I=J_coupling)) # Kytkin
-#     disks.append(Disk(13, J_SRM)) # Toinen moottori
-
-#     # shafts.append(Shaft(10, 11, None,None, k=K_coupling, I=J_coupling)) # kytkin
-#     # gears.append(gear1 := Gear(11, Ig, 1)) #vaihde
-#     # gears.append(Gear(12, Ig, 1.95, parent=gear1)) # vaihde
-#     # disks.append(Disk(13, J_IM)) # Toinen moottori
-
-#     assembly = Rotor(shafts, disk_elements=disks, gear_elements=gears)
-
-#     assembly.modal_analysis()

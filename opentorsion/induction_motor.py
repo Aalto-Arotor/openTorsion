@@ -5,8 +5,6 @@ from shaft_element import Shaft
 from disk_element import Disk
 from gear_element import Gear
 
-# from assembly import Rotor
-
 
 class Induction_motor:
     """Induction motor object
