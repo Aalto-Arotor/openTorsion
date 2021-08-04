@@ -10,8 +10,7 @@ from scipy.signal import lsim
 from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
-
-# from opentorsion.induction_motor import Induction_motor
+from opentorsion.induction_motor import Induction_motor
 from opentorsion.errors import DOF_mismatch_error
 
 
@@ -323,7 +322,7 @@ class Assembly:
 
         omegas, thetas = np.hsplit(yout, 2)
 
-        k_val = np.diag(self.K(), 1) * (-1)
+        k_val = np.abs(np.diag(self.K(), 1))
         K = np.diag(k_val, 1)
         K -= np.vstack(
             [
@@ -337,6 +336,7 @@ class Assembly:
             i = 0
             for element in self.gear_elements:
                 if element.stages is not None:
+                    print(element.stages)
                     K[(element.stages[0][0][0] - i)] = [
                         np.abs(element.stages[0][0][1] / element.stages[0][1][1]) * x
                         if x < 0
@@ -345,6 +345,6 @@ class Assembly:
                     ]
                     i += 1
 
-        torques = [np.dot(K, x) for x in thetas]
+        torques = [np.dot(K, np.abs(x)) for x in thetas]
 
         return torques, omegas, thetas
