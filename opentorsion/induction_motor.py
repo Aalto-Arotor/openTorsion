@@ -1,9 +1,9 @@
 import numpy as np
 from scipy import linalg as LA
 
-from shaft_element import Shaft
-from disk_element import Disk
-from gear_element import Gear
+# from opentorsion.shaft_element import Shaft
+# from opentorsion.disk_element import Disk
+# from opentorsion.gear_element import Gear
 
 
 class Induction_motor:
