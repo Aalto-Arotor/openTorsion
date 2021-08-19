@@ -16,7 +16,7 @@ from opentorsion.plots import Plots
 """Example cases"""
 
 
-def ex_1(get_assembly=False):
+def twomass(get_assembly=False):
     """
     Two disks connected with a shaft.
     Eigenfrequencies and a campbell diagram.
@@ -46,10 +46,10 @@ def ex_1(get_assembly=False):
         plot_tools = Plots(assembly)
         plot_tools.campbell_diagram(frequency_range=10)
 
-        return print("Example 1 finished")
+        return print("Example finished")
 
 
-def ex_2(get_assembly=False):
+def n_mass(get_assembly=False):
     """Powertrain with shafts, disks and gears"""
     # Induction motor inertia
     J_IM = 0.196  # kgm^2
@@ -106,10 +106,10 @@ def ex_2(get_assembly=False):
         plot_tools.figure_2D()  # A 2D representation of the powertrain
         plot_tools.figure_eigenmodes()  # Plot the eigenmodes of the powertrain
 
-        return print("Example 2 finished")
+        return print("Example finished")
 
 
-def ex_3(linear_parameters=True, noload=True):
+def motor(linear_parameters=True, noload=True):
     """Induction motor and two disks connected with a shaft"""
     if noload:
         if linear_parameters:
@@ -168,10 +168,10 @@ def ex_3(linear_parameters=True, noload=True):
     for f in damped / (np.pi * 2):
         print(f)
 
-    return print("Example 3 finished")
+    return print("Example finished")
 
 
-def ex_4():  # incomplete
+def planetary_gear():  # incomplete
     """
     Planetary gear:
     Input shaft attached to sun gear and ring gear, output shaft attached to carrier and planet gears.
@@ -257,10 +257,10 @@ def ex_4():  # incomplete
         ring_gear = Gear(n, I=0, R=134, parent=sun_gear)
         gears.append(ring_gear)
 
-    return print("Example 4 finished")
+    return print("Example finished")
 
 
-def ex_5():
+def timedomain():
     """Time-domain analysis of a powertrain"""
 
     nstep = 300
@@ -307,7 +307,7 @@ def ex_5():
         prbs[k:] = -a[i]
         i = i + 1
 
-    assembly = ex_2(get_assembly=True)  # The powertrain from example 2
+    assembly = n_mass(get_assembly=True)  # The powertrain from example 2
     t_in = np.linspace(0, 299, 300)  # timesteps for time-domain analysis
     # u1 = np.linspace(-5, -20, 300) # input vector
     tout, torque, speed, angle = assembly.time_domain(t_in, u1=random_signal, u2=prbs)
@@ -326,21 +326,13 @@ def ex_5():
     plt.plot(prbs, drawstyle="steps", label="PRBS")
     plt.legend()
     plt.show()
-    return print("Example 5 finished")
+    return print("Example finished")
 
 
 if __name__ == "__main__":
-    print("openTorsion examples.\nChoose a number (1-5)")
-    choice = input()
-    if choice == "1":
-        ex_1()
-    if choice == "2":
-        ex_2()
-    if choice == "3":
-        ex_3()
-    if choice == "4":
-        ex_4()
-    if choice == "5":
-        ex_5()
-    else:
-        print("Choice invalid: quitting.")
+    # twomass()
+    # n_mass()
+    # motor()
+    # planetary_gear()
+    # timedomain()
+    pass
