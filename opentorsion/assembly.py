@@ -10,7 +10,8 @@ from scipy.signal import lsim
 from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
-from opentorsion.induction_motor import Induction_motor
+
+# from opentorsion.induction_motor import Induction_motor
 from opentorsion.errors import DOF_mismatch_error
 
 
@@ -283,6 +284,7 @@ class Assembly:
 
         if np.array([u2]).all() == None:
             u2 = np.zeros((1, np.size(u1)))
+            u2 = u2[0]
 
         return np.vstack([[u1], np.zeros((self.M().shape[1] - 2, np.size(u1))), [u2]]).T
 

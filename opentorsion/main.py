@@ -9,7 +9,7 @@ from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
 from opentorsion.induction_motor import Induction_motor
-from opentorsion.assembly import Assembly
+from opentorsion.assembly import Rotor
 from opentorsion.plots import Plots
 
 
@@ -171,7 +171,7 @@ def motor(linear_parameters=True, noload=True):
     return print("Example finished")
 
 
-def planetary_gear():  # incomplete
+def planetary_gear(n=None):  # incomplete
     """
     Planetary gear:
     Input shaft attached to sun gear and ring gear, output shaft attached to carrier and planet gears.
@@ -183,8 +183,13 @@ def planetary_gear():  # incomplete
     """
 
     pgs = 5  # number of planet gears
-    gears = []
-    case = 0
+    shafts, gears = [], []
+    if n == None:
+        n = 0
+    case = 1
+
+    shafts.append(Shaft(n, n + 1, None, None, I=0.1, k=80000))
+    n += 1
 
     if case == 0:
 
@@ -192,14 +197,18 @@ def planetary_gear():  # incomplete
         gears.append(sun_gear)
         n += 1
 
-        planet_gear = Gear(n, I=0, R=3, parent=sun_gear)
+        planet_gear = Gear(n, I=0, R=-3, parent=sun_gear)
         gears.append(planet_gear)
         n += 1
 
         ring_gear = Gear(n, I=0, R=9, parent=planet_gear)
         gears.append(ring_gear)
 
-        print("node:", n, "gears:", gears)
+        K = np.vstack([[-80000, 40000, 0], [0, -80000 / 3, 80000]])
+        # K = np.array([-(((6/3)*(3/9))*80000), 0, 80000])
+        print(
+            K
+        )  # Forming of K matrix based on equation torque_12=k_12*(theta2-theta1) and k values corrected with gear ratios
 
     if case == 1:
 
@@ -207,7 +216,7 @@ def planetary_gear():  # incomplete
         gears.append(sun_gear)
         n += 1
 
-        carrier = Gear(n, I=0, R=95)  # R_c = R_s + R_p
+        carrier = Gear(n, I=0, R=-95)  # R_c = R_s + R_p
         gears.append(carrier)
         n += 1
 
@@ -217,7 +226,7 @@ def planetary_gear():  # incomplete
             n += 1
         n -= 1
 
-        print("carrier node:", carrier.node, "gears:", gears)
+        K = np.vstack([[], []])
 
     if case == 2:
 
@@ -235,8 +244,6 @@ def planetary_gear():  # incomplete
             n += 1
         n -= 1
 
-        print("carrier node:", carrier.node, "gears:", gears)
-
     if case == 3:
 
         sun_gear = Gear(n, I=0, R=56)
@@ -248,7 +255,7 @@ def planetary_gear():  # incomplete
         # n += 1
 
         for i in range(pgs):
-            planet_gear = Gear(n, I=0, R=39, parent=sun_gear, parent2=ring_gear)
+            planet_gear = Gear(n, I=0, R=-39, parent=sun_gear, parent2=ring_gear)
             gears.append(planet_gear)
             n += 1
         # n -= 1
@@ -256,6 +263,44 @@ def planetary_gear():  # incomplete
         gears.pop(1)
         ring_gear = Gear(n, I=0, R=134, parent=sun_gear)
         gears.append(ring_gear)
+
+    shafts.append(Shaft(n, n + 1, None, None, I=0.1, k=80000))
+    n += 1
+
+    # assembly = Assembly(shafts, gear_elements=gears)
+    assembly = friswell_ex9_6_3()
+    print("Gear constraint matrix:\n", assembly.E())
+
+    u1 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    u2 = [
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+        -0.5 * 10,
+    ]
+    t = np.linspace(0, 10, 11)
+    tout, torques, omegas, thetas = assembly.time_domain(t, u1)
+    print("thetas:\n", thetas)
+    print("omegas:\n", omegas)
+
+    K = assembly.K()
+    print("K:", K)
+
+    test_torq = [K @ x for x in thetas]
+    print("torque:", test_torq)
+
+    plt.figure("planetary_gear-speed")
+    plt.plot(tout, test_torq, omegas)
+    plt.grid(alpha=0.3)
+    plt.xlabel("t")
+    plt.show()
 
     return print("Example finished")
 
@@ -310,7 +355,7 @@ def timedomain():
     assembly = n_mass(get_assembly=True)  # The powertrain from example 2
     t_in = np.linspace(0, 299, 300)  # timesteps for time-domain analysis
     # u1 = np.linspace(-5, -20, 300) # input vector
-    tout, torque, speed, angle = assembly.time_domain(t_in, u1=random_signal, u2=prbs)
+    tout, torque, speed, angle = assembly.time_domain(t_in, u1=prbs)
     torque = np.array(torque)
 
     plt.figure("opentorsion-torque")
@@ -329,10 +374,75 @@ def timedomain():
     return print("Example finished")
 
 
+def friswell_ex9_6_3():
+    # Inertias
+    J_motor, J_gear1, J_gear2, J_propeller = 3200, 200, 800, 450
+    # Shaft dimensions
+    L1, L2, D1, D2 = 2500, 3500, 200, 250
+    # Gear radii
+    N1, N2 = 500, 800
+    # Shaft stiffnesses
+    k1, k2 = 4.2726e6, 7.4508e6
+    # Powertrain
+    shafts, disks, gears = [], [], []
+    n = 0
+
+    disks.append(Disk(n, J_motor))
+    shafts.append(Shaft(n, n + 1, None, None, I=0, k=k1))
+    n += 1
+    gears.append(gear1 := Gear(n, J_gear1, N1))
+    n += 1
+    # Upper branch
+    gears.append(Gear(n, J_gear2, N2, parent=gear1))
+    shafts.append(Shaft(n, n + 1, None, None, I=0, k=k2))
+    n += 1
+    disks.append(Disk(n, J_propeller))
+    # Lower branch
+    n += 1
+    gears.append(gear2 := Gear(n, J_gear1, N1, parent=gear1))
+    n += 1
+    gears.append(Gear(n, J_gear2, N2, parent=gear2))
+    shafts.append(Shaft(n, n + 1, None, None, I=0, k=k2))
+    n += 1
+    disks.append(Disk(n, J_propeller))
+
+    assembly = Assembly(shafts, disk_elements=disks, gear_elements=gears)
+    # print('Mass:\n', assembly.M())
+    # print('Stiffness:\n', assembly.K())
+    # print('Gear constraint:\n', assembly.E())
+    # a, b, c = assembly.modal_analysis()
+    # print(b.round(3))
+
+    return assembly
+    # return print("Example finished")
+
+
+def multiple_gears():
+
+    shafts, disks, gears = [], [], []
+
+    n = 0
+    disks.append(Disk(n, I=0.1))
+    shafts.append(Shaft(n, n + 1, None, None, I=0.05, k=80e3))
+    n += 1
+    gears.append(gear := Gear(n, 0, 20))
+    n += 1
+    gears.append(gear2 := Gear(n, 0, 30, parent=gear))
+    # n += 1
+    # gears.append(Gear(n, 0, 10, parent=gear2))
+    shafts.append(Shaft(n, n + 1, None, None, I=0.04, k=80e3))
+    n += 1
+    disks.append(Disk(n, I=0.1))
+
+    Plots(Assembly(shafts, disk_elements=disks, gear_elements=gears)).figure_2D()
+
+
 if __name__ == "__main__":
     # twomass()
     # n_mass()
     # motor()
     # planetary_gear()
     # timedomain()
+    # friswell_ex9_6_3()
+    # multiple_gears()
     pass

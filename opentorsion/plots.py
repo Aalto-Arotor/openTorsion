@@ -55,6 +55,9 @@ class Plots:
 
     def figure_2D(self):
         """Creates a 2D-figure of the powertrain"""
+        # TODO: if shaft masses are identical, v==nan --> figure broken
+        # TODO: disks should be drawn last as coordinates may not be correct due to varying shaft size
+        # TODO: correct shaft placement when amount of consecutive gears is > 2
 
         fig, ax = plt.subplots(nrows=1, ncols=1)
         x_axis, y_axis = ax.get_xaxis(), ax.get_yaxis()
@@ -101,8 +104,9 @@ class Plots:
         plt.xlim(right=max_nodes)
         plt.ylim(top=y0 + l / 2, bottom=y0 - l / 2)
         k = len(nodes_g) * h  # to level shaft and gear figures right
-        i = 0
         m = 0.1 * l  # for node number text coordinate
+        t = 0  # for gear block effect on x coordinate
+        last_node = -1
 
         # Draws gear elements and possible disk elements
         for node in nodes_g:
@@ -137,24 +141,20 @@ class Plots:
                     )
                     # disk figure lower part
 
-            if i % 2 == 0:
+            if node == last_node + 1:
+                t += 1
+            else:
                 plt.text(
-                    x0 + node * l + m, y0 + k + m * 0.1, str(node)
+                    x0 - t + node * l + m, y0 + k + m * 0.1, str(node)
                 )  # add node number as text
-                ax.add_patch(
-                    matplotlib.patches.Rectangle(
-                        (x0 + node * l, y0 + k), l, -h, ec="black", fc="green"
-                    )
+            ax.add_patch(
+                matplotlib.patches.Rectangle(
+                    (x0 - t + node * l, y0 + k), l, -h, ec="black", fc="green"
                 )
-                # gear figure upper part
-                k -= h
-                ax.add_patch(
-                    matplotlib.patches.Rectangle(
-                        (x0 + node * l, y0 + k), l, -h, ec="black", fc="green"
-                    )
-                )
-                # gear figure lower part
-            i += 1
+            )
+            k -= h
+            last_node = node
+
         k = len(nodes_g) * h
 
         # Draws shaft and possible disk elements
@@ -270,3 +270,17 @@ class Plots:
         plt.show()
 
         return
+
+
+class fig_2D:
+    def init(self, assembly):
+        self.assembly = assembly
+
+    def draw_gear(self):
+        pass
+
+    def draw_shaft(self):
+        pass
+
+    def draw_disk(self):
+        pass
