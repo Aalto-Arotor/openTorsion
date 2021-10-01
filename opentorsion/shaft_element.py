@@ -35,7 +35,7 @@ class Shaft:
     """
 
     def __init__(
-        self, nl, nr, L, odl, idl=0, G=78e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
+        self, nl, nr, L, odl, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
     ):
 
         if k is None:

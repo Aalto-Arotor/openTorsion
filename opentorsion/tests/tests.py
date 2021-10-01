@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from opentorsion.shaft_element import Shaft
 from opentorsion.disk_element import Disk
 from opentorsion.gear_element import Gear
-from opentorsion.assembly import Rotor
+from opentorsion.assembly import Assembly
 
 
 class Test(unittest.TestCase):
@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
         shaft = Shaft(0, 1, 0, 0, k=k)
         disks = [Disk(0, J1), Disk(1, J2)]
 
-        assembly = Rotor([shaft], disk_elements=disks)
+        assembly = Assembly([shaft], disk_elements=disks)
 
         omegas_damped, freqs, damping_ratios = assembly.modal_analysis()
 
@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
         gear2 = Gear(2, Ig, 1, parent=gear1)
         gears = [gear1, gear2]
 
-        rotor = Rotor(shafts, disk_elements=disks, gear_elements=gears)
+        rotor = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
         _, freqs, _ = rotor.modal_analysis()
 
@@ -128,7 +128,7 @@ class Test(unittest.TestCase):
 
         disks.append(Disk(n, Ip5))
 
-        assembly = Rotor(shafts, disk_elements=disks)
+        assembly = Assembly(shafts, disk_elements=disks)
 
         a, freqs, b = assembly.modal_analysis()
 
@@ -169,7 +169,7 @@ class Test(unittest.TestCase):
         gears.append(gear3)
         gears.append(gear4)
 
-        assembly = Rotor(shafts, disk_elements=disks, gear_elements=gears)
+        assembly = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
         # print(( assembly.K() * 1e-6).round(3))
         # print(assembly.E())
@@ -198,7 +198,7 @@ class Test(unittest.TestCase):
 
             disks.append(Disk(0, mt))
             disks.append(Disk(ne, m))
-            assembly = Rotor(shafts, disk_elements=disks)
+            assembly = Assembly(shafts, disk_elements=disks)
             a, freq, b = assembly.modal_analysis()
             freqs[j] = freq.round(4)[0:5].tolist()
 

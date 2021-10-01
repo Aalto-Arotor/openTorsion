@@ -23,13 +23,7 @@ class Gear:
         Node value of the parent gear element
     """
 
-    def __init__(
-        self,
-        node,
-        I,
-        R,
-        parent=None,
-    ):
+    def __init__(self, node, I, R, parent=None, parent2=None):
 
         self.node = node
         self.I = I
@@ -37,9 +31,18 @@ class Gear:
 
         if parent is None:
             self.stages = None
-        else:
+        elif parent2 is None:
             self.stages = []
             self.stages.append([[parent.node, parent.R], [self.node, self.R]])
+        else:
+            self.stages = []
+            self.stages.append(
+                [
+                    [parent.node, parent.R],
+                    [parent2.node, parent2.R],
+                    [self.node, self.R],
+                ]
+            )
 
     def M(self):
         """Mass Matrix of 1 DOF gear element
