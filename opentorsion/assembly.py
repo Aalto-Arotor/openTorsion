@@ -18,6 +18,7 @@ from disk_element import Disk
 from shaft_element import Shaft
 from gear_element import Gear
 
+
 class Assembly:
     """Powertrain assembly"""
 
@@ -218,39 +219,40 @@ class Assembly:
 
         return lam, vec
 
-    def C_full(self):
+    def C_full(self, M, K, xi=0.02):
         """Full damping matrix obtained from modal damping matrix"""
-        # from Sopanen et al. (2011)
-        omegas, phi = self.undamped_modal_analysis()
+        # omegas, phi = self.undamped_modal_analysis()
+        omegas, phi = LA.eig(M, K)
 
         omegas = np.absolute(omegas)
-        # print('omegas: ', omegas)
-        # print('phi: ', phi)
-        xi = 0.02 # damping factor of 2%
-
-        # the diagonal modal damping matrix
-        C_modal_elements = 2*xi*omegas
-        C_modal_diag = np.diag(C_modal_elements)
+        print("omegas: ", omegas)
+        print("phi: ", phi)
+        # xi = 0.02 # damping factor of 2%
 
         # modal mass matrix
-        M_modal = phi.T @ self.M() @ phi
-        print(M_modal)
+        # M = self.M()
+        M_modal = phi.T @ M @ phi
         M_modal_inv = LA.inv(M_modal)
+
         # the mode shape matrix is normalized by M^(-1/2) @ phi
         phi_norm = phi @ LA.fractional_matrix_power(M_modal_inv, 0.5)
-        # confirmation that phi.T @ M @ phi = unit matrix
-        # I = phi.T @ self.M() @ phi
-        I = phi_norm.T @ self.M() @ phi_norm
-        print('Confirmation\nI: ', I)
+
+        # confirmation that phi.T @ M @ phi = I (unit matrix)
+        print("normalized phi:", phi_norm)
+        I = phi_norm.T @ M @ phi_norm
+        print("Confirmation\nI: ", I)
         print(np.diagonal(I))
 
-        # the diagonal modal damping matrix by equation: C = (phi.T)^-1 @ C_modal_diag @ phi^-1
+        # the diagonal modal damping matrix
+        C_modal_elements = 2 * xi * omegas
+        C_modal_diag = np.diag(C_modal_elements)
+
+        # the full damping matrix by equation: C = (phi.T)^-1 @ C_modal_diag @ phi^-1
         C = LA.inv(phi_norm.T) @ C_modal_diag @ LA.inv(phi_norm)
 
         return C
 
     def ss_response(self):
-        # from Sopanen et al. (2011)
         M, K, C = self.M(), self.K(), self.C_full()
         a, b = [], []
         # coefficient vectors a and b
@@ -262,7 +264,6 @@ class Assembly:
         return a, b
 
     def vibratory_torque(self, a, b):
-        # from Sopanen et al. (2011)
         M, K, C = self.M(), self.K(), self.C_full()
         # T_vs = K @ a - (w*C) @ b
         # T_vc = K @ b - (w*C) @ a
@@ -281,6 +282,8 @@ class Assembly:
         lam, vec = self._eig(A, B)
 
         # Sort and delete complex conjugates
+        # lam = np.sort(lam)
+        # lam = np.delete(lam, [i*2+1 for i in range(len(lam)//2)])
 
         omegas = np.sort(np.absolute(lam))
         omegas_damped = np.sort(np.abs(np.imag(lam)))

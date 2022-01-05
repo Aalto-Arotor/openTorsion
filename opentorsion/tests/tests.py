@@ -68,11 +68,13 @@ class Test(unittest.TestCase):
         omegas_damped, freqs, damping_ratios = assembly.modal_analysis()
 
         self.assertEqual(
-            freqs.round(1).tolist(), [0, 176.1], "shaft gives the wrong result"
+            freqs.round(1).tolist(),
+            [0, 0, 176.1, 176.1],
+            "shaft gives the wrong result",
         )
 
     def test_friswell_pagex(self):
-        correct = [0.0, 425.4, 634.1, 3247.2]
+        correct = [0.0, 0.0, 425.4, 425.4, 634.1, 634.1, 3247.2, 3247.2]
         Im = 400e-6
         Ir = 700e-6
         Ig = 25e-6
@@ -97,7 +99,7 @@ class Test(unittest.TestCase):
         self.assertEqual(freqs.round(1).tolist(), correct, "geared system incorrect")
 
     def test_friswell_ex971(self):
-        correct = [0, 81.21, 141.21, 378.95, 536.36]
+        correct = [0, 0, 81.21, 81.21, 141.21, 141.21, 378.95, 378.95, 536.36, 536.36]
         Ip1to3 = 3.5e-3
         Ip4 = 0.15
         Ip5 = 0.05
@@ -135,7 +137,7 @@ class Test(unittest.TestCase):
         self.assertEqual(freqs.round(2).tolist(), correct, "geared system incorrect")
 
         # def friswell_9_6_3(self):
-        correct = [0, 10.304, 20.479, 24.423]
+        correct = [0, 0, 10.304, 10.304, 20.479, 20.479, 24.423, 24.423]
         Ip0 = 3200
         Ip1 = 200
         Ip2 = 800
@@ -200,12 +202,45 @@ class Test(unittest.TestCase):
             disks.append(Disk(ne, m))
             assembly = Assembly(shafts, disk_elements=disks)
             a, freq, b = assembly.modal_analysis()
-            freqs[j] = freq.round(4)[0:5].tolist()
+            freqs[j] = freq.round(4)[0:10].tolist()
 
         correct = [
-            [0.0000, 1.9417, 4.0719, 6.5437, 9.1547],
-            [0.0000, 1.9225, 3.9187, 6.0625, 8.4185],
-            [0.0000, 1.9106, 3.8232, 5.7394, 7.6613],
+            [
+                0.0000,
+                0.0000,
+                1.9417,
+                1.9417,
+                4.0719,
+                4.0719,
+                6.5437,
+                6.5437,
+                9.1547,
+                9.1547,
+            ],
+            [
+                0.0000,
+                0.0000,
+                1.9225,
+                1.9225,
+                3.9187,
+                3.9187,
+                6.0625,
+                6.0625,
+                8.4185,
+                8.4185,
+            ],
+            [
+                0.0000,
+                0.0000,
+                1.9106,
+                1.9106,
+                3.8232,
+                3.8232,
+                5.7394,
+                5.7394,
+                7.6613,
+                7.6613,
+            ],
         ]
 
         self.assertEqual(freqs, correct, "Shaft discretization not correct")

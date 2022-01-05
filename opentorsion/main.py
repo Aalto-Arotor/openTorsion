@@ -19,19 +19,30 @@ from induction_motor import Induction_motor
 from assembly import Assembly
 from plots import Plots, Fig_2D
 
-"""Example cases"""
-#TODO: damping
-#TODO: steady-state response
-#TODO: vibratory torque
+"""Various tests under development"""
+# TODO: damping
+# TODO: steady-state response
+# TODO: vibratory torque
+
 
 def test_damping():
-    # assembly = n_mass(get_assembly=True)
-    assembly = twomass(get_assembly=True)
+    assembly = n_mass(get_assembly=True)
+    # assembly = twomass(get_assembly=True)
 
-    C = assembly.C_full()
-    print('Damped C: ', C)
+    C = assembly.C_full(assembly.M(), assembly.K())
+    # print('Damped C: ', C)
+
+    print("--------------------")
+    print("Test example using previous method")
+    print("--------------------")
+
+    M = np.vstack([np.hstack([10, 0]), np.hstack([0, 10])])
+    K = np.vstack([np.hstack([428400, -132900]), np.hstack([-132900, 532800])])
+    C1 = assembly.C_full(M, K)
+    print("Damped C1: ", C1)
 
     return
+
 
 def twomass(get_assembly=False):
     """
@@ -456,7 +467,7 @@ def multiple_gears():
 
 if __name__ == "__main__":
     test_damping()
-    # twomass()
+    twomass()
     # n_mass()
     # motor()
     # planetary_gear()

@@ -116,15 +116,15 @@ class Plots:
         return
 
 
-class Fig_2D():
+class Fig_2D:
     """Creates a 2D-figure of the powertrain"""
 
     def __init__(self, assembly):
         self.assembly = assembly
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1)
         self.x0, self.y0 = 1, 0
-        self.l = 1 # block_length
-        self.h = 0.1 # block height
+        self.l = 1  # block_length
+        self.h = 0.1  # block height
         self.gear_nodes = []
 
     def draw_gears(self):
@@ -136,19 +136,31 @@ class Fig_2D():
                 gear_stages.append(element.stages)
 
         for i, node in enumerate(gear_stages):
-            plt.text(self.x0+node[0][0][0], self.y0-i*self.h, str(node[0][0][0]))
+            plt.text(self.x0 + node[0][0][0], self.y0 - i * self.h, str(node[0][0][0]))
             plt.text(
-                self.x0+node[0][0][0]+self.h,
-                self.y0-self.h*(1/2+i),
-                'Ratio: '+str(abs(node[0][0][1]))+':'+str(abs(node[0][1][1])),
-                color='red'
+                self.x0 + node[0][0][0] + self.h,
+                self.y0 - self.h * (1 / 2 + i),
+                "Ratio: " + str(abs(node[0][0][1])) + ":" + str(abs(node[0][1][1])),
+                color="red",
             )
 
-            self.ax.add_patch(patch.Rectangle(
-                (self.x0+node[0][0][0], self.y0-i*self.h), self.l, -self.h, ec='black', fc='green')
+            self.ax.add_patch(
+                patch.Rectangle(
+                    (self.x0 + node[0][0][0], self.y0 - i * self.h),
+                    self.l,
+                    -self.h,
+                    ec="black",
+                    fc="green",
+                )
             )
-            self.ax.add_patch(patch.Rectangle(
-                (self.x0+node[0][0][0], self.y0-self.h*(1+i)), self.l, -self.h, ec='black', fc='green')
+            self.ax.add_patch(
+                patch.Rectangle(
+                    (self.x0 + node[0][0][0], self.y0 - self.h * (1 + i)),
+                    self.l,
+                    -self.h,
+                    ec="black",
+                    fc="green",
+                )
             )
 
     def draw_shafts(self):
@@ -156,41 +168,59 @@ class Fig_2D():
 
         for element in self.assembly.shaft_elements:
             shaft_nodes.append(element.nl)
-        shaft_nodes.append(shaft_nodes[-1]+1)
+        shaft_nodes.append(shaft_nodes[-1] + 1)
         print(shaft_nodes)
 
-        a = 0 # to level shafts accroding to gears
+        a = 0  # to level shafts accroding to gears
         for node in shaft_nodes:
             if node in self.gear_nodes:
                 a += self.h
             if node != shaft_nodes[-1]:
-                plt.text(self.x0+node, self.y0-a, str(node)) # add node number as text
-                self.ax.add_patch(patch.Rectangle((self.x0+node, self.y0-a), self.l, -self.h, ec='black'))
+                plt.text(
+                    self.x0 + node, self.y0 - a, str(node)
+                )  # add node number as text
+                self.ax.add_patch(
+                    patch.Rectangle(
+                        (self.x0 + node, self.y0 - a), self.l, -self.h, ec="black"
+                    )
+                )
             else:
-                plt.text(self.x0+node, self.y0-a, str(node))
+                plt.text(self.x0 + node, self.y0 - a, str(node))
 
     def draw_disks(self):
-        a = self.h*self.l
+        a = self.h * self.l
         b = 0
 
         for element in self.assembly.disk_elements:
-            x = self.x0+element.node
+            x = self.x0 + element.node
 
             for gear_node in self.gear_nodes:
-                print('gear node:', gear_node)
-                print('element node:', element.node)
+                print("gear node:", gear_node)
+                print("element node:", element.node)
                 if element.node > gear_node:
                     b += 1
 
-            c = b*self.h
-            d = self.h+c
+            c = b * self.h
+            d = self.h + c
 
-            polygon_edges = [(x, self.y0-c), (x+2*a, self.y0+a/2-c), (x+2*a, self.y0+a-c), (x-2*a, self.y0+a-c), (x-2*a, self.y0+a/2-c)]
+            polygon_edges = [
+                (x, self.y0 - c),
+                (x + 2 * a, self.y0 + a / 2 - c),
+                (x + 2 * a, self.y0 + a - c),
+                (x - 2 * a, self.y0 + a - c),
+                (x - 2 * a, self.y0 + a / 2 - c),
+            ]
 
-            negative_edges = [(x, self.y0-d), (x+2*a, self.y0-a/2-d), (x+2*a, self.y0-a-d), (x-2*a, self.y0-a-d), (x-2*a, self.y0-a/2-d)]
+            negative_edges = [
+                (x, self.y0 - d),
+                (x + 2 * a, self.y0 - a / 2 - d),
+                (x + 2 * a, self.y0 - a - d),
+                (x - 2 * a, self.y0 - a - d),
+                (x - 2 * a, self.y0 - a / 2 - d),
+            ]
 
-            self.ax.add_patch(patch.Polygon(polygon_edges, ec='black', fc='black'))
-            self.ax.add_patch(patch.Polygon(negative_edges, ec='black', fc='black'))
+            self.ax.add_patch(patch.Polygon(polygon_edges, ec="black", fc="black"))
+            self.ax.add_patch(patch.Polygon(negative_edges, ec="black", fc="black"))
 
     def draw_figure(self):
         x_axis, y_axis = self.ax.get_xaxis(), self.ax.get_yaxis()
@@ -206,11 +236,10 @@ class Fig_2D():
         if self.assembly.disk_elements is not None:
             self.draw_disks()
 
-        plt.rcParams.update({
-            "text.usetex": False,
-            "font.serif": ["Computer Modern Roman"]
-        })
+        plt.rcParams.update(
+            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
+        )
 
-        plt.xlim(right=self.x0+int(self.assembly._check_dof()))
-        plt.ylim(top=self.y0+self.l/2, bottom=self.y0-self.l)
+        plt.xlim(right=self.x0 + int(self.assembly._check_dof()))
+        plt.ylim(top=self.y0 + self.l / 2, bottom=self.y0 - self.l)
         plt.show()
