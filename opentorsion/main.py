@@ -5,16 +5,33 @@ import matplotlib.pyplot as plt
 from scipy import linalg as LA
 from scipy.sparse import linalg as las
 
-from opentorsion.disk_element import Disk
-from opentorsion.shaft_element import Shaft
-from opentorsion.gear_element import Gear
-from opentorsion.induction_motor import Induction_motor
-from opentorsion.assembly import Rotor
-from opentorsion.plots import Plots
+# from opentorsion.disk_element import Disk
+# from opentorsion.shaft_element import Shaft
+# from opentorsion.gear_element import Gear
+# from opentorsion.induction_motor import Induction_motor
+# from opentorsion.assembly import Assembly
+# from opentorsion.plots import Plots, Fig_2D
 
+from disk_element import Disk
+from shaft_element import Shaft
+from gear_element import Gear
+from induction_motor import Induction_motor
+from assembly import Assembly
+from plots import Plots, Fig_2D
 
 """Example cases"""
+#TODO: damping
+#TODO: steady-state response
+#TODO: vibratory torque
 
+def test_damping():
+    # assembly = n_mass(get_assembly=True)
+    assembly = twomass(get_assembly=True)
+
+    C = assembly.C_full()
+    print('Damped C: ', C)
+
+    return
 
 def twomass(get_assembly=False):
     """
@@ -76,8 +93,8 @@ def n_mass(get_assembly=False):
 
     disks.append(Disk(0, J_IM))  # Motor represented as a mass
     shafts.append(Shaft(0, 1, None, None, k=40050, I=0.045))  # Coupling
-    gears.append(gear1 := Gear(1, Ig, 1))  # Gear
-    gears.append(Gear(2, Ig, -1.95, parent=gear1))  # Gear
+    # gears.append(gear1 := Gear(1, Ig, 1))  # Gear
+    # gears.append(Gear(2, Ig, -1.95, parent=gear1))  # Gear
 
     shafts.append(Shaft(2, 3, None, None, k=40050, I=0.045))  # Coupling
 
@@ -438,6 +455,7 @@ def multiple_gears():
 
 
 if __name__ == "__main__":
+    test_damping()
     # twomass()
     # n_mass()
     # motor()
@@ -445,4 +463,4 @@ if __name__ == "__main__":
     # timedomain()
     # friswell_ex9_6_3()
     # multiple_gears()
-    pass
+    # pass
