@@ -7,16 +7,12 @@ from scipy.sparse import linalg as las
 from scipy.signal import lti
 from scipy.signal import lsim
 
-# from opentorsion.disk_element import Disk
-# from opentorsion.shaft_element import Shaft
-# from opentorsion.gear_element import Gear
+from opentorsion.disk_element import Disk
+from opentorsion.shaft_element import Shaft
+from opentorsion.gear_element import Gear
 
-# # from opentorsion.induction_motor import Induction_motor
-# from opentorsion.errors import DOF_mismatch_error
-
-from disk_element import Disk
-from shaft_element import Shaft
-from gear_element import Gear
+# from opentorsion.induction_motor import Induction_motor
+from opentorsion.errors import DOF_mismatch_error
 
 
 class Assembly:
@@ -222,7 +218,7 @@ class Assembly:
     def C_full(self, M, K, xi=0.02):
         """Full damping matrix obtained from modal damping matrix"""
         # omegas, phi = self.undamped_modal_analysis()
-        omegas, phi = LA.eig(M, K)
+        omegas, phi = LA.eig(K, M)
 
         omegas = np.absolute(omegas)
         print("omegas: ", omegas)
@@ -230,11 +226,10 @@ class Assembly:
         # xi = 0.02 # damping factor of 2%
 
         # modal mass matrix
-        # M = self.M()
         M_modal = phi.T @ M @ phi
         M_modal_inv = LA.inv(M_modal)
 
-        # the mode shape matrix is normalized by M^(-1/2) @ phi
+        # the mode shape matrix is normalized
         phi_norm = phi @ LA.fractional_matrix_power(M_modal_inv, 0.5)
 
         # confirmation that phi.T @ M @ phi = I (unit matrix)
@@ -247,34 +242,48 @@ class Assembly:
         C_modal_elements = 2 * xi * omegas
         C_modal_diag = np.diag(C_modal_elements)
 
-        # the full damping matrix by equation: C = (phi.T)^-1 @ C_modal_diag @ phi^-1
+        # the full damping matrix
         C = LA.inv(phi_norm.T) @ C_modal_diag @ LA.inv(phi_norm)
 
         return C
 
-    def ss_response(self):
-        M, K, C = self.M(), self.K(), self.C_full()
-        a, b = [], []
-        # coefficient vectors a and b
-        # KCM^-1 @ U = [a, b].T
-        # KCM = [[K-w^2*M,    -w*C],
-        #       [   w*C,  K-w^2*M]]
-        # U = excitation torque vector
-        # w = natural frequency
+    def ss_response(self, U):
+        """The coefficient vectors a and b of the steady-state responses of the system"""
+        M, K = self.M(), self.K()
+        C = self.C_full(M, K)
+        omega, phi = self.undamped_modal_analysis()
+        omega = abs(omega)
+        KCM = np.vstack(
+            [
+                np.hstack([K - (np.power(omega, 2) * M), -(omega * C)]),
+                np.hstack([omega * C, K - (np.power(omega, 2) * M)]),
+            ]
+        )
+        # U = np.zeros(KCM.shape)
+        ab = LA.inv(KCM) @ U
+        a, b = np.vsplit(ab, 2)
         return a, b
 
     def vibratory_torque(self, a, b):
-        M, K, C = self.M(), self.K(), self.C_full()
-        # T_vs = K @ a - (w*C) @ b
-        # T_vc = K @ b - (w*C) @ a
-
+        """Elemental vibratory torque"""
+        M, K = self.M(), self.K()
+        C = self.C_full(M, K)
+        omega, phi = self.undamped_modal_analysis()
+        omega = abs(omega)
         # torque at node i
-        # T_v[i] = sqrt(T_vs[i]**2 + T_vc[i]**2)
+        T_vs = K @ a - (omega * C) @ b
+        T_vc = K @ b - (omega * C) @ a
+        T_v = np.sqrt(np.power(T_vs, 2) + np.power(T_vc, 2))
 
-        # torque in element
-        # T_e[i] = sqrt((T_vs[i+1] - T_vs[i])**2 + (T_vc[i+1] - T_vc[i])**2)
+        # torque at elements
+        T_e = np.vstack(
+            [
+                np.sqrt((T_vs[1] - T_vs[0]) ** 2 + (T_vc[1] - T_vc[0]) ** 2),
+                np.sqrt((T_vs[2] - T_vs[1]) ** 2 + (T_vc[2] - T_vc[1]) ** 2),
+            ]
+        )
 
-        return
+        return T_v, T_e
 
     def modal_analysis(self):
         """Calculates the eigenvalues and eigenfrequencies of the assembly"""

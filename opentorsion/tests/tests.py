@@ -245,6 +245,16 @@ class Test(unittest.TestCase):
 
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
 
+    # def test_full_damping_matrix(self):
+    #     correct = np.vstack([
+    #         np.hstack([1.01201814e-05, 2.5243470e-06]),
+    #         np.hstack([2.52434706e-06, 8.13717291e-06])
+    #     ])
+    #     M = np.vstack([np.hstack([10, 0]), np.hstack([0, 10])])
+    #     K = np.vstack([np.hstack([428400, -132900]), np.hstack([-132900, 532800])])
+    #     C = Assembly.C_full(M, K)
+    #     self.assertEqual(C, correct, "Full damping matrix not correct")
+
 
 if __name__ == "__main__":
     unittest.main()

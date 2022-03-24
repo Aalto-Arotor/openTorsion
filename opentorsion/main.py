@@ -5,24 +5,36 @@ import matplotlib.pyplot as plt
 from scipy import linalg as LA
 from scipy.sparse import linalg as las
 
-# from opentorsion.disk_element import Disk
-# from opentorsion.shaft_element import Shaft
-# from opentorsion.gear_element import Gear
-# from opentorsion.induction_motor import Induction_motor
-# from opentorsion.assembly import Assembly
-# from opentorsion.plots import Plots, Fig_2D
+from opentorsion.disk_element import Disk
+from opentorsion.shaft_element import Shaft
+from opentorsion.gear_element import Gear
+from opentorsion.induction_motor import Induction_motor
+from opentorsion.assembly import Assembly
+from opentorsion.plots import Plots, Fig_2D
 
-from disk_element import Disk
-from shaft_element import Shaft
-from gear_element import Gear
-from induction_motor import Induction_motor
-from assembly import Assembly
-from plots import Plots, Fig_2D
 
-"""Various tests under development"""
-# TODO: damping
-# TODO: steady-state response
-# TODO: vibratory torque
+def test_sopa():
+    """wind turbine"""
+    k1 = 3.67e8
+    k2 = 5.496e9
+    J1 = 1e7
+    J2 = 5770
+    J3 = 97030
+    T = np.vstack([0, 0, 2.9e6, 0, 0, 0])  # padded torque vector for this specific case
+    assembly = Assembly(
+        shaft_elements=[
+            Shaft(0, 1, None, None, k=k1, I=0.1),
+            Shaft(1, 2, None, None, k=k2, I=0.01),
+        ],
+        disk_elements=[Disk(0, J1), Disk(1, J2), Disk(2, J3)],
+    )
+    _, freqs, _ = assembly.modal_analysis()
+    print(freqs)
+    a, b = assembly.ss_response(T)
+    T_v, T_e = assembly.vibratory_torque(a, b)
+    print("T_v: ", T_v)
+    print("T_e: ", T_e)
+    return
 
 
 def test_damping():
@@ -30,17 +42,21 @@ def test_damping():
     # assembly = twomass(get_assembly=True)
 
     C = assembly.C_full(assembly.M(), assembly.K())
-    # print('Damped C: ', C)
+    print("Damped C: ", C)
 
-    print("--------------------")
-    print("Test example using previous method")
-    print("--------------------")
+    return
 
-    M = np.vstack([np.hstack([10, 0]), np.hstack([0, 10])])
-    K = np.vstack([np.hstack([428400, -132900]), np.hstack([-132900, 532800])])
-    C1 = assembly.C_full(M, K)
-    print("Damped C1: ", C1)
 
+def test_ss_response():
+    assembly = twomass(get_assembly=True)
+    U = np.vstack([0, 0, 0, 100])
+    a, b = assembly.ss_response(U)
+    print(a)
+    print(b)
+    return
+
+
+def test_vibratory_torque():
     return
 
 
@@ -466,8 +482,11 @@ def multiple_gears():
 
 
 if __name__ == "__main__":
-    test_damping()
-    twomass()
+    test_sopa()
+    # test_damping()
+    # test_ss_response()
+    # test_vibrator_torque()
+    # twomass()
     # n_mass()
     # motor()
     # planetary_gear()
