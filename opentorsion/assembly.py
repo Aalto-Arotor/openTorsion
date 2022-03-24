@@ -216,72 +216,99 @@ class Assembly:
         return lam, vec
 
     def C_full(self, M, K, xi=0.02):
-        """Full damping matrix obtained from modal damping matrix"""
-        # omegas, phi = self.undamped_modal_analysis()
+        """Full damping matrix for mechanical system obtained from modal damping matrix"""
+        if self.xi is None:
+            xi = self.xi
         omegas, phi = LA.eig(K, M)
-
         omegas = np.absolute(omegas)
-        print("omegas: ", omegas)
-        print("phi: ", phi)
-        # xi = 0.02 # damping factor of 2%
 
-        # modal mass matrix
+        # Modal mass matrix is calculated using the eigenvectors
         M_modal = phi.T @ M @ phi
-        M_modal_inv = LA.inv(M_modal)
 
-        # the mode shape matrix is normalized
-        phi_norm = phi @ LA.fractional_matrix_power(M_modal_inv, 0.5)
+        # Nondiagonal elements are removed to prevent floating point error and inverse square root is applied
+        M_modal_inv = LA.fractional_matrix_power(np.diag(np.diag(M_modal)), -0.5)
 
-        # confirmation that phi.T @ M @ phi = I (unit matrix)
-        print("normalized phi:", phi_norm)
+        # The mode shape matrix is normalized by multiplying with the inverse modal matrix
+        phi_norm = phi @ M_modal_inv
+
+        # Multiplying the mass matrix with the normalized eigenvectors should result in identity matix
         I = phi_norm.T @ M @ phi_norm
-        print("Confirmation\nI: ", I)
-        print(np.diagonal(I))
 
-        # the diagonal modal damping matrix
-        C_modal_elements = 2 * xi * omegas
+        # The diagonal modal damping matrix is achieved by applying the modal damping
+        C_modal_elements = 2 * self.xi * np.sqrt(omegas)
         C_modal_diag = np.diag(C_modal_elements)
 
-        # the full damping matrix
+        # The final damping matrix
         C = LA.inv(phi_norm.T) @ C_modal_diag @ LA.inv(phi_norm)
 
         return C
 
-    def ss_response(self, U):
-        """The coefficient vectors a and b of the steady-state responses of the system"""
-        M, K = self.M(), self.K()
-        C = self.C_full(M, K)
-        omega, phi = self.undamped_modal_analysis()
-        omega = abs(omega)
-        KCM = np.vstack(
-            [
-                np.hstack([K - (np.power(omega, 2) * M), -(omega * C)]),
-                np.hstack([omega * C, K - (np.power(omega, 2) * M)]),
-            ]
-        )
-        # U = np.zeros(KCM.shape)
-        ab = LA.inv(KCM) @ U
-        a, b = np.vsplit(ab, 2)
+    def ss_coefficients(self, M, C, K, amplitudes, omegas):
+        """The coefficient vectors a and b of the steady-state responses of the system M, C, K included for debug reasons"""
+        # M, K = self.M(), self.K()
+        # N = np.array([amplitudes[:,0]]).T.shape
+        if type(amplitudes) is np.ndarray:
+            Z = np.zeros(amplitudes.shape)
+            a, b = np.zeros(amplitudes.shape), np.zeros(amplitudes.shape)
+        else:
+            Z = np.zeros(np.array([amplitudes]).shape)
+            a, b = np.zeros(np.array([amplitudes]).shape), np.zeros(
+                np.array([amplitudes]).shape
+            )
+
+        U = np.vstack([amplitudes, Z])
+
+        # setting excitation to zero at very low frequencies
+        for i, omega in enumerate(omegas):
+            AA = np.vstack(
+                [
+                    np.hstack([K - (omega ** 2 * M), -omega * C]),
+                    np.hstack([omega * C, K - (omega * omega * M)]),
+                ]
+            )
+            ab = LA.inv(AA) @ np.array([U[:, i]]).T
+            a_i, b_i = np.split(ab, 2)
+
+            a[:, i] = a_i.T
+            b[:, i] = b_i.T
+
         return a, b
 
-    def vibratory_torque(self, a, b):
-        """Elemental vibratory torque"""
-        M, K = self.M(), self.K()
-        C = self.C_full(M, K)
-        omega, phi = self.undamped_modal_analysis()
-        omega = abs(omega)
-        # torque at node i
-        T_vs = K @ a - (omega * C) @ b
-        T_vc = K @ b - (omega * C) @ a
-        T_v = np.sqrt(np.power(T_vs, 2) + np.power(T_vc, 2))
+    def ss_response(self, M, C, K, amplitudes, omegas):
+        """Calculates steady state vibration amplitudes and phase angles for each drivetrain node"""
 
-        # torque at elements
-        T_e = np.vstack(
-            [
-                np.sqrt((T_vs[1] - T_vs[0]) ** 2 + (T_vc[1] - T_vc[0]) ** 2),
-                np.sqrt((T_vs[2] - T_vs[1]) ** 2 + (T_vc[2] - T_vc[1]) ** 2),
-            ]
+        a, b = self.ss_coefficients(M, C, K, amplitudes, omegas)
+
+        X = np.sqrt(np.power(a, 2) + np.power(b, 2))
+        tanphi = np.divide(a, b)
+
+        return X, tanphi
+
+    def vibratory_torque(self, M, C, K, amplitudes, omegas):
+        """Elemental vibratory torque"""
+
+        aa, bb = self.ss_coefficients(M, C, K, amplitudes, omegas)
+
+        T_v, T_e = np.zeros(amplitudes.shape), np.zeros(
+            [amplitudes.shape[0] - 1, amplitudes.shape[1]]
         )
+
+        T_vs, T_vc = np.zeros(T_v.shape), np.zeros(T_v.shape)
+        for i, omega in enumerate(omegas):
+            a, b = aa[:, i], bb[:, i]
+            T_vs[:, i] += K @ a - (omega * C) @ b
+            T_vc[:, i] += K @ b + (omega * C) @ a
+
+        # Vibratory torque at nodes
+        for i in range(T_vs.shape[1]):
+            T_v[:, i] = np.array([np.sqrt(T_vs[:, i] ** 2 + T_vc[:, i] ** 2)])
+
+        # Vibratory torque between nodes
+        for j in range(T_e.shape[0]):
+            T_e[j] = np.sqrt(
+                np.power((T_vs[j + 1] - T_vs[j]), 2)
+                + np.power((T_vc[j + 1] - T_vc[j]), 2)
+            )
 
         return T_v, T_e
 
@@ -360,7 +387,11 @@ class Assembly:
         """Input matrix of the state-space model"""
         # u1 at node '0', u2 at node 'n'
 
-        if np.array([u2]).all() == None:
+        if np.array([u1]) is None:
+            u1 = np.zeros((1, self.M().shape[0]))
+            u1 = u1[0]
+
+        if np.array([u2]) is None:
             u2 = np.zeros((1, np.size(u1)))
             u2 = u2[0]
 
@@ -369,10 +400,10 @@ class Assembly:
     def time_domain(self, t_in, u1, u2=None, U=None, system=None, x_in=None):
         """Time-domain analysis of the powertrain"""
 
-        if system == None:
+        if system is None:
             system = self.system()
 
-        if U == None:
+        if U is None:
             U = self.U(u1, u2)
 
         tout, yout, xout = lsim(system, U, t_in, X0=x_in)
@@ -383,7 +414,11 @@ class Assembly:
 
     def system(self):
         """System model in the ltis-format"""
-        M, K, C = self.M(), self.K(), self.C()
+        M, K = self.M(), self.K()
+        try:
+            C = self.C_full(M, K, xi=self.xi)
+        except:
+            C = self.C()
 
         Z = np.zeros(M.shape, dtype=np.float64)
         I = np.eye(M.shape[0])
@@ -413,7 +448,7 @@ class Assembly:
         K = K[:-1, :]
 
         if self.gear_elements is not None:
-            i = 0
+            i = 1  # TODO: possible bug depending on system DOF
             for element in self.gear_elements:
                 if element.stages is not None:
                     print(element.stages)
