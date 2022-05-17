@@ -9,11 +9,55 @@ from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
 from opentorsion.induction_motor import Induction_motor
-from opentorsion.assembly import Rotor
-from opentorsion.plots import Plots
+from opentorsion.assembly import Assembly
+from opentorsion.plots import Plots, Fig_2D
 
 
-"""Example cases"""
+def test_sopa():
+    """wind turbine"""
+    k1 = 3.67e8
+    k2 = 5.496e9
+    J1 = 1e7
+    J2 = 5770
+    J3 = 97030
+    T = np.vstack([0, 0, 2.9e6, 0, 0, 0])  # padded torque vector for this specific case
+    assembly = Assembly(
+        shaft_elements=[
+            Shaft(0, 1, None, None, k=k1, I=0.1),
+            Shaft(1, 2, None, None, k=k2, I=0.01),
+        ],
+        disk_elements=[Disk(0, J1), Disk(1, J2), Disk(2, J3)],
+    )
+    _, freqs, _ = assembly.modal_analysis()
+    print(freqs)
+    a, b = assembly.ss_response(T)
+    T_v, T_e = assembly.vibratory_torque(a, b)
+    print("T_v: ", T_v)
+    print("T_e: ", T_e)
+    return
+
+
+def test_damping():
+    assembly = n_mass(get_assembly=True)
+    # assembly = twomass(get_assembly=True)
+
+    C = assembly.C_full(assembly.M(), assembly.K())
+    print("Damped C: ", C)
+
+    return
+
+
+def test_ss_response():
+    assembly = twomass(get_assembly=True)
+    U = np.vstack([0, 0, 0, 100])
+    a, b = assembly.ss_response(U)
+    print(a)
+    print(b)
+    return
+
+
+def test_vibratory_torque():
+    return
 
 
 def twomass(get_assembly=False):
@@ -76,8 +120,8 @@ def n_mass(get_assembly=False):
 
     disks.append(Disk(0, J_IM))  # Motor represented as a mass
     shafts.append(Shaft(0, 1, None, None, k=40050, I=0.045))  # Coupling
-    gears.append(gear1 := Gear(1, Ig, 1))  # Gear
-    gears.append(Gear(2, Ig, -1.95, parent=gear1))  # Gear
+    # gears.append(gear1 := Gear(1, Ig, 1))  # Gear
+    # gears.append(Gear(2, Ig, -1.95, parent=gear1))  # Gear
 
     shafts.append(Shaft(2, 3, None, None, k=40050, I=0.045))  # Coupling
 
@@ -438,6 +482,10 @@ def multiple_gears():
 
 
 if __name__ == "__main__":
+    test_sopa()
+    # test_damping()
+    # test_ss_response()
+    # test_vibrator_torque()
     # twomass()
     # n_mass()
     # motor()
@@ -445,4 +493,4 @@ if __name__ == "__main__":
     # timedomain()
     # friswell_ex9_6_3()
     # multiple_gears()
-    pass
+    # pass

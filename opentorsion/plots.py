@@ -53,162 +53,6 @@ class Plots:
 
         return
 
-    def figure_2D(self):
-        """Creates a 2D-figure of the powertrain"""
-        # TODO: if shaft masses are identical, v==nan --> figure broken
-        # TODO: disks should be drawn last as coordinates may not be correct due to varying shaft size
-        # TODO: correct shaft placement when amount of consecutive gears is > 2
-
-        fig, ax = plt.subplots(nrows=1, ncols=1)
-        x_axis, y_axis = ax.get_xaxis(), ax.get_yaxis()
-        x_axis.set_visible(False)
-        y_axis.set_visible(True)
-        shaft_mass, disk_mass, nodes_sl, nodes_sr, nodes_d, nodes_g, disk_on_gear = (
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-        )
-
-        plt.rcParams.update(
-            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
-        )
-
-        # Appends nodes to lists
-        if self.assembly.shaft_elements is not None:
-            for element in self.assembly.shaft_elements:
-                shaft_mass.append(element.mass)
-                nodes_sl.append(element.nl)
-                nodes_sr.append(element.nr)
-            if nodes_sr != []:
-                nodes_sl.append(nodes_sr[-1])  # nodes_sl contains all nodes
-
-        if self.assembly.disk_elements is not None:
-            for element_d in self.assembly.disk_elements:
-                disk_mass.append(element_d.I)
-                nodes_d.append(element_d.node)
-
-        if self.assembly.gear_elements is not None:
-            for element_g in self.assembly.gear_elements:
-                nodes_g.append(element_g.node)
-
-        # Axis limits and starting point
-        max_nodes = len(nodes_sl) + 1 + len(nodes_g) / 2
-        x0 = 0.5  # figure start coordinates (x0, y0)
-        y0 = 1 / (3 * len(nodes_g) + 1)
-        l = 1 / (2 * x0)  # length of a shaft/gear element
-        h = 0.05 * l  # height of a shaft/gear element
-        plt.xlim(right=max_nodes)
-        plt.ylim(top=y0 + l / 2, bottom=y0 - l / 2)
-        k = len(nodes_g) * h  # to level shaft and gear figures right
-        m = 0.1 * l  # for node number text coordinate
-        t = 0  # for gear block effect on x coordinate
-        last_node = -1
-
-        # Draws gear elements and possible disk elements
-        for node in nodes_g:
-            if node in nodes_d:
-                polygon_edges = [
-                    (x0 + node * l, y0 + k),
-                    (x0 + node * l + 0.2 * l, y0 + k + 0.05 * l),
-                    (x0 + node * l + 0.2 * l, y0 + k + 0.1 * l),
-                    (x0 + node * l - 0.2 * l, y0 + k + 0.1 * l),
-                    (x0 + node * l - 0.2 * l, y0 + k + 0.05 * l),
-                ]  # coordinates for upper disk polygon
-
-                neg_polygon_edges = [
-                    (x0 + node * l, y0 + k - 2 * h),
-                    (x0 + node * l + 0.2 * l, y0 + k - 0.05 * l - 2 * h),
-                    (x0 + node * l + 0.2 * l, y0 + k - 0.1 * l - 2 * h),
-                    (x0 + node * l - 0.2 * l, y0 + k - 0.1 * l - 2 * h),
-                    (x0 + node * l - 0.2 * l, y0 + k - 0.05 * l - 2 * h),
-                ]  # coordinates for lower disk polygon
-
-                if node in nodes_d:
-                    ax.add_patch(
-                        matplotlib.patches.Polygon(
-                            polygon_edges, ec="black", fc="black"
-                        )
-                    )
-                    # disk figure upper part
-                    ax.add_patch(
-                        matplotlib.patches.Polygon(
-                            neg_polygon_edges, ec="black", fc="black"
-                        )
-                    )
-                    # disk figure lower part
-
-            if node == last_node + 1:
-                t += 1
-            else:
-                plt.text(
-                    x0 - t + node * l + m, y0 + k + m * 0.1, str(node)
-                )  # add node number as text
-            ax.add_patch(
-                matplotlib.patches.Rectangle(
-                    (x0 - t + node * l, y0 + k), l, -h, ec="black", fc="green"
-                )
-            )
-            k -= h
-            last_node = node
-
-        k = len(nodes_g) * h
-
-        # Draws shaft and possible disk elements
-        for i, node in enumerate(nodes_sl):
-            if node in nodes_g:
-                k -= h
-
-            if i != len(nodes_sl) - 1:
-                v = (
-                    h
-                    / 2
-                    * (shaft_mass[i] - np.min(shaft_mass))
-                    / (np.max(shaft_mass - np.min(shaft_mass)))
-                )
-
-            plt.text(
-                x0 + node * l + m, y0 + k + m * 0.1 + v / 2, str(node)
-            )  # add node number as text
-
-            if node != nodes_sl[-1]:
-                ax.add_patch(
-                    matplotlib.patches.Rectangle(
-                        (x0 + node * l, y0 + k + v / 2), l, -h - v, ec="black"
-                    )
-                )  # shaft figure
-
-            upper_polygon = [
-                (x0 + node * l, y0 + k + v),
-                (x0 + node * l + 0.2 * l, y0 + k + 0.05 * l + v),
-                (x0 + node * l + 0.2 * l, y0 + k + 0.1 * l + v),
-                (x0 + node * l - 0.2 * l, y0 + k + 0.1 * l + v),
-                (x0 + node * l - 0.2 * l, y0 + k + 0.05 * l + v),
-            ]  # coordinates for upper disk polygon
-
-            lower_polygon = [
-                (x0 + node * l, y0 + k - h - v),
-                (x0 + node * l + 0.2 * l, y0 + k - 0.05 * l - h - v),
-                (x0 + node * l + 0.2 * l, y0 + k - 0.1 * l - h - v),
-                (x0 + node * l - 0.2 * l, y0 + k - 0.1 * l - h - v),
-                (x0 + node * l - 0.2 * l, y0 + k - 0.05 * l - h - v),
-            ]  # coordinates for lower disk polygon
-            if node in nodes_d:
-                ax.add_patch(
-                    matplotlib.patches.Polygon(upper_polygon, ec="black", fc="black")
-                )
-                # disk figure upper part
-                ax.add_patch(
-                    matplotlib.patches.Polygon(lower_polygon, ec="black", fc="black")
-                )
-                # disk figure lower part
-        plt.show()
-
-        return
-
     def figure_eigenmodes(self, modes=5, l=0):
         """Plots the eigenmodes of the powertrain"""
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
@@ -233,7 +77,6 @@ class Plots:
 
             this_mode = vec[:, inds[mode]]
             this_mode = np.abs(this_mode[-this_mode.size // 2 :])
-            print(this_mode)
 
             # Do not normalize rigid body mode
             if mode <= 1:
@@ -272,15 +115,130 @@ class Plots:
         return
 
 
-class fig_2D:
-    def init(self, assembly):
+class Fig_2D:
+    """Creates a 2D-figure of the powertrain"""
+
+    def __init__(self, assembly):
         self.assembly = assembly
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1)
+        self.x0, self.y0 = 1, 0
+        self.l = 1  # block_length
+        self.h = 0.1  # block height
+        self.gear_nodes = []
 
-    def draw_gear(self):
-        pass
+    def draw_gears(self):
+        gear_stages = []
 
-    def draw_shaft(self):
-        pass
+        for element in self.assembly.gear_elements:
+            if element.stages is not None:
+                self.gear_nodes.append(element.node)
+                gear_stages.append(element.stages)
 
-    def draw_disk(self):
-        pass
+        for i, node in enumerate(gear_stages):
+            plt.text(self.x0 + node[0][0][0], self.y0 - i * self.h, str(node[0][0][0]))
+            plt.text(
+                self.x0 + node[0][0][0] + self.h,
+                self.y0 - self.h * (1 / 2 + i),
+                "Ratio: " + str(abs(node[0][0][1])) + ":" + str(abs(node[0][1][1])),
+                color="red",
+            )
+
+            self.ax.add_patch(
+                patch.Rectangle(
+                    (self.x0 + node[0][0][0], self.y0 - i * self.h),
+                    self.l,
+                    -self.h,
+                    ec="black",
+                    fc="green",
+                )
+            )
+            self.ax.add_patch(
+                patch.Rectangle(
+                    (self.x0 + node[0][0][0], self.y0 - self.h * (1 + i)),
+                    self.l,
+                    -self.h,
+                    ec="black",
+                    fc="green",
+                )
+            )
+
+    def draw_shafts(self):
+        shaft_nodes = []
+
+        for element in self.assembly.shaft_elements:
+            shaft_nodes.append(element.nl)
+        shaft_nodes.append(shaft_nodes[-1] + 1)
+        print(shaft_nodes)
+
+        a = 0  # to level shafts accroding to gears
+        for node in shaft_nodes:
+            if node in self.gear_nodes:
+                a += self.h
+            if node != shaft_nodes[-1]:
+                plt.text(
+                    self.x0 + node, self.y0 - a, str(node)
+                )  # add node number as text
+                self.ax.add_patch(
+                    patch.Rectangle(
+                        (self.x0 + node, self.y0 - a), self.l, -self.h, ec="black"
+                    )
+                )
+            else:
+                plt.text(self.x0 + node, self.y0 - a, str(node))
+
+    def draw_disks(self):
+        a = self.h * self.l
+        b = 0
+
+        for element in self.assembly.disk_elements:
+            x = self.x0 + element.node
+
+            for gear_node in self.gear_nodes:
+                print("gear node:", gear_node)
+                print("element node:", element.node)
+                if element.node > gear_node:
+                    b += 1
+
+            c = b * self.h
+            d = self.h + c
+
+            polygon_edges = [
+                (x, self.y0 - c),
+                (x + 2 * a, self.y0 + a / 2 - c),
+                (x + 2 * a, self.y0 + a - c),
+                (x - 2 * a, self.y0 + a - c),
+                (x - 2 * a, self.y0 + a / 2 - c),
+            ]
+
+            negative_edges = [
+                (x, self.y0 - d),
+                (x + 2 * a, self.y0 - a / 2 - d),
+                (x + 2 * a, self.y0 - a - d),
+                (x - 2 * a, self.y0 - a - d),
+                (x - 2 * a, self.y0 - a / 2 - d),
+            ]
+
+            self.ax.add_patch(patch.Polygon(polygon_edges, ec="black", fc="black"))
+            self.ax.add_patch(patch.Polygon(negative_edges, ec="black", fc="black"))
+
+    def draw_figure(self):
+        x_axis, y_axis = self.ax.get_xaxis(), self.ax.get_yaxis()
+        x_axis.set_visible(False)
+        y_axis.set_visible(False)
+
+        if self.assembly.gear_elements is not None:
+            self.draw_gears()
+
+        if self.assembly.shaft_elements is not None:
+            self.draw_shafts()
+
+        if self.assembly.disk_elements is not None:
+            self.draw_disks()
+
+        plt.rcParams.update(
+            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
+        )
+
+        plt.xlim(right=self.x0 + int(self.assembly._check_dof()))
+        plt.ylim(top=self.y0 + self.l / 2, bottom=self.y0 - self.l)
+        plt.show()
