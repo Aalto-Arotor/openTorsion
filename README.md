@@ -15,17 +15,16 @@ Open-source simulator backend for torsional analysis of powertrains.
 
 ## Introduction
 OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain. OpenTorsion has the possibility of creating and including induction motor small signal model in the shaft-line FEM.
-Folder ```opentorsion``` includes the software. Folder ```examples``` contains scripts to run example powertrains and analyses.
 
-![Small-scale marine thruster testbench](./figures/testbench.png "Small-scale marine thruster testbench")
-![Eigenmodes of the testbench](./figures/eigenmodes.pdf "Eigenmodes of the testbench")
-![Campbell diagram of the testbench](./figures/campbell.pdf "Campbell diagram of the testbench")
+![Small-scale marine thruster testbench](./figures/testbench_all.png "Small-scale marine thruster testbench")
 
 ## Documentation
 
 [openTorsion documentation](https://aalto-arotor.github.io/openTorsion/)
 
 ## Quickstart
+Install openTorsion by running the command ```pip install opentorsion```. Folder ```opentorsion``` includes the software. Folder ```examples``` contains scripts to run example powertrains and analyses.
+
 Make sure you have pip3 & pipenv installed in your system. Then simply running ```pipenv install``` will invoke the config files and install the necessary files in your pipenv.
 
 ## Tests
