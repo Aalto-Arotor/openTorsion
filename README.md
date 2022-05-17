@@ -18,8 +18,8 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
 Folder ```opentorsion``` includes the software. Folder ```examples``` contains scripts to run example powertrains and analyses.
 
 ![Small-scale marine thruster testbench](./figures/testbench.png "Small-scale marine thruster testbench")
-![Eigenmodes of the testbench](./figures/eigenmodes.png "Eigenmodes of the testbench")
-![Campbell diagram of the testbench](./figures/campbell.png "Campbell diagram of the testbench")
+![Eigenmodes of the testbench](./figures/eigenmodes.pdf "Eigenmodes of the testbench")
+![Campbell diagram of the testbench](./figures/campbell.pdf "Campbell diagram of the testbench")
 
 ## Documentation
 
