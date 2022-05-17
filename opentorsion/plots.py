@@ -77,7 +77,6 @@ class Plots:
 
             this_mode = vec[:, inds[mode]]
             this_mode = np.abs(this_mode[-this_mode.size // 2 :])
-            print(this_mode)
 
             # Do not normalize rigid body mode
             if mode <= 1:
