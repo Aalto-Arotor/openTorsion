@@ -11,7 +11,15 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Aalto-Arotor/openTorsion/blob/main/LICENSE)
 
 
-Open source library for creating torsional finite element models.
+Open-source simulator backend for torsional analysis of powertrains.
+
+## Introduction
+OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain. OpenTorsion has the possibility of creating and including induction motor small signal model in the shaft-line FEM.
+Folder ```opentorsion``` includes the software. Folder ```examples``` contains scripts to run example powertrains and analyses.
+
+![Small-scale marine thruster testbench](./figures/testbench.png "Small-scale marine thruster testbench")
+![Eigenmodes of the testbench](./figures/eigenmodes.png "Eigenmodes of the testbench")
+![Campbell diagram of the testbench](./figures/campbell.png "Campbell diagram of the testbench")
 
 ## Documentation
 
@@ -23,6 +31,7 @@ Make sure you have pip3 & pipenv installed in your system. Then simply running `
 ## Tests
 Running ```pipenv run python -m unittest``` will run the the tests locally.
 
+<!--
 ## Coverage report
 First generate the ```.coverage``` file by running ```pipenv run coverage run -m unittest```. You can access the report easily by running ```pipenv run coverage report``` 
 
