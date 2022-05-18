@@ -9,8 +9,7 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Aalto-Arotor/openTorsion/blob/main/LICENSE)
 
 ![Small-scale marine thruster testbench](./figures/testbench_all.png "Small-scale marine thruster testbench")
-
-Open-source software for torsional vibration analysis. Supported features include 
+Open-source software for torsional vibration analysis. Supported features include
 * finite element model creation based on dimensions or datasheet specifications
 * natural frequency calculation
 * eigenmodes
@@ -18,7 +17,7 @@ Open-source software for torsional vibration analysis. Supported features includ
 * time-stepping simulation
 
 ## Introduction
-OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain. 
+OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain.
 Please note that the software is still in development and the authors are not able to responsibility for the functioning or effects of future changes. See the licence for more information.
 
 ## Documentation
@@ -30,5 +29,10 @@ Install openTorsion by running the command ```pip install opentorsion```. Folder
 
 Make sure you have pip3 & pipenv installed in your system. Then simply running ```pipenv install``` will invoke the config files and install the necessary files in your pipenv.
 
+Two examples are found in opentorsion/examples folder.
 
+## Contact
+The main developers are Sampo Laine and Urho Hakonen from Arotor lab at Aalto University Finland.
+https://www.aalto.fi/en/industrial-internet-campus/aalto-arotor-lab
 
+For questions regarding the software please contact arotor.software@aalto.fi
