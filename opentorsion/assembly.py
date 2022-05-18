@@ -10,6 +10,7 @@ from scipy.signal import lsim
 from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
+from opentorsion.excitation import SystemExcitation
 
 # from opentorsion.induction_motor import Induction_motor
 from opentorsion.errors import DOF_mismatch_error
@@ -53,6 +54,8 @@ class Assembly:
 
         self.dofs = self._check_dof()
 
+        self.xi = 0.02
+
     def __repr__(self):
         pass
 
@@ -89,6 +92,17 @@ class Assembly:
             M = np.dot(np.dot(transform.T, M), transform)
 
         return M
+
+    def nongearK(self):
+        """Assembles the stiffness matrix when gears are not considered"""
+        K = np.zeros((self.dofs, self.dofs))
+
+        if self.shaft_elements is not None:
+            for element in self.shaft_elements:
+                dofs = np.array([element.nl, element.nr])
+                K[np.ix_(dofs, dofs)] += element.K()
+
+        return K
 
     def K(self):
         """Assembles the stiffness matrix"""
@@ -215,7 +229,7 @@ class Assembly:
 
         return lam, vec
 
-    def C_full(self, M, K, xi=0.02):
+    def C_modal(self, M, K, xi=0.02):
         """Full damping matrix for mechanical system obtained from modal damping matrix"""
         if self.xi is None:
             xi = self.xi
@@ -245,8 +259,6 @@ class Assembly:
 
     def ss_coefficients(self, M, C, K, amplitudes, omegas):
         """The coefficient vectors a and b of the steady-state responses of the system M, C, K included for debug reasons"""
-        # M, K = self.M(), self.K()
-        # N = np.array([amplitudes[:,0]]).T.shape
         if type(amplitudes) is np.ndarray:
             Z = np.zeros(amplitudes.shape)
             a, b = np.zeros(amplitudes.shape), np.zeros(amplitudes.shape)
@@ -258,11 +270,10 @@ class Assembly:
 
         U = np.vstack([amplitudes, Z])
 
-        # setting excitation to zero at very low frequencies
         for i, omega in enumerate(omegas):
             AA = np.vstack(
                 [
-                    np.hstack([K - (omega ** 2 * M), -omega * C]),
+                    np.hstack([K - (omega**2 * M), -omega * C]),
                     np.hstack([omega * C, K - (omega * omega * M)]),
                 ]
             )
@@ -404,6 +415,7 @@ class Assembly:
             system = self.system()
 
         if U is None:
+            raise ValueError("No excitation matrix given.")
             U = self.U(u1, u2)
 
         tout, yout, xout = lsim(system, U, t_in, X0=x_in)
@@ -416,7 +428,7 @@ class Assembly:
         """System model in the ltis-format"""
         M, K = self.M(), self.K()
         try:
-            C = self.C_full(M, K, xi=self.xi)
+            C = self.C_modal(M, K, xi=self.xi)
         except:
             C = self.C()
 
@@ -463,3 +475,55 @@ class Assembly:
         torques = [np.dot(K, np.abs(x)) for x in thetas]
 
         return torques, omegas, thetas
+
+    def system_updated(self, modal_damping=False):
+        """System model in the ltis-format"""
+        M, K = self.M(), self.K()
+        if modal_damping:
+            C = self.C_modal(M, K, xi=self.xi)
+        else:
+            C = self.C()
+
+        Z = np.zeros(M.shape, dtype=np.float64)
+        I = np.eye(M.shape[0])
+        M_inv = LA.inv(M)
+
+        A_sys = np.vstack([np.hstack([Z, I]), np.hstack([-M_inv @ K, -M_inv @ C])])
+
+        B_sys = np.vstack([Z, M_inv])
+
+        stiffness_diagonal = -copy(np.diagonal(K, offset=1))
+        stiffness_diagonal = np.append(stiffness_diagonal, 0)
+        offset = -stiffness_diagonal
+
+        # Gear elements modify the output matrix
+        if (
+            self.gear_elements is not None
+        ):  # TODO Does not work if first or last element is gear
+            stages = []
+            for gear in self.gear_elements:
+                stages += [gear.stages] if gear.stages is not None else []
+
+            count = 0
+            gear_nodes = []
+            for stage in stages:
+                parent_node = stage[0][0]
+                gear_ratio = stage[1][1] / stage[0][1]
+                gear_node = parent_node - count
+                stiffness_diagonal[gear_node] *= np.sign(gear_ratio)
+                offset[gear_node] = stiffness_diagonal[gear_node] * gear_ratio
+                count += 1
+
+        torque_transformation = np.diag(stiffness_diagonal)
+        np.fill_diagonal(torque_transformation[:, 1:], offset)
+
+        C_sys = np.vstack(
+            [
+                np.hstack([torque_transformation, Z]),
+                np.hstack([Z, I]),
+            ]
+        )
+
+        D_sys = np.zeros(B_sys.shape)
+
+        return lti(A_sys, B_sys, C_sys, D_sys), C_sys

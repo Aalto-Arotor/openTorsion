@@ -1,11 +1,11 @@
 import numpy as np
 from itertools import count
 
-from shaft_element import Shaft
-from disk_element import Disk
-from gear_element import Gear
-from assembly import Assembly
-from plots import Plots
+from opentorsion.shaft_element import Shaft
+from opentorsion.disk_element import Disk
+from opentorsion.gear_element import Gear
+from opentorsion.assembly import Assembly
+from opentorsion.plots import Plots
 
 
 def back_to_back_testbench():

@@ -51,3 +51,4 @@ if __name__ == "__main__":
 
     ## Plot eigenmodes, input number of eigenmodes
     plot_tools.figure_eigenmodes(modes=3)
+    plot_tools.campbell_diagram()

@@ -44,8 +44,8 @@ class Shaft:
             self.odl = float(odl) * 1e-3
 
             # Calculate polar of inertia
-            A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
-            J = np.pi * ((self.odl ** 4) - (self.idl ** 4)) / 32
+            A = np.pi * ((self.odl**4) - (self.idl**4))
+            J = np.pi * ((self.odl**4) - (self.idl**4)) / 32
 
             # Calculate mass moment of inertia
             self.mass = rho * J * self.L / 6
