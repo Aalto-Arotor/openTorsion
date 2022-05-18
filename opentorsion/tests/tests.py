@@ -1,11 +1,13 @@
 import numpy as np
 import unittest
 import matplotlib.pyplot as plt
+import scipy.linalg as LA
 
 from opentorsion.shaft_element import Shaft
 from opentorsion.disk_element import Disk
 from opentorsion.gear_element import Gear
 from opentorsion.assembly import Assembly
+from opentorsion.excitation import SystemExcitation
 
 
 class Test(unittest.TestCase):
@@ -173,12 +175,8 @@ class Test(unittest.TestCase):
 
         assembly = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
-        # print(( assembly.K() * 1e-6).round(3))
-        # print(assembly.E())
-        # print(assembly.T(assembly.E()))
         a, freqs, b = assembly.modal_analysis()
 
-        # print(freqs)
         self.assertEqual(freqs.round(3).tolist(), correct, "geared system incorrect")
 
     def test_friswell_09_09(self):
@@ -245,15 +243,103 @@ class Test(unittest.TestCase):
 
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
 
-    # def test_full_damping_matrix(self):
-    #     correct = np.vstack([
-    #         np.hstack([1.01201814e-05, 2.5243470e-06]),
-    #         np.hstack([2.52434706e-06, 8.13717291e-06])
-    #     ])
-    #     M = np.vstack([np.hstack([10, 0]), np.hstack([0, 10])])
-    #     K = np.vstack([np.hstack([428400, -132900]), np.hstack([-132900, 532800])])
-    #     C = Assembly.C_full(M, K)
-    #     self.assertEqual(C, correct, "Full damping matrix not correct")
+    def test_mass_matrix(self):
+        correct_M = np.array([[10, 0], [0, 10]])
+        shafts = []
+        disks = []
+        disks.append(Disk(0, I=10))
+        shafts.append(Shaft(0, 1, None, None, k=428400, I=0))
+        disks.append(Disk(1, I=10))
+
+        assembly = Assembly(shafts, disk_elements=disks)
+        M = assembly.M()
+
+        mass_values, correct = [], []
+        correct = correct_M.tolist()
+        mass_values = M.tolist()
+
+        self.assertEqual(mass_values, correct, "Mass matrix not correct")
+
+    def test_stiffness_matrix(self):
+        correct_K = np.array([[428400, -428400], [-428400, 428400]])
+        shafts = []
+        disks = []
+        disks.append(Disk(0, I=10))
+        shafts.append(Shaft(0, 1, None, None, k=428400, I=0))
+        disks.append(Disk(1, I=10))
+
+        assembly = Assembly(shafts, disk_elements=disks)
+        K = assembly.K()
+
+        stiffness_values, correct = [], []
+        correct = correct_K.tolist()
+        stiffness_values = K.tolist()
+
+        self.assertEqual(stiffness_values, correct, "Stiffness matrix not correct")
+
+    def test_modal_damping_matrix(self):
+        shafts = []
+        disks = []
+        disks.append(Disk(0, I=10))
+        shafts.append(Shaft(0, 1, None, None, k=428400, I=0))
+        disks.append(Disk(1, I=10))
+
+        assembly = Assembly(shafts, disk_elements=disks)
+
+        ## D. Inman, in Encyclopedia of Vibration, 2001, Critical Damping in Lumped Parameter Models
+        M = assembly.M()
+        M_inv = LA.inv(M)
+        K = assembly.K()
+        M_K_M = LA.sqrtm(M_inv) @ K @ LA.sqrtm(M_inv)
+        correct_C = 2 * 0.02 * (LA.sqrtm(M) @ LA.sqrtm(M_K_M) @ LA.sqrtm(M))
+        correct_C = correct_C.round(4)
+
+        C = assembly.C_modal(assembly.M(), assembly.K())
+        C = C.round(4)
+
+        damping_values, correct = [], []
+        correct = correct_C.tolist()
+        damping_values = C.tolist()
+
+        self.assertEqual(damping_values, correct, "Modal damping matrix not correct")
+
+    def test_frequency_domain_excitation_matrix_shape(self):
+        correct_U_shape = (4, 9)
+
+        dofs = 4
+        omegas = np.arange(1, 10, 1)
+        U = SystemExcitation(dofs, omegas)
+        U_shape = U.excitation_amplitudes().shape
+
+        self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
+
+    # def test_frequency_domain_excitation_matrix_sweep(self):
+    #     correct_U = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.0, 10.0, 133.75, 275.5, 381.25, 505.0, 628.75, 752.5, 1000.0, 1000.0]])
+
+    #     dofs = 4
+    #     omegas = np.arange(1, 100, 10)
+    #     U = SystemExcitation(dofs, omegas)
+    #     U.add_sweep(3, 1000)
+
+    #     correct = correct_U.tolist()
+    #     excitation_values = U.excitation_amplitudes().tolist()
+    #     print(correct)
+    #     print(excitation_values)
+
+    #     self.assertEqual(excitation_values, correct, "Excitation matrix not correct")
+
+    # def test_vibratory_torque(self):
+
+    #     return
+
+    # def test_time_domain_excitation_matrix(self):
+    #     correct_U = np.array([])
+
+    #     self.assertEqual(excitation_values, correct, "Excitation matrix not correct")
+
+    # def test_time_domain_response(self):
+
+    #     return
 
 
 if __name__ == "__main__":
