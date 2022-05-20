@@ -7,7 +7,7 @@ setuptools.setup(
     name="opentorsion",
     version="0.1.0",
     author="Aalto ARotor",
-    author_email="todo@aalto.fi",
+    author_email="arotor.software@aalto.fi",
     description="Open source library for creating torsional finite element models",
     long_description=long_description,
     long_description_content_type="text/markdown",

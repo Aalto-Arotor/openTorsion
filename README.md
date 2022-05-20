@@ -7,7 +7,7 @@
 [![main branch unittests](https://github.com/aalto-arotor/opentorsion/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/Aalto-Arotor/openTorsion/tree/main/opentorsion/tests)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Aalto-Arotor/openTorsion/blob/main/LICENSE)
-<img src="./figures/opentorsion_logo.png" width="20">
+<img src="./figures/opentorsion_logo.png" width="60">
 
 ![Small-scale marine thruster testbench](./figures/testbench_all.png "Small-scale marine thruster testbench")
 Open-source software for torsional vibration analysis. Supported features include
