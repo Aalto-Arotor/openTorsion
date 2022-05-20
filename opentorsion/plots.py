@@ -7,13 +7,33 @@ from scipy import linalg as LA
 
 
 class Plots:
-    """This class contains plot and figure tools"""
+    """
+    This class includes plotting functions
+
+    Attributes
+    ----------
+    assembly : openTorsion Assembly class instance
+    """
 
     def __init__(self, assembly):
+        """
+        Parameters
+        ----------
+        assembly : openTorsion Assembly class instance
+        """
         self.assembly = assembly
 
     def campbell_diagram(self, num_modes=10, frequency_range=100):
-        """Campbell diagram of the powertrain"""
+        """
+        Creates a Campbell diagram
+
+        Parameters
+        ----------
+        num_modes : int, optional
+            Number of modes to be plotted, default is 10
+        frequency_range : int, optional
+            Analysis frequency range, default is 100 Hz
+        """
         omegas_damped, freqs, damping_ratios = self.assembly.modal_analysis()
         freqs = freqs[:num_modes]
         freqs = freqs[::2]
@@ -23,7 +43,18 @@ class Plots:
         return
 
     def plot_campbell(self, frequency_range, modes, excitations=[1, 2, 3, 4]):
-        """Plots the campbell diagram"""
+        """
+        Plots the Campbell diagram
+
+        Parameters
+        ----------
+        frequency_range : int
+            Analysis frequency range
+        modes : int
+            Number of modes to be plotted
+        excitations : list, optional
+            List containing the numbers of harmonics, default is 1 through 4
+        """
         plt.rcParams.update(
             {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
         )
@@ -53,8 +84,15 @@ class Plots:
 
         return
 
-    def figure_eigenmodes(self, modes=5, l=0):
-        """Plots the eigenmodes of the powertrain"""
+    def figure_eigenmodes(self, modes=5):
+        """
+        Plots the eigenmodes of the powertrain
+
+        Parameters
+        ----------
+        modes : int, optional
+            Number of modes to be plotted, default is 5
+        """
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
         plt.ylim(-1.1, 1.1)
 
@@ -79,13 +117,7 @@ class Plots:
             this_mode = np.abs(this_mode[-this_mode.size // 2 :])
 
             # Do not normalize rigid body mode
-            if mode <= 1:
-                normalized_mode = this_mode
-
-            else:
-                normalized_mode = (this_mode - np.min(this_mode)) / (
-                    np.max(this_mode) - np.min(this_mode)
-                )
+            normalized_mode = this_mode / LA.norm(this_mode)
 
             s = np.arange(1, normalized_mode.size + 1)
 

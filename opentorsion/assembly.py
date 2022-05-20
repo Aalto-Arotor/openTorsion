@@ -11,13 +11,28 @@ from opentorsion.disk_element import Disk
 from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
 from opentorsion.excitation import SystemExcitation
-
-# from opentorsion.induction_motor import Induction_motor
 from opentorsion.errors import DOF_mismatch_error
 
 
 class Assembly:
-    """Powertrain assembly"""
+    """
+    This class assembles the multi-degree of freedom system matrices, includes functions for modal analysis and response analysis in frequency and time domain.
+
+    Attributes
+    ----------
+    shaft_elements : list
+        List containing the shaft elements
+    disk_elements : list
+        List containing the disk elements
+    gear_elements : list
+        List containing the gear elements
+    motor_elements : list
+        List containing the motor elements
+    dofs : int
+        Number of degrees of freedom of the system
+    xi : float, optional
+        Modal damping factor
+    """
 
     def __init__(
         self,
@@ -26,6 +41,18 @@ class Assembly:
         gear_elements=None,
         motor_elements=None,
     ):
+        """
+        Parameters
+        ----------
+        shaft_elements: list
+            List containing the shaft elements
+        disk_elements : list
+            List containing the disk elements
+        gear_elements : list
+            List containing the gear elements
+        motor_elements : list
+            List containing the motor elements
+        """
 
         ## Initiate shaft elements
         if shaft_elements is None:
@@ -54,7 +81,7 @@ class Assembly:
 
         self.dofs = self._check_dof()
 
-        self.xi = 0.02
+        self.xi = 0.00  # modal damping coefficient, default 0 -> no damping
 
     def __repr__(self):
         pass
@@ -63,7 +90,14 @@ class Assembly:
         return f"rotor"
 
     def M(self):
-        """Assembles the mass matrix"""
+        """
+        Assembles the mass matrix
+
+        Returns
+        -------
+        ndarray
+            The mass matrix
+        """
 
         M = np.zeros((self.dofs, self.dofs))
 
@@ -93,19 +127,15 @@ class Assembly:
 
         return M
 
-    def nongearK(self):
-        """Assembles the stiffness matrix when gears are not considered"""
-        K = np.zeros((self.dofs, self.dofs))
-
-        if self.shaft_elements is not None:
-            for element in self.shaft_elements:
-                dofs = np.array([element.nl, element.nr])
-                K[np.ix_(dofs, dofs)] += element.K()
-
-        return K
-
     def K(self):
-        """Assembles the stiffness matrix"""
+        """
+        Assembles the stiffness matrix
+
+        Returns
+        -------
+        ndarray
+            The stiffness matrix
+        """
         K = np.zeros((self.dofs, self.dofs))
 
         if self.shaft_elements is not None:
@@ -125,11 +155,30 @@ class Assembly:
             # Calculate transformed mass matrix
             K = np.dot(np.dot(transform.T, K), transform)
 
-        # print(K)
+        return K
+
+    def nongearK(self):
+        """
+        Assembles the stiffness matrix when gears are not considered
+        """
+        K = np.zeros((self.dofs, self.dofs))
+
+        if self.shaft_elements is not None:
+            for element in self.shaft_elements:
+                dofs = np.array([element.nl, element.nr])
+                K[np.ix_(dofs, dofs)] += element.K()
+
         return K
 
     def C(self):
-        """Assembles the damping matrix"""
+        """
+        Assembles the damping matrix
+
+        Returns
+        -------
+        ndarray
+            The damping matrix assembled with component specific damping coefficients
+        """
         C = np.zeros((self.dofs, self.dofs))
 
         if self.shaft_elements is not None:
@@ -159,7 +208,14 @@ class Assembly:
         return C
 
     def E(self):
-        """Assembles the gear constraint matrix"""
+        """
+        Assembles the gear constraint matrix
+
+        Returns
+        -------
+        ndarray
+            The gear constraint matrix
+        """
 
         stages = []
         for gear in self.gear_elements:
@@ -177,8 +233,56 @@ class Assembly:
 
         return E
 
+    def T(self, E):
+        """
+        Method for determining gear constraint transformation matrix
+
+        Parameters
+        ----------
+        E : ndarray
+            The gear constraint matrix
+
+        Returns
+        -------
+        ndarray
+            The gear constraint transformation matrix
+        """
+        r, c = E.shape
+        T = np.eye(r)
+        for i in range(c):
+            E_i = np.dot(T.T, E)
+
+            # (1) Set T_i = I(n+1) (The identity matrix of dimension (n_i + 1))
+            T_i = np.eye(r)
+
+            # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1
+            k = np.argmax(np.abs(E_i[:, i]))
+
+            # (3) Replace row k of T_i with the transpose of column i from E_(i-1)
+            T_i[k] = E_i[:, i]
+
+            # (4) Divide this row by the negative of its kth element
+            T_i[k] = T_i[k] / (-1 * T_i[k][k])
+
+            # (5) Strike out column k from the matrix
+            T_i = np.delete(T_i, k, axis=1)
+            T = np.dot(T, T_i)
+
+            r -= 1
+
+        return T
+
     def state_matrix(self):
-        """Assembles the state-space matrices"""
+        """
+        Assembles the state-space matrices
+
+        Returns
+        -------
+        ndarray
+            The state matrix
+        ndarray
+            The input matrix
+        """
 
         M, K, C = self.M(), self.K(), self.C()
         Z = np.zeros(M.shape, dtype=np.float64)
@@ -212,25 +316,23 @@ class Assembly:
 
             B = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
 
-            # Solved versions
-            # A = np.vstack([
-            #     np.hstack([LA.solve(-M, C), LA.solve(-M, K)]),
-            #     np.hstack([I, Z]) # ])
-            # B = np.vstack([M_inv, Z])
-
-        # np.set_printoptions(suppress=True)
-        # print(A)
-
         return A, B
 
-    def undamped_modal_analysis(self):
-        """Calculates the undamped eigenvalues and eigenfrequencies of the assembly"""
-        lam, vec = self._eig(self.K(), self.M())
-
-        return lam, vec
-
     def C_modal(self, M, K, xi=0.02):
-        """Full damping matrix for mechanical system obtained from modal damping matrix"""
+        """
+        Full damping matrix for mechanical system obtained from modal damping matrix
+
+        Parameters
+        ----------
+        TODO: M, K included in parameters for debugging reasons
+        xi : float, optional
+            Modal damping factor, default is 0
+
+        Returns
+        -------
+        ndarray
+            The full damping matrix
+        """
         if self.xi is None:
             xi = self.xi
         omegas, phi = LA.eig(K, M)
@@ -258,7 +360,30 @@ class Assembly:
         return C
 
     def ss_coefficients(self, M, C, K, amplitudes, omegas):
-        """The coefficient vectors a and b of the steady-state responses of the system M, C, K included for debug reasons"""
+        """
+        The coefficient vectors a and b of the steady-state responses of the system
+        TODO: M, C, K included in parameters for debug reasons
+
+        Parameters
+        ----------
+        M : ndarray
+            Assembly mass matrix
+        C : ndarray
+            Assembly damping matrix
+        K : ndarray
+            Assembly stiffness matrix
+        amplitudes : ndarray
+            Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies
+        omegas : ndarray
+            Excitation frequencies
+
+        Returns
+        -------
+        ndarray
+            Steady-state coefficient vector
+        ndarray
+            Steady-state coefficient vector
+        """
         if type(amplitudes) is np.ndarray:
             Z = np.zeros(amplitudes.shape)
             a, b = np.zeros(amplitudes.shape), np.zeros(amplitudes.shape)
@@ -273,7 +398,7 @@ class Assembly:
         for i, omega in enumerate(omegas):
             AA = np.vstack(
                 [
-                    np.hstack([K - (omega**2 * M), -omega * C]),
+                    np.hstack([K - (omega ** 2 * M), -omega * C]),
                     np.hstack([omega * C, K - (omega * omega * M)]),
                 ]
             )
@@ -286,7 +411,30 @@ class Assembly:
         return a, b
 
     def ss_response(self, M, C, K, amplitudes, omegas):
-        """Calculates steady state vibration amplitudes and phase angles for each drivetrain node"""
+        """
+        Calculates steady state vibration amplitudes and phase angles for each drivetrain node
+        TODO: M, C, K included in parameters for debugging
+
+        Parameters
+        ----------
+        M : ndarray
+            Assembly mass matrix
+        C : ndarray
+            Assembly damping matrix
+        K : ndarray
+            Assembly stiffness matrix
+        amplitudes : ndarray
+            Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies
+        omegas : ndarray
+            Excitation frequencies
+
+        Returns
+        -------
+        ndarray
+            Steady-state vibration amplitudes at assembly nodes
+        ndarray
+            Phase angles
+        """
 
         a, b = self.ss_coefficients(M, C, K, amplitudes, omegas)
 
@@ -296,7 +444,30 @@ class Assembly:
         return X, tanphi
 
     def vibratory_torque(self, M, C, K, amplitudes, omegas):
-        """Elemental vibratory torque"""
+        """
+        Elemental vibratory torque
+        TODO: M, C, K included in parameters for debugging
+
+        Parameters
+        ----------
+        M : ndarray
+            Assembly mass matrix
+        C : ndarray
+            Assembly damping matrix
+        K : ndarray
+            Assembly stiffness matrix
+        amplitudes : ndarray
+            Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies
+        omegas : ndarray
+            Excitation frequencies
+
+        Returns
+        -------
+        ndarray
+            Vibratory torque at each assembly node
+        ndarray
+            Vibratory torque at each assembly shaft
+        """
 
         aa, bb = self.ss_coefficients(M, C, K, amplitudes, omegas)
 
@@ -323,14 +494,36 @@ class Assembly:
 
         return T_v, T_e
 
+    def undamped_modal_analysis(self):
+        """
+        Calculates the undamped eigenvalues and eigenvectors of the assembly
+
+        Returns
+        -------
+        complex ndarray
+            The eigenvalues of the undamped assembly
+        complex ndarray
+            The eigenvectors of the undamped assembly
+        """
+        lam, vec = self._eig(self.K(), self.M())
+
+        return lam, vec
+
     def modal_analysis(self):
-        """Calculates the eigenvalues and eigenfrequencies of the assembly"""
+        """
+        Calculates the eigenvalues and eigenfrequencies of the assembly
+
+        Returns
+        -------
+        ndarray
+            The eigenvalues in rad/s
+        ndarray
+            The eigenfrequencies of the assembly
+        ndarray
+            The damping ratios
+        """
         A, B = self.state_matrix()
         lam, vec = self._eig(A, B)
-
-        # Sort and delete complex conjugates
-        # lam = np.sort(lam)
-        # lam = np.delete(lam, [i*2+1 for i in range(len(lam)//2)])
 
         omegas = np.sort(np.absolute(lam))
         omegas_damped = np.sort(np.abs(np.imag(lam)))
@@ -340,13 +533,52 @@ class Assembly:
         return omegas_damped, freqs, damping_ratios
 
     def _eig(self, A, B):
-        """Solves the eigenvalues of the state space matrix using ARPACK"""
+        """
+        Solves the eigenvalues of the state space matrix using ARPACK
+
+        Returns
+        -------
+        complex ndarray
+            Solved eigenvalues
+        complex ndarray
+            Solved eigenvectors
+        """
         lam, vec = LA.eig(A, B)
 
         return lam, vec
 
+    def eigenmodes(self):
+        """
+        Solve system eigenmodes
+
+        Returns
+        -------
+        complex ndarray
+            Eigenmode array, columns correspond to modes left to right starting from zero
+        """
+        A, B = self.state_matrix()
+        lam, vec = self._eig(A, B)
+
+        lam = lam[::2]
+        vec = vec[: int(vec.shape[0] / 2)]
+        vec = vec[:, ::2]
+
+        inds = np.argsort(np.abs(lam))
+        eigenmodes = np.zeros(vec.shape)
+        for i, v in enumerate(inds):
+            eigenmodes[:, i] = vec[:, v]
+
+        return eigenmodes
+
     def _check_dof(self):
-        """Returns the number of degrees of freedom in the model"""
+        """
+        Returns the number of degrees of freedom in the model
+
+        Returns
+        -------
+        int
+            Number of degrees of freedom of the assembly
+        """
         nodes = set()
         if self.shaft_elements is not None:
             for element in self.shaft_elements:
@@ -367,35 +599,11 @@ class Assembly:
 
         return max(nodes) + 1
 
-    def T(self, E):
-        """Method for determining gear constraint transformation matrix"""
-        r, c = E.shape
-        T = np.eye(r)
-        for i in range(c):
-            E_i = np.dot(T.T, E)
-
-            # (1) Set T_i = I(n+1) (The identity matrix of dimension (n_i + 1))
-            T_i = np.eye(r)
-
-            # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1
-            k = np.argmax(np.abs(E_i[:, i]))
-
-            # (3) Replace row k of T_i with the transpose of column i from E_(i-1)
-            T_i[k] = E_i[:, i]
-
-            # (4) Divide this row by the negative of its kth element
-            T_i[k] = T_i[k] / (-1 * T_i[k][k])
-
-            # (5) Strike out column k from the matrix
-            T_i = np.delete(T_i, k, axis=1)
-            T = np.dot(T, T_i)
-
-            r -= 1
-
-        return T
-
     def U(self, u1, u2):
-        """Input matrix of the state-space model"""
+        """
+        OUTDATED! See module excitations
+        Input matrix of the state-space model
+        """
         # u1 at node '0', u2 at node 'n'
 
         if np.array([u1]) is None:
@@ -409,14 +617,31 @@ class Assembly:
         return np.vstack([[u1], np.zeros((self.M().shape[1] - 2, np.size(u1))), [u2]]).T
 
     def time_domain(self, t_in, u1, u2=None, U=None, system=None, x_in=None):
-        """Time-domain analysis of the powertrain"""
+        """
+        TODO: make compatible with excitations module
+        Time-domain analysis of the powertrain
+
+        Parameters
+        ----------
+        TODO
+
+        Returns
+        -------
+        ndarray
+            Output time values
+        ndarray
+            The shaft torques of the assembly
+        ndarray
+            The nodal rotational speed of the assembly
+        ndarray
+            The rotation of the nodes of the assembly
+        """
 
         if system is None:
             system = self.system()
 
         if U is None:
             raise ValueError("No excitation matrix given.")
-            U = self.U(u1, u2)
 
         tout, yout, xout = lsim(system, U, t_in, X0=x_in)
 
@@ -425,7 +650,14 @@ class Assembly:
         return tout, torques, omegas, thetas
 
     def system(self):
-        """System model in the ltis-format"""
+        """
+        System model in the ltis-format
+
+        Returns
+        -------
+        StateSpaceContinuous
+            A continuous time-invariant state-space model of the assembly
+        """
         M, K = self.M(), self.K()
         try:
             C = self.C_modal(M, K, xi=self.xi)
@@ -445,7 +677,23 @@ class Assembly:
         return lti(A, B, C, D)
 
     def torque(self, yout):
-        """Calculate torque between every node"""
+        """
+        Calculates the shaft torque in time domain
+
+        Parameters
+        ----------
+        yout : ndarray
+            The response of a continuous-time linear system
+
+        Returns
+        -------
+        ndarray
+            The shaft torques of the assembly in time domain
+        ndarray
+            The nodal rotational speed of the assembly
+        ndarray
+            The rotation of the nodes of the assembly
+        """
 
         omegas, thetas = np.hsplit(yout, 2)
 
@@ -477,7 +725,9 @@ class Assembly:
         return torques, omegas, thetas
 
     def system_updated(self, modal_damping=False):
-        """System model in the ltis-format"""
+        """
+        System model in the ltis-format
+        """
         M, K = self.M(), self.K()
         if modal_damping:
             C = self.C_modal(M, K, xi=self.xi)

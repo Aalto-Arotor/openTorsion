@@ -8,54 +8,13 @@ from opentorsion.disk_element import Disk
 from opentorsion.gear_element import Gear
 from opentorsion.assembly import Assembly
 from opentorsion.excitation import SystemExcitation
+from opentorsion.plots import Plots
 
 
 class Test(unittest.TestCase):
-    """Unittests for the FEM"""
-
-    # def test_induction_motor(self):
-    #     f = 60
-    #     p = 4
-    #     omega = 895.3
-    #     k = 9.775e6
-    #     J1 = 211.4
-    #     J2 = 8.3
-    #     motor = induction_motor(0, 1, omega, f, p, J1, J2, k)
-
-    #     L, R = motor.L(), motor.R()
-
-    #     np.set_printoptions(suppress=True)
-
-    #     drivetrain = Rotor([Shaft(0,1, 0, 0, k=9.775e6, I=0), Shaft(1, 2, 20, 5)], disk_elements=[Disk(0, 211.4), Disk(1, 8.3)])
-
-    #     A, B = motor.state_space(drivetrain)
-
-    #     lam, vec = LA.eig(R, L)
-    #     print(np.abs(lam/(2*np.pi)).round(3))
-
-    #     lam, vec = LA.eig(A, B)
-    #     print(np.abs(lam/(2*np.pi)).round(3))
-
-    # def test_hauptmann(self):
-    #     nl = 0
-    #     nr = 1
-    #     rated_speed = 895.3
-    #     omega = rated_speed*2.0*np.pi/60.0
-    #     rated_torque = 39.73e3
-    #     break_torque = 82.86e3
-    #     freq = 60.0
-    #     pole_pairs = 4.0
-    #     J1 = 211.4
-    #     J2 = 8.3
-    #     k = 9.775e6
-
-    #     motor = Motor_hauptmann(nl, nr, omega, rated_torque, break_torque, freq, pole_pairs, J1, J2, k)
-
-    #     assembly = Rotor(None, motor_elements=[motor])
-
-    #     omegas_damped, freqs, damping_ratios = assembly.modal_analysis()
-
-    #     self.assertEqual(1, 1, "Hauptmann gives the wrong result")
+    """
+    Unittests for openTorsion
+    """
 
     def test_shaft(self):
         J1 = 211.4
@@ -242,6 +201,199 @@ class Test(unittest.TestCase):
         ]
 
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
+
+    def test_friswell_09_06(self):
+        ## Here state matrix composition and eigenmode calculation is identical to assembly,
+        ## however they are done manually here as the stiffness matrix in this example had to be modified
+        k1 = 10e6
+        k2 = 2.5e6
+        k3 = k2
+        k4 = k2
+        k5 = k2
+        k6 = k2
+        k7 = 40e6
+        k8 = k7
+        k9 = 3e6
+        k10 = k1
+
+        m1 = 90
+        m2 = 140
+        m3 = m2
+        m4 = m2
+        m5 = m2
+        m6 = m1
+        m7 = 350
+        m8 = 500
+        m9 = 22000
+
+        shafts, disks = [], []
+        n = 0
+        disks.append(Disk(n, I=m1))
+        shafts.append(Shaft(n, n + 1, None, None, k=k2))
+        n += 1
+        disks.append(Disk(n, I=m2))
+        shafts.append(Shaft(n, n + 1, None, None, k=k3))
+        n += 1
+        disks.append(Disk(n, I=m3))
+        shafts.append(Shaft(n, n + 1, None, None, k=k4))
+        n += 1
+        disks.append(Disk(n, I=m4))
+        shafts.append(Shaft(n, n + 1, None, None, k=k5))
+        n += 1
+        disks.append(Disk(n, I=m5))
+        shafts.append(Shaft(n, n + 1, None, None, k=k6))
+        n += 1
+        disks.append(Disk(n, I=m6))
+        shafts.append(Shaft(n, n + 1, None, None, k=k7))
+        n += 1
+        disks.append(Disk(n, I=m7))
+        shafts.append(Shaft(n, n + 1, None, None, k=k8))
+        n += 1
+        disks.append(Disk(n, I=m8))
+        shafts.append(Shaft(n, n + 1, None, None, k=k9))
+        n += 1
+        disks.append(Disk(n, I=m9))
+
+        assembly = Assembly(shafts, disk_elements=disks)
+        M, K = assembly.M(), assembly.K()
+        K[0, 0] += k1
+        K[5, 5] += k10
+        Z = np.zeros(M.shape, dtype=np.float64)
+
+        A = np.vstack([np.hstack([Z, K]), np.hstack([-M, Z])])
+        B = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
+
+        lam, vec = assembly._eig(A, B)
+        lam = lam[::2]
+        vec = vec[: int(vec.shape[0] / 2)]
+        vec = vec[:, ::2]
+
+        inds = np.argsort(np.abs(lam))
+        sorted_vec = np.zeros(vec.shape)
+        for i, v in enumerate(inds):
+            sorted_vec[:, i] = vec[:, v]
+
+        correct_vec = np.array(
+            [
+                [
+                    6.60605199481177e-5,
+                    0.00667406247011805,
+                    -0.00451698937983853,
+                    0.0122100078859736,
+                    0.0137040069782762,
+                    0.00956129679649614,
+                    0.103042990675201,
+                    -4.54419853685659e-6,
+                    -2.51310389680045e-9,
+                ],
+                [
+                    0.000330077639141967,
+                    0.0320211322617543,
+                    -0.0205225369398110,
+                    0.0506773033773183,
+                    0.0463814794663998,
+                    0.0258629404003599,
+                    -0.0175470307647990,
+                    8.24220088009509e-6,
+                    5.04281185022623e-8,
+                ],
+                [
+                    0.000592346256462216,
+                    0.0472988420882423,
+                    -0.0219519455363917,
+                    0.0221751991784241,
+                    -0.0374962957739650,
+                    -0.0501676592843986,
+                    0.00298794179246030,
+                    -6.63323141738523e-5,
+                    -1.86290692935124e-6,
+                ],
+                [
+                    0.000851477070985716,
+                    0.0477029658395100,
+                    -0.00778997721920759,
+                    -0.0356311433682274,
+                    -0.0271470197620900,
+                    0.0529032836459798,
+                    -0.000508118203721655,
+                    0.000562164074952234,
+                    6.88615997175939e-5,
+                ],
+                [
+                    0.00110609740349712,
+                    0.0331064228274443,
+                    0.0119048251136658,
+                    -0.0463513916947389,
+                    0.0514218915409095,
+                    -0.0328936585423667,
+                    8.24492991471238e-5,
+                    -0.00476784120131347,
+                    -0.00254544227606329,
+                ],
+                [
+                    0.00135485846790594,
+                    0.00809923955809763,
+                    0.0231442212898544,
+                    0.00418112343958315,
+                    0.000769152819570238,
+                    -0.00125827338620105,
+                    9.90422170641066e-6,
+                    0.0404375594726567,
+                    0.0940912846852475,
+                ],
+                [
+                    0.00170883228914918,
+                    0.00845877027092123,
+                    0.0289722758348375,
+                    0.00816268781687740,
+                    -0.00228201460479100,
+                    0.000584856450504386,
+                    4.64572960193113e-6,
+                    0.0361514836562086,
+                    -0.0237522688507098,
+                ],
+                [
+                    0.00206139171945407,
+                    0.00840268481139112,
+                    0.0315850852333137,
+                    0.0104588012300431,
+                    -0.00443714557289372,
+                    0.00210174058558432,
+                    -6.45089912032581e-6,
+                    -0.0280060906386327,
+                    0.00311362987148320,
+                ],
+                [
+                    0.00672968503001360,
+                    -0.000209129883290887,
+                    -0.000343282659273933,
+                    -6.07886503115980e-5,
+                    1.35246108824622e-5,
+                    -4.50526327439023e-6,
+                    6.13082758290678e-9,
+                    2.01919434383870e-5,
+                    -6.09911575562020e-7,
+                ],
+            ]
+        )
+
+        normalized_correct_vec = np.zeros(correct_vec.shape)
+        for i in range(len(inds)):
+            normalized_correct_vec[:, i] = correct_vec[:, i] / (
+                LA.norm(correct_vec[:, i])
+            )
+
+        normalized_correct_vec = normalized_correct_vec.round(2)
+        sorted_vec = sorted_vec.round(2)
+
+        normalized_correct_vec = abs(normalized_correct_vec)
+        sorted_vec = abs(sorted_vec)
+        correct_eigenmodes = normalized_correct_vec.tolist()
+        eigenmodes = sorted_vec.tolist()
+
+        self.assertEqual(
+            eigenmodes, correct_eigenmodes, "Eigenmode calculation not correct"
+        )
 
     def test_mass_matrix(self):
         correct_M = np.array([[10, 0], [0, 10]])

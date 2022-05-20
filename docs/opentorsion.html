@@ -50,7 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.disk_element">opentorsion.disk_element module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.errors">opentorsion.errors module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.gear_element">opentorsion.gear_element module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#opentorsion-main-module">opentorsion.main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.main">opentorsion.main module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.plots">opentorsion.plots module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.shaft_element">opentorsion.shaft_element module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-opentorsion">Module contents</a></li>
@@ -109,53 +109,119 @@
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.assembly.</span></span><span class="sig-name descname"><span class="pre">Assembly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shaft_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disk_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gear_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motor_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Powertrain assembly</p>
+<p>This class assembles the multi-degree of freedom system matrices, includes functions for modal analysis and response analysis in frequency and time domain.</p>
+<dl class="simple">
+<dt>shaft_elements<span class="classifier">list</span></dt><dd><p>List containing the shaft elements</p>
+</dd>
+<dt>disk_elements<span class="classifier">list</span></dt><dd><p>List containing the disk elements</p>
+</dd>
+<dt>gear_elements<span class="classifier">list</span></dt><dd><p>List containing the gear elements</p>
+</dd>
+<dt>motor_elements<span class="classifier">list</span></dt><dd><p>List containing the motor elements</p>
+</dd>
+<dt>dofs<span class="classifier">int</span></dt><dd><p>Number of degrees of freedom of the system</p>
+</dd>
+<dt>xi<span class="classifier">float, optional</span></dt><dd><p>Modal damping factor</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.C">
 <span class="sig-name descname"><span class="pre">C</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.C" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles the damping matrix</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The damping matrix assembled with component specific damping coefficients</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.C_modal">
 <span class="sig-name descname"><span class="pre">C_modal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.C_modal" title="Permalink to this definition"></a></dt>
 <dd><p>Full damping matrix for mechanical system obtained from modal damping matrix</p>
+<p>TODO: M, K included in parameters for debugging reasons
+xi : float, optional</p>
+<blockquote>
+<div><p>Modal damping factor, default is 0</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The full damping matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.E">
 <span class="sig-name descname"><span class="pre">E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.E" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles the gear constraint matrix</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The gear constraint matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.K">
 <span class="sig-name descname"><span class="pre">K</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.K" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles the stiffness matrix</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The stiffness matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.M">
 <span class="sig-name descname"><span class="pre">M</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.M" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles the mass matrix</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The mass matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.T">
 <span class="sig-name descname"><span class="pre">T</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.T" title="Permalink to this definition"></a></dt>
 <dd><p>Method for determining gear constraint transformation matrix</p>
+<dl class="simple">
+<dt>E<span class="classifier">ndarray</span></dt><dd><p>The gear constraint matrix</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The gear constraint transformation matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.U">
 <span class="sig-name descname"><span class="pre">U</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.U" title="Permalink to this definition"></a></dt>
-<dd><p>Input matrix of the state-space model</p>
+<dd><p>OUTDATED! See module excitations
+Input matrix of the state-space model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opentorsion.assembly.Assembly.eigenmodes">
+<span class="sig-name descname"><span class="pre">eigenmodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.eigenmodes" title="Permalink to this definition"></a></dt>
+<dd><p>Solve system eigenmodes</p>
+<dl class="simple">
+<dt>complex ndarray</dt><dd><p>Eigenmode array, columns correspond to modes left to right starting from zero</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.modal_analysis">
 <span class="sig-name descname"><span class="pre">modal_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.modal_analysis" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the eigenvalues and eigenfrequencies of the assembly</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The eigenvalues in rad/s</p>
+</dd>
+<dt>ndarray</dt><dd><p>The eigenfrequencies of the assembly</p>
+</dd>
+<dt>ndarray</dt><dd><p>The damping ratios</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -167,25 +233,73 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.ss_coefficients">
 <span class="sig-name descname"><span class="pre">ss_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omegas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.ss_coefficients" title="Permalink to this definition"></a></dt>
-<dd><p>The coefficient vectors a and b of the steady-state responses of the system M, C, K included for debug reasons</p>
+<dd><p>The coefficient vectors a and b of the steady-state responses of the system
+TODO: M, C, K included in parameters for debug reasons</p>
+<dl class="simple">
+<dt>M<span class="classifier">ndarray</span></dt><dd><p>Assembly mass matrix</p>
+</dd>
+<dt>C<span class="classifier">ndarray</span></dt><dd><p>Assembly damping matrix</p>
+</dd>
+<dt>K<span class="classifier">ndarray</span></dt><dd><p>Assembly stiffness matrix</p>
+</dd>
+<dt>amplitudes<span class="classifier">ndarray</span></dt><dd><p>Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies</p>
+</dd>
+<dt>omegas<span class="classifier">ndarray</span></dt><dd><p>Excitation frequencies</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>Steady-state coefficient vector</p>
+</dd>
+<dt>ndarray</dt><dd><p>Steady-state coefficient vector</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.ss_response">
 <span class="sig-name descname"><span class="pre">ss_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omegas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.ss_response" title="Permalink to this definition"></a></dt>
-<dd><p>Calculates steady state vibration amplitudes and phase angles for each drivetrain node</p>
+<dd><p>Calculates steady state vibration amplitudes and phase angles for each drivetrain node
+TODO: M, C, K included in parameters for debugging</p>
+<dl class="simple">
+<dt>M<span class="classifier">ndarray</span></dt><dd><p>Assembly mass matrix</p>
+</dd>
+<dt>C<span class="classifier">ndarray</span></dt><dd><p>Assembly damping matrix</p>
+</dd>
+<dt>K<span class="classifier">ndarray</span></dt><dd><p>Assembly stiffness matrix</p>
+</dd>
+<dt>amplitudes<span class="classifier">ndarray</span></dt><dd><p>Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies</p>
+</dd>
+<dt>omegas<span class="classifier">ndarray</span></dt><dd><p>Excitation frequencies</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>Steady-state vibration amplitudes at assembly nodes</p>
+</dd>
+<dt>ndarray</dt><dd><p>Phase angles</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.state_matrix">
 <span class="sig-name descname"><span class="pre">state_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.state_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles the state-space matrices</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The state matrix</p>
+</dd>
+<dt>ndarray</dt><dd><p>The input matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.system">
 <span class="sig-name descname"><span class="pre">system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.system" title="Permalink to this definition"></a></dt>
 <dd><p>System model in the ltis-format</p>
+<dl class="simple">
+<dt>StateSpaceContinuous</dt><dd><p>A continuous time-invariant state-space model of the assembly</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -197,25 +311,74 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.time_domain">
 <span class="sig-name descname"><span class="pre">time_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.time_domain" title="Permalink to this definition"></a></dt>
-<dd><p>Time-domain analysis of the powertrain</p>
+<dd><p>TODO: make compatible with excitations module
+Time-domain analysis of the powertrain</p>
+<p>TODO</p>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>Output time values</p>
+</dd>
+<dt>ndarray</dt><dd><p>The shaft torques of the assembly</p>
+</dd>
+<dt>ndarray</dt><dd><p>The nodal rotational speed of the assembly</p>
+</dd>
+<dt>ndarray</dt><dd><p>The rotation of the nodes of the assembly</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.torque">
 <span class="sig-name descname"><span class="pre">torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.torque" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate torque between every node</p>
+<dd><p>Calculates the shaft torque in time domain</p>
+<dl class="simple">
+<dt>yout<span class="classifier">ndarray</span></dt><dd><p>The response of a continuous-time linear system</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>The shaft torques of the assembly in time domain</p>
+</dd>
+<dt>ndarray</dt><dd><p>The nodal rotational speed of the assembly</p>
+</dd>
+<dt>ndarray</dt><dd><p>The rotation of the nodes of the assembly</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.undamped_modal_analysis">
 <span class="sig-name descname"><span class="pre">undamped_modal_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.undamped_modal_analysis" title="Permalink to this definition"></a></dt>
-<dd><p>Calculates the undamped eigenvalues and eigenfrequencies of the assembly</p>
+<dd><p>Calculates the undamped eigenvalues and eigenvectors of the assembly</p>
+<dl class="simple">
+<dt>complex ndarray</dt><dd><p>The eigenvalues of the undamped assembly</p>
+</dd>
+<dt>complex ndarray</dt><dd><p>The eigenvectors of the undamped assembly</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly.vibratory_torque">
 <span class="sig-name descname"><span class="pre">vibratory_torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omegas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly.vibratory_torque" title="Permalink to this definition"></a></dt>
-<dd><p>Elemental vibratory torque</p>
+<dd><p>Elemental vibratory torque
+TODO: M, C, K included in parameters for debugging</p>
+<dl class="simple">
+<dt>M<span class="classifier">ndarray</span></dt><dd><p>Assembly mass matrix</p>
+</dd>
+<dt>C<span class="classifier">ndarray</span></dt><dd><p>Assembly damping matrix</p>
+</dd>
+<dt>K<span class="classifier">ndarray</span></dt><dd><p>Assembly stiffness matrix</p>
+</dd>
+<dt>amplitudes<span class="classifier">ndarray</span></dt><dd><p>Harmonic excitation amplitudes, rows correspond to the assembly node values and columns to excitation frequencies</p>
+</dd>
+<dt>omegas<span class="classifier">ndarray</span></dt><dd><p>Excitation frequencies</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>Vibratory torque at each assembly node</p>
+</dd>
+<dt>ndarray</dt><dd><p>Vibratory torque at each assembly shaft</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -338,8 +501,75 @@ node: int</p>
 </dd></dl>
 
 </section>
-<section id="opentorsion-main-module">
-<h2>opentorsion.main module<a class="headerlink" href="#opentorsion-main-module" title="Permalink to this headline"></a></h2>
+<section id="module-opentorsion.main">
+<span id="opentorsion-main-module"></span><h2>opentorsion.main module<a class="headerlink" href="#module-opentorsion.main" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.friswell_ex9_6_3">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">friswell_ex9_6_3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.friswell_ex9_6_3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.motor">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">motor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.motor" title="Permalink to this definition"></a></dt>
+<dd><p>Induction motor and two disks connected with a shaft</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.multiple_gears">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">multiple_gears</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.multiple_gears" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.n_mass">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">n_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_assembly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.n_mass" title="Permalink to this definition"></a></dt>
+<dd><p>Powertrain with shafts, disks and gears</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.planetary_gear">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">planetary_gear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.planetary_gear" title="Permalink to this definition"></a></dt>
+<dd><p>Planetary gear:
+Input shaft attached to sun gear and ring gear, output shaft attached to carrier and planet gears.</p>
+<p>Three cases:
+1. Ring gear stationary, sun and carrier moving. Output speed positive.
+2. Sun gear stationary, ring and carrier moving. Output speed 2. &gt; 1.
+3. Carrier stationary, sun and ring moving. Output speed negative.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.test_damping">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">test_damping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.test_damping" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.test_sopa">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">test_sopa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.test_sopa" title="Permalink to this definition"></a></dt>
+<dd><p>wind turbine</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.test_ss_response">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">test_ss_response</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.test_ss_response" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.test_vibratory_torque">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">test_vibratory_torque</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.test_vibratory_torque" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.timedomain">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">timedomain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.timedomain" title="Permalink to this definition"></a></dt>
+<dd><p>Time-domain analysis of a powertrain</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="opentorsion.main.twomass">
+<span class="sig-prename descclassname"><span class="pre">opentorsion.main.</span></span><span class="sig-name descname"><span class="pre">twomass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_assembly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.main.twomass" title="Permalink to this definition"></a></dt>
+<dd><p>Two disks connected with a shaft.
+Eigenfrequencies and a campbell diagram.</p>
+</dd></dl>
+
 </section>
 <section id="module-opentorsion.plots">
 <span id="opentorsion-plots-module"></span><h2>opentorsion.plots module<a class="headerlink" href="#module-opentorsion.plots" title="Permalink to this headline"></a></h2>
@@ -347,23 +577,42 @@ node: int</p>
 <dt class="sig sig-object py" id="opentorsion.plots.Plots">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.plots.</span></span><span class="sig-name descname"><span class="pre">Plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assembly</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class contains plot and figure tools</p>
+<p>This class includes plotting functions</p>
+<p>assembly : openTorsion Assembly class instance</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.plots.Plots.campbell_diagram">
 <span class="sig-name descname"><span class="pre">campbell_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots.campbell_diagram" title="Permalink to this definition"></a></dt>
-<dd><p>Campbell diagram of the powertrain</p>
+<dd><p>Creates a Campbell diagram</p>
+<dl class="simple">
+<dt>num_modes<span class="classifier">int, optional</span></dt><dd><p>Number of modes to be plotted, default is 10</p>
+</dd>
+<dt>frequency_range<span class="classifier">int, optional</span></dt><dd><p>Analysis frequency range, default is 100 Hz</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.plots.Plots.figure_eigenmodes">
-<span class="sig-name descname"><span class="pre">figure_eigenmodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots.figure_eigenmodes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">figure_eigenmodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots.figure_eigenmodes" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the eigenmodes of the powertrain</p>
+<dl class="simple">
+<dt>modes<span class="classifier">int, optional</span></dt><dd><p>Number of modes to be plotted, default is 5</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="opentorsion.plots.Plots.plot_campbell">
 <span class="sig-name descname"><span class="pre">plot_campbell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excitations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots.plot_campbell" title="Permalink to this definition"></a></dt>
-<dd><p>Plots the campbell diagram</p>
+<dd><p>Plots the Campbell diagram</p>
+<dl class="simple">
+<dt>frequency_range<span class="classifier">int</span></dt><dd><p>Analysis frequency range</p>
+</dd>
+<dt>modes<span class="classifier">int</span></dt><dd><p>Number of modes to be plotted</p>
+</dd>
+<dt>excitations<span class="classifier">list, optional</span></dt><dd><p>List containing the numbers of harmonics, default is 1 through 4</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
