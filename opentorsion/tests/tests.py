@@ -437,6 +437,7 @@ class Test(unittest.TestCase):
         disks.append(Disk(1, I=10))
 
         assembly = Assembly(shafts, disk_elements=disks)
+        assembly.xi = 0.02
 
         ## D. Inman, in Encyclopedia of Vibration, 2001, Critical Damping in Lumped Parameter Models
         M = assembly.M()
