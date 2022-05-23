@@ -272,9 +272,14 @@ class Assembly:
 
         return T
 
-    def state_matrix(self):
+    def state_matrix(self, C=None):
         """
         Assembles the state-space matrices
+
+        Parameters
+        ----------
+        C : ndarray, optional
+            Damping matrix
 
         Returns
         -------
@@ -284,7 +289,9 @@ class Assembly:
             The input matrix
         """
 
-        M, K, C = self.M(), self.K(), self.C()
+        if C is None:
+            C = self.C()
+        M, K = self.M(), self.K()
         Z = np.zeros(M.shape, dtype=np.float64)
 
         if self.motor_elements is not None:

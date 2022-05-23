@@ -145,3 +145,38 @@ class Plots:
         plt.show()
 
         return
+
+    def torque_response_plot(self, omegas, T, show_plot=False, save=False):
+        """
+        Plots forced response amplitude as a function of rotational speed.
+
+        Parameters:
+        -----------
+        omegas : ndarray
+            Drivetrain rotational speed in rad/s
+        T : ndarray
+            Drivetrain response amplitudes in Nm
+        show_plot : bool, optional
+            If True, plot is shown
+        save : bool
+            If True, plot is saved to a pdf, show_plot must be False if save == True
+        """
+        c = np.pi / 30
+
+        ax1 = plt.subplot(211)
+        ax1.plot(omegas, T[0] * 1 / 1000, label="Shaft 1")
+        ax1.legend()
+        plt.ylabel("Amplitude (kNm)", loc="center")
+        plt.grid()
+
+        ax2 = plt.subplot(212)
+        ax2.plot(omegas, T[1] * (1 / 1000), label="Shaft 2")
+        ax2.legend()
+        plt.ylabel("Amplitude (kNm)", loc="center")
+        plt.xlabel("$\omega$ (RPM)")
+        plt.grid()
+
+        if show_plot:
+            plt.show()
+        if save:
+            plt.savefig("response.pdf")
