@@ -10,7 +10,11 @@ from opentorsion.shaft_element import Shaft
 from opentorsion.gear_element import Gear
 from opentorsion.induction_motor import Induction_motor
 from opentorsion.assembly import Assembly
-from opentorsion.plots import Plots, Fig_2D
+from opentorsion.plots import Plots
+
+"""
+Incomplete tests and junk
+"""
 
 
 def test_sopa():

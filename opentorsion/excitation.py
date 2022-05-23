@@ -9,10 +9,33 @@ from scipy.signal import lsim
 
 class SystemExcitation:
     """
-    This class is for building excitation matrices.
+    This class is for building system excitation matrices.
+
+    Attributes
+    ----------
+    dofs : int
+        Number of degrees of freedom of the system
+    omegas : ndarray
+        Array of excitation frequencies
+    U : ndarray
+        Array of excitation amplitudes
     """
 
     def __init__(self, dofs, omegas, shape=None, harmonic=True, transient=False):
+        """
+        Parameters
+        ----------
+        dofs : int
+            Number of degrees of freedom of the system
+        omegas : ndarray
+            Array of excitation frequencies
+        shape : tuple, optional
+            Time domain excitation matrix shape
+        harmonic : bool, optional
+            If True, excitation is harmonic
+        transient : bool
+            If True, excitation is transient
+        """
 
         if dofs is None:
             print("Zero DOF system")
@@ -34,15 +57,21 @@ class SystemExcitation:
         return
 
     def time_domain_excitation(self, nodes, data):
-        """Excitation matrix for transient analysis.
+        """
+        Excitation matrix for transient analysis.
         The function takes as input the node numbers where excitation data is inputted and the time domain excitation data. The excitation data must be listed in the same order as the listed nodes. The excitation data arrays must be of equal length.
 
-        Arguments:
+        Parameters
         ----------
         nodes: list, int
             List of nodes where excitation data is inputted
         data: list, ndarray
             Excitation amplitudes as a list of (1 x n) shaped numpy arrays
+
+        Returns
+        -------
+        ndarray
+            Excitation matrix in time domain, containing excitation amplitudes for each time step
         """
         if len(nodes) < 1:
             raise ValueError("No nodes were defined for excitation input.")
@@ -66,11 +95,37 @@ class SystemExcitation:
         return excitation_array.T
 
     def excitation_frequencies(self, interval):
-        """Excitation frequencies for steady-state and vibratory torque analysis"""
+        """
+        Excitation frequencies for steady-state and vibratory torque analysis
+
+        Parameters
+        ----------
+        interval : list
+            Lowest and highest excitation frequency values
+
+        Returns
+        -------
+        ndarray
+            Excitation frequencies evenly spaced over the specified interval
+        """
         return np.linspace(interval[0], interval[-1])
 
     def ramp_amplitude(self, omegas):
-        """The excitation at low frequencies is a ramp to avoid very large response values near zero"""
+        """
+        Sets the excitation at low frequencies to a ramp to avoid very large response values near zero
+
+        Parameters
+        ----------
+        omegas : ndarray
+            Excitation frequencies
+
+        Returns
+        -------
+        int
+            Amount of excitation frequency values 0 <= omega < 4
+        int
+            Amount of excitation frequency values 4 <= omega < 80
+        """
         count_zero = 0
         count_ramp = 0
         for omega in omegas:
@@ -82,7 +137,16 @@ class SystemExcitation:
         return count_zero, count_ramp
 
     def add_sweep(self, node, amplitude):
-        """Adds a sweep excitation with the given uniform amplitude to the given node"""
+        """
+        Adds a sweep excitation with the given uniform amplitude to the given node
+
+        Parameters
+        ----------
+        node : int
+            Node number where excitation is inputted
+        amplitude : ndarray
+            Harmonic excitation amplitudes
+        """
         z, r = self.ramp_amplitude(self.omegas)
         ramp = np.linspace(0.01, 1, (r + z))
         k = 0
@@ -99,7 +163,16 @@ class SystemExcitation:
         return
 
     def add_harmonic(self, node, amplitudes):
-        """Adds a harmonic excitaiton based on the omegas and amplitudes of the excitation this method should extensively check if all of the excitations have same size of omegas"""
+        """
+        Adds a harmonic excitaiton based on the omegas and amplitudes of the excitation this method should extensively check if all of the excitations have same size of omegas
+
+        Parameters
+        ----------
+        node : int
+            Node number where excitation is inputted
+        amplitudes : ndarray
+            Harmonic excitation amplitudes
+        """
 
         if self.U is None:
             return "Error"  # TODO
@@ -112,6 +185,13 @@ class SystemExcitation:
         return
 
     def excitation_amplitudes(self):
-        """Excitation amplitudes for steady-state and vibratory torque analysis"""
+        """
+        Excitation amplitudes for steady-state and vibratory torque analysis
+
+        Returns
+        -------
+        ndarray
+            The excitation amplitude matrix
+        """
 
         return self.U
