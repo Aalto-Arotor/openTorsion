@@ -65,6 +65,7 @@ class Shaft:
 
     def M(self):
         """Mass matrix of a shaft element"""
+
         A = np.array([[2, 1], [1, 2]], dtype=np.float64)
 
         M = A * self.mass
@@ -80,6 +81,7 @@ class Shaft:
 
     def C(self):
         """Damping matrix of a shaft element"""
+
         C = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.c
 
         return C

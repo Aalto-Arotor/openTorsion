@@ -21,6 +21,7 @@ class Plots:
         ----------
         assembly : openTorsion Assembly class instance
         """
+
         self.assembly = assembly
 
     def campbell_diagram(self, num_modes=10, frequency_range=100):
@@ -34,6 +35,7 @@ class Plots:
         frequency_range : int, optional
             Analysis frequency range, default is 100 Hz
         """
+
         omegas_damped, freqs, damping_ratios = self.assembly.modal_analysis()
         freqs = freqs[:num_modes]
         freqs = freqs[::2]
@@ -55,6 +57,7 @@ class Plots:
         excitations : list, optional
             List containing the numbers of harmonics, default is 1 through 4
         """
+
         plt.rcParams.update(
             {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
         )
@@ -93,6 +96,7 @@ class Plots:
         modes : int, optional
             Number of modes to be plotted, default is 5
         """
+
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
         plt.ylim(-1.1, 1.1)
 
@@ -161,6 +165,7 @@ class Plots:
         save : bool
             If True, plot is saved to a pdf, show_plot must be False if save == True
         """
+
         c = np.pi / 30
 
         ax1 = plt.subplot(211)

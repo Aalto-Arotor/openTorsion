@@ -20,7 +20,10 @@ class Disk:
         self.damping = c
 
     def __repr__(self):
-        """String representation of a disk element"""
+        """
+        String representation of a disk element
+        """
+
         return (str(self.n), str(self.m), str(self.I), str(self.I))
 
     def M(self):
@@ -31,6 +34,7 @@ class Disk:
         M: ndarray
             Mass matrix of the disk element
         """
+
         I = self.I
         M = np.array([I], dtype=np.float64)
 

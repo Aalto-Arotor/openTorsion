@@ -73,6 +73,7 @@ class SystemExcitation:
         ndarray
             Excitation matrix in time domain, containing excitation amplitudes for each time step
         """
+
         if len(nodes) < 1:
             raise ValueError("No nodes were defined for excitation input.")
         elif len(data) < 1:
@@ -108,6 +109,7 @@ class SystemExcitation:
         ndarray
             Excitation frequencies evenly spaced over the specified interval
         """
+
         return np.linspace(interval[0], interval[-1])
 
     def ramp_amplitude(self, omegas):
@@ -126,6 +128,7 @@ class SystemExcitation:
         int
             Amount of excitation frequency values 4 <= omega < 80
         """
+
         count_zero = 0
         count_ramp = 0
         for omega in omegas:
@@ -147,6 +150,7 @@ class SystemExcitation:
         amplitude : ndarray
             Harmonic excitation amplitudes
         """
+
         z, r = self.ramp_amplitude(self.omegas)
         ramp = np.linspace(0.01, 1, (r + z))
         k = 0
