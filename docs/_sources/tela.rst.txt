@@ -1,0 +1,7 @@
+tela module
+===========
+
+.. automodule:: tela
+   :members:
+   :undoc-members:
+   :show-inheritance:

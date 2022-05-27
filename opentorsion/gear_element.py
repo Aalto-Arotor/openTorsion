@@ -9,7 +9,7 @@ class Gear:
     the use is constant.
 
     Arguments:
-    ---------_
+    ----------
     node: int
         Nodal position of the gear in the global coordinates
     I: float
@@ -66,6 +66,7 @@ class Gear:
         M: ndarray
             Mass matrix of the gear element
         """
+
         K = np.zeros((1))
 
         return K
@@ -78,6 +79,7 @@ class Gear:
         M: ndarray
             Mass matrix of the gear element
         """
+
         C = np.zeros((1))
 
         return C

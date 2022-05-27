@@ -136,6 +136,7 @@ class Assembly:
         ndarray
             The stiffness matrix
         """
+
         K = np.zeros((self.dofs, self.dofs))
 
         if self.shaft_elements is not None:
@@ -161,6 +162,7 @@ class Assembly:
         """
         Assembles the stiffness matrix when gears are not considered
         """
+
         K = np.zeros((self.dofs, self.dofs))
 
         if self.shaft_elements is not None:
@@ -179,6 +181,7 @@ class Assembly:
         ndarray
             The damping matrix assembled with component specific damping coefficients
         """
+
         C = np.zeros((self.dofs, self.dofs))
 
         if self.shaft_elements is not None:
@@ -247,6 +250,7 @@ class Assembly:
         ndarray
             The gear constraint transformation matrix
         """
+
         r, c = E.shape
         T = np.eye(r)
         for i in range(c):
@@ -331,7 +335,10 @@ class Assembly:
 
         Parameters
         ----------
-        TODO: M, K included in parameters for debugging reasons
+        M : ndarray
+            Assembly mass matrix, included for debugging reasons
+        K : ndarray
+            Assembly stiffness matrix, included for debugging reasons
         xi : float, optional
             Modal damping factor, default is 0
 
@@ -340,6 +347,7 @@ class Assembly:
         ndarray
             The full damping matrix
         """
+
         if self.xi is None:
             xi = self.xi
         omegas, phi = LA.eig(K, M)
@@ -391,6 +399,7 @@ class Assembly:
         ndarray
             Steady-state coefficient vector
         """
+
         if type(amplitudes) is np.ndarray:
             Z = np.zeros(amplitudes.shape)
             a, b = np.zeros(amplitudes.shape), np.zeros(amplitudes.shape)
@@ -405,7 +414,7 @@ class Assembly:
         for i, omega in enumerate(omegas):
             AA = np.vstack(
                 [
-                    np.hstack([K - (omega ** 2 * M), -omega * C]),
+                    np.hstack([K - (omega**2 * M), -omega * C]),
                     np.hstack([omega * C, K - (omega * omega * M)]),
                 ]
             )
@@ -512,6 +521,7 @@ class Assembly:
         complex ndarray
             The eigenvectors of the undamped assembly
         """
+
         lam, vec = self._eig(self.K(), self.M())
 
         return lam, vec
@@ -529,6 +539,7 @@ class Assembly:
         ndarray
             The damping ratios
         """
+
         A, B = self.state_matrix()
         lam, vec = self._eig(A, B)
 
@@ -550,6 +561,7 @@ class Assembly:
         complex ndarray
             Solved eigenvectors
         """
+
         lam, vec = LA.eig(A, B)
 
         return lam, vec
@@ -563,6 +575,7 @@ class Assembly:
         complex ndarray
             Eigenmode array, columns correspond to modes left to right starting from zero
         """
+
         A, B = self.state_matrix()
         lam, vec = self._eig(A, B)
 
@@ -586,6 +599,7 @@ class Assembly:
         int
             Number of degrees of freedom of the assembly
         """
+
         nodes = set()
         if self.shaft_elements is not None:
             for element in self.shaft_elements:
@@ -611,6 +625,7 @@ class Assembly:
         OUTDATED! See module excitations
         Input matrix of the state-space model
         """
+
         # u1 at node '0', u2 at node 'n'
 
         if np.array([u1]) is None:
@@ -665,6 +680,7 @@ class Assembly:
         StateSpaceContinuous
             A continuous time-invariant state-space model of the assembly
         """
+
         M, K = self.M(), self.K()
         try:
             C = self.C_modal(M, K, xi=self.xi)
@@ -735,6 +751,7 @@ class Assembly:
         """
         System model in the ltis-format
         """
+
         M, K = self.M(), self.K()
         if modal_damping:
             C = self.C_modal(M, K, xi=self.xi)

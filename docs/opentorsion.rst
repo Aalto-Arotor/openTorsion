@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   opentorsion.examples
    opentorsion.tests
 
 Submodules

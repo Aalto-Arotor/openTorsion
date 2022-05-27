@@ -1,0 +1,7 @@
+windmill module
+===============
+
+.. automodule:: windmill
+   :members:
+   :undoc-members:
+   :show-inheritance:
