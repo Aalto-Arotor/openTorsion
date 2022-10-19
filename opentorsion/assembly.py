@@ -81,8 +81,6 @@ class Assembly:
 
         self.dofs = self._check_dof()
 
-        self.xi = 0.00  # modal damping coefficient, default 0 -> no damping
-
     def __repr__(self):
         pass
 
@@ -348,8 +346,6 @@ class Assembly:
             The full damping matrix
         """
 
-        if self.xi is None:
-            xi = self.xi
         omegas, phi = LA.eig(K, M)
         omegas = np.absolute(omegas)
 
@@ -366,7 +362,7 @@ class Assembly:
         I = phi_norm.T @ M @ phi_norm
 
         # The diagonal modal damping matrix is achieved by applying the modal damping
-        C_modal_elements = 2 * self.xi * np.sqrt(omegas)
+        C_modal_elements = 2 * xi * np.sqrt(omegas)
         C_modal_diag = np.diag(C_modal_elements)
 
         # The final damping matrix
