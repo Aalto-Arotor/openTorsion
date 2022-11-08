@@ -85,3 +85,6 @@ class Shaft:
         C = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.c
 
         return C
+    
+    def __str__(self):
+        return 'Shaft, nl: ' + str(self.nl) + ' nr: '  + str(self.nr) + ' L: ' + str(self.L) + ' odl: ' + str(self.odl) + ' k: ' + str(self.k) + ' I: ' + str(self.I) + ' c: ' + str(self.c)
