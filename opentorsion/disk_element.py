@@ -61,3 +61,6 @@ class Disk:
         """
 
         return np.zeros((1), dtype=np.float64)
+
+    def __str__(self):
+        return 'Disk, pos: ' + str(self.node) + ' I:'  + str(self.I) + ' c: ' + str(self.damping)
