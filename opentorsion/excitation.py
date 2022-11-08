@@ -39,6 +39,10 @@ class SystemExcitation:
 
         if dofs is None:
             print("Zero DOF system")
+            return None
+
+        if omegas[0] < 10:
+            print("WARNGING: RESPONSES UNDER 10 rad/s are unstable")
 
         self.dofs = dofs
 
@@ -112,33 +116,6 @@ class SystemExcitation:
 
         return np.linspace(interval[0], interval[-1])
 
-    def ramp_amplitude(self, omegas):
-        """
-        Sets the excitation at low frequencies to a ramp to avoid very large response values near zero
-
-        Parameters
-        ----------
-        omegas : ndarray
-            Excitation frequencies
-
-        Returns
-        -------
-        int
-            Amount of excitation frequency values 0 <= omega < 4
-        int
-            Amount of excitation frequency values 4 <= omega < 80
-        """
-
-        count_zero = 0
-        count_ramp = 0
-        for omega in omegas:
-            if omega < 4:
-                count_zero += 1
-            if omega < 80:
-                count_ramp += 1
-
-        return count_zero, count_ramp
-
     def add_sweep(self, node, amplitude):
         """
         Adds a sweep excitation with the given uniform amplitude to the given node
@@ -150,18 +127,7 @@ class SystemExcitation:
         amplitude : ndarray
             Harmonic excitation amplitudes
         """
-
-        z, r = self.ramp_amplitude(self.omegas)
-        ramp = np.linspace(0.01, 1, (r + z))
-        k = 0
         amplitudes = np.ones(self.omegas.shape) * amplitude
-        for i, a in enumerate(amplitudes):
-            if i == 0:
-                amplitudes[i] = 0 * amplitudes[i]
-            elif i < r:
-                amplitudes[i] = ramp[k] * amplitudes[i]
-                k += 1
-
         self.add_harmonic(node, amplitudes)
 
         return
