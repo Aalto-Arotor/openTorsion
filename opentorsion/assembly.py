@@ -410,7 +410,7 @@ class Assembly:
         for i, omega in enumerate(omegas):
             AA = np.vstack(
                 [
-                    np.hstack([K - (omega**2 * M), -omega * C]),
+                    np.hstack([K - (omega ** 2 * M), -omega * C]),
                     np.hstack([omega * C, K - (omega * omega * M)]),
                 ]
             )
