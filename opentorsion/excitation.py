@@ -41,9 +41,6 @@ class SystemExcitation:
             print("Zero DOF system")
             return None
 
-        if omegas[0] < 10:
-            print("WARNGING: RESPONSES UNDER 10 rad/s are unstable")
-
         self.dofs = dofs
 
         self.omegas = omegas
@@ -53,7 +50,7 @@ class SystemExcitation:
 
         elif transient:
             self.U = np.zeros(shape)
-            pass  # TODO
+            # TODO
 
         else:
             self.U = None
