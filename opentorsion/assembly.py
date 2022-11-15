@@ -142,10 +142,9 @@ class Assembly:
                 dofs = np.array([element.nl, element.nr])
                 K[np.ix_(dofs, dofs)] += element.K()
 
-        # if self.motor_elements is not None:
-        #     for element in self.motor_elements:
-        #         dofs = np.array([element.nl, element.nr])
-        #         K[np.ix_(dofs, dofs)] += element.K()
+        if self.disk_elements is not None:
+            for element in self.disk_elements:
+                K[element.node, element.node] += element.K()
 
         if self.gear_elements is not None:
             # Build transformation matrix
@@ -186,11 +185,6 @@ class Assembly:
             for element in self.shaft_elements:
                 dof = np.array([element.nl, element.nr])
                 C[np.ix_(dof, dof)] += element.C()
-
-        # if self.motor_elements is not None:
-        #     for element in self.motor_elements:
-        #         dof = np.array([element.nl, element.nr])
-        #         C[np.ix_(dof, dof)] += element.C()
 
         if self.disk_elements is not None:
             for element in self.disk_elements:
