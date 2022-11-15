@@ -14,9 +14,10 @@ class Disk:
         Damping coefficient of the disk [Nms/rad]
     """
 
-    def __init__(self, node, I, c=0):
+    def __init__(self, node, I, c=0, k=0):
         self.node = node
         self.I = I
+        self.k = k
         self.damping = c
 
     def __repr__(self):
@@ -59,5 +60,7 @@ class Disk:
         K: ndarray
             Stiffness matrix of the disk element
         """
+        k = self.k
+        K = np.array([k], dtype=np.float64)
 
-        return np.zeros((1), dtype=np.float64)
+        return K
