@@ -20,7 +20,7 @@ class Disk:
         self.node = node
         self.I = I
         self.k = k
-        self.damping = c
+        self.c = c
 
     def __repr__(self):
         """
@@ -52,7 +52,7 @@ class Disk:
             Damping matrix of disk element
         """
 
-        return np.array([self.damping], dtype=np.float64) * self.damping
+        return np.array([self.c], dtype=np.float64) * self.c
 
     def K(self):
         """Stiffness matrix of a disk element
@@ -68,4 +68,4 @@ class Disk:
         return K
 
     def __str__(self):
-        return 'Disk, pos: ' + str(self.node) + ' I:'  + str(self.I) + ' c: ' + str(self.damping)
+        return 'Disk, pos: ' + str(self.node) + ' I:'  + str(self.I) + ' c: ' + str(self.c) + ' k: ' + str(self.k)
