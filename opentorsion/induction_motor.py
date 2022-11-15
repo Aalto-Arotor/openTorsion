@@ -68,7 +68,7 @@ class Induction_motor:
         S = (omega_s - omega_0) / omega_s
 
         denominator = np.complex(
-            -S * L_r * L_s * omega_s**2 + L_m**2 * omega_s**2 * S + R_r * R_s,
+            -S * L_r * L_s * omega_s ** 2 + L_m ** 2 * omega_s ** 2 * S + R_r * R_s,
             S * L_r * R_s * omega_s + L_s * R_r * omega_s,
         )
 

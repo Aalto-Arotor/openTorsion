@@ -11,7 +11,9 @@ class Disk:
     I: float
         Moment of inertia of the disk [kgm^2]
     c: float
-        Damping coefficient of the disk [Nms/rad]
+        Viscous damping coefficient of the disk [Nms/rad]
+    k: float
+        Equivalent stiffness coefficient of the disk [Nm/rad]
     """
 
     def __init__(self, node, I, c=0, k=0):
@@ -64,3 +66,6 @@ class Disk:
         K = np.array([k], dtype=np.float64)
 
         return K
+
+    def __str__(self):
+        return 'Disk, pos: ' + str(self.node) + ' I:'  + str(self.I) + ' c: ' + str(self.damping)

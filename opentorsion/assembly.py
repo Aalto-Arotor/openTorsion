@@ -186,11 +186,6 @@ class Assembly:
                 dof = np.array([element.nl, element.nr])
                 C[np.ix_(dof, dof)] += element.C()
 
-        # if self.motor_elements is not None:
-        #     for element in self.motor_elements:
-        #         dof = np.array([element.nl, element.nr])
-        #         C[np.ix_(dof, dof)] += element.C()
-
         if self.disk_elements is not None:
             for element in self.disk_elements:
                 C[element.node, element.node] += element.C()
@@ -409,7 +404,7 @@ class Assembly:
         for i, omega in enumerate(omegas):
             AA = np.vstack(
                 [
-                    np.hstack([K - (omega**2 * M), -omega * C]),
+                    np.hstack([K - (omega ** 2 * M), -omega * C]),
                     np.hstack([omega * C, K - (omega * omega * M)]),
                 ]
             )
