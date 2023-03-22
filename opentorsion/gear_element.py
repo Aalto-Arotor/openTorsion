@@ -19,8 +19,8 @@ class Gear:
 
     Keyword arguments:
     ------------------
-    Parent: Int
-        Node value of the parent gear element
+    Parent: Gear
+        openTorsion Gear instance of the connected parent gear
     """
 
     def __init__(self, node, I, R, parent=None):
@@ -36,7 +36,7 @@ class Gear:
             self.stages.append([[parent.node, parent.R], [self.node, self.R]])
 
     def M(self):
-        """Mass Matrix of 1 DOF gear element
+        """Mass Matrix of 1 DOF gear element.
 
         Returns
         -------
@@ -50,7 +50,7 @@ class Gear:
         return M
 
     def K(self):
-        """Stiffness matrix of a gear element. Gears are assumed to be rigid
+        """Stiffness matrix of a gear element. Gears are assumed to be rigid.
 
         Returns
         -------
@@ -63,7 +63,7 @@ class Gear:
         return K
 
     def C(self):
-        """Damping matrix of a gear element. Gears are assumed to have no damping
+        """Damping matrix of a gear element. Gears are assumed to have no damping.
 
         Returns
         -------

@@ -221,10 +221,6 @@ class Assembly:
         for i, stage in enumerate(stages):
             E[stage[0][0]][i] += stage[0][1]
             E[stage[1][0]][i] += stage[1][1]
-            try:
-                E[stage[2][0]][i] += stage[2][1]
-            except:
-                pass
 
         return E
 
@@ -610,32 +606,12 @@ class Assembly:
 
         return max(nodes) + 1
 
-    def U(self, u1, u2):
+    def time_domain(self, t_in, U, system=None, x_in=None):
         """
-        OUTDATED! See module excitations
-        Input matrix of the state-space model
-        """
-
-        # u1 at node '0', u2 at node 'n'
-
-        if np.array([u1]) is None:
-            u1 = np.zeros((1, self.M().shape[0]))
-            u1 = u1[0]
-
-        if np.array([u2]) is None:
-            u2 = np.zeros((1, np.size(u1)))
-            u2 = u2[0]
-
-        return np.vstack([[u1], np.zeros((self.M().shape[1] - 2, np.size(u1))), [u2]]).T
-
-    def time_domain(self, t_in, u1, u2=None, U=None, system=None, x_in=None):
-        """
-        TODO: make compatible with excitations module
-        Time-domain analysis of the powertrain
 
         Parameters
         ----------
-        TODO
+        TODO:
 
         Returns
         -------
@@ -651,9 +627,6 @@ class Assembly:
 
         if system is None:
             system = self.system()
-
-        if U is None:
-            raise ValueError("No excitation matrix given.")
 
         tout, yout, xout = lsim(system, U, t_in, X0=x_in)
 
@@ -691,12 +664,13 @@ class Assembly:
 
     def torque(self, yout):
         """
-        Calculates the shaft torque in time domain
+        Calculates the shaft torque using time-domain simulation data.
 
         Parameters
         ----------
         yout : ndarray
-            The response of a continuous-time linear system
+            The response of a continuous-time linear system.
+            Assumed to be a vector containing nodal speed and nodal angular values
 
         Returns
         -------
