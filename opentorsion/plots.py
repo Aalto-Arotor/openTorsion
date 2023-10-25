@@ -90,7 +90,7 @@ class Plots:
     def plot_eigenmodes(self, modes=5):
         """
         Updated eigenmode plot. Geared systems not supported.
-        The eigenvectors are plotted over the assmebly schematic, and the trajectories are plotted with dashed lines.
+        The eigenvectors are plotted over the assembly schematic, and the trajectories are plotted with dashed lines.
         Each plotted eigenvector is rotated so that the node with maximum abs displacement has phase of 0
 
         Parameters
