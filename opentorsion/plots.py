@@ -185,3 +185,69 @@ class Plots:
             plt.show()
         if save:
             plt.savefig("response.pdf")
+
+    def plot_assembly(self, assembly=None):
+        assembly = self.assembly
+        fig, ax = plt.subplots(figsize=(5,4))
+        self.plot_on_ax(assembly, ax)
+
+
+        # plt.ylim((-2*disk_max, 2*disk_max))
+        ax.set_xticks(np.arange(0, assembly._check_dof(), step=1))
+        ax.set_xlabel('node')
+        ax.set_yticks([])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+
+        plt.tight_layout()
+        plt.show()
+        return
+
+
+    def plot_on_ax(self, assembly, ax):
+
+        disks = assembly.disk_elements
+        shafts = assembly.shaft_elements
+
+        max_I_disk = max(disks, key=lambda disk: disk.I)
+        min_I_disk = min(disks, key=lambda disk: disk.I)
+        max_I_value = max_I_disk.I
+        min_I_value = min_I_disk.I
+
+        # max and min heights of a disk element
+        disk_max = 2
+        disk_min = 0.5
+
+
+        # width of a disk element
+        width = 0.5
+
+        num_segments = 6 # number of lines in a spring
+        amplitude = 0.1  # spring "height"
+        # plot springs connecting the disk elements
+        for i, shaft in enumerate(shafts):
+            if i < len(shafts):
+                x1, y1 = shaft.nl+width/2, 0
+                x2, y2 = shaft.nr-width/2, 0
+                
+                x_values = np.linspace(x1, x2, num_segments)
+                y_values = np.linspace(y1, y2, num_segments)
+
+                for i in range(0, num_segments):
+                    if i % 2 == 0:
+                        y_values[i] += amplitude
+                    else:
+                        y_values[i] -= amplitude
+
+                for i in range(num_segments - 1):
+                    ax.plot(x_values[i:i+2], y_values[i:i+2], color='k')
+
+        # plot disk elements
+        for i, disk in enumerate(disks):
+            node = disk.node
+            height = (disk.I - min_I_value) / (max_I_value - min_I_value) * (disk_max - disk_min) + disk_min
+            pos = (node-width/2, -height/2)
+
+            ax.add_patch(matplotlib.patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='darkgrey', linewidth=1.5))
+        return
