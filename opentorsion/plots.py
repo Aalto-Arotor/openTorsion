@@ -93,7 +93,7 @@ class Plots:
         """
         eigenmodes = self.assembly.eigenmodes()
         phases = np.angle(eigenmodes)
-        nodes = np.arange(1, self.assembly.dofs)
+        nodes = np.arange(0, self.assembly.dofs)
 
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
 
@@ -105,8 +105,11 @@ class Plots:
             # the system is rotated so that the imaginary component is zero at the node with max. displacement
             eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp,i])
             # plot eigenvector
-            axs[i].plot(nodes, eigenvector_rotated)
-
+            self.plot_on_ax(self.assembly,axs[i],alpha=0.2)
+            axs[i].plot(nodes, np.real(eigenvector_rotated)/np.sqrt(np.sum(np.real(eigenvector_rotated)**2)),color='red')
+            #axs[i].plot(nodes, -np.real(eigenvector_rotated)/np.sqrt(np.sum(np.real(eigenvector_rotated)**2)),'--',color='red',alpha=0.6)
+            axs[i].plot([nodes,nodes],[np.abs(eigenvector_rotated),-np.abs(eigenvector_rotated)],'--',color='black')
+            axs[i].set_ylim([-1.1,1.1])
         plt.show()
 
     def figure_eigenmodes(self, modes=5):
@@ -227,7 +230,7 @@ class Plots:
         return
 
 
-    def plot_on_ax(self, assembly, ax):
+    def plot_on_ax(self, assembly, ax, alpha=1):
 
         disks = assembly.disk_elements
         shafts = assembly.shaft_elements
@@ -263,7 +266,7 @@ class Plots:
                         y_values[i] -= amplitude
 
                 for i in range(num_segments - 1):
-                    ax.plot(x_values[i:i+2], y_values[i:i+2], color='k')
+                    ax.plot(x_values[i:i+2], y_values[i:i+2], color='k', alpha=alpha)
 
         # plot disk elements
         for i, disk in enumerate(disks):
@@ -271,5 +274,5 @@ class Plots:
             height = (disk.I - min_I_value) / (max_I_value - min_I_value) * (disk_max - disk_min) + disk_min
             pos = (node-width/2, -height/2)
 
-            ax.add_patch(matplotlib.patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='darkgrey', linewidth=1.5))
+            ax.add_patch(matplotlib.patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='darkgrey', linewidth=1.5, alpha=alpha))
         return
