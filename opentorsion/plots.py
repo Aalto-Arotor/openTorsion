@@ -86,6 +86,28 @@ class Plots:
         plt.show()
 
         return
+    
+    def plot_eigenmodes(self, modes=5):
+        """
+        Updated eigenmode plot. Geared systems not supported.
+        """
+        eigenmodes = self.assembly.eigenmodes()
+        phases = np.angle(eigenmodes)
+        nodes = np.arange(1, self.assembly.dofs)
+
+        fig_modes, axs = plt.subplots(modes, 1, sharex=True)
+
+        for i in range(modes):
+            # eigenvector corresponding to mode i
+            eigenvector = eigenmodes[:,i]
+            # find node with largest displacement
+            max_disp = np.argmax(np.abs(eigenvector))
+            # the system is rotated so that the imaginary component is zero at the node with max. displacement
+            eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp,i])
+            # plot eigenvector
+            axs[i].plot(nodes, eigenvector_rotated)
+
+        plt.show()
 
     def figure_eigenmodes(self, modes=5):
         """
