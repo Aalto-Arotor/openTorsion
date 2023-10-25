@@ -570,7 +570,7 @@ class Assembly:
         vec = vec[:, ::2]
 
         inds = np.argsort(np.abs(lam))
-        eigenmodes = np.zeros(vec.shape)
+        eigenmodes = np.zeros(vec.shape, dtype=np.complex128 )
         for i, v in enumerate(inds):
             eigenmodes[:, i] = vec[:, v]
 
