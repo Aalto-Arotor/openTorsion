@@ -212,12 +212,17 @@ class Plots:
             plt.savefig("response.pdf")
 
     def plot_assembly(self, assembly=None):
+        """
+        Plots the given assembly as disk and spring elements
+
+        Parameters:
+        -----------
+        assembly : openTorsion Assembly class instance
+        """
         assembly = self.assembly
         fig, ax = plt.subplots(figsize=(5,4))
         self.plot_on_ax(assembly, ax)
 
-
-        # plt.ylim((-2*disk_max, 2*disk_max))
         ax.set_xticks(np.arange(0, assembly._check_dof(), step=1))
         ax.set_xlabel('node')
         ax.set_yticks([])
@@ -232,6 +237,19 @@ class Plots:
 
     def plot_on_ax(self, assembly, ax, alpha=1):
 
+        """
+        Plots disk and spring elements
+
+        Parameters:
+        -----------
+        assembly : openTorsion Assembly class instance
+            
+        ax : matplotlib Axes class instance
+            The Axes where the elements are plotted
+        alpha : float, optional
+            Adjust the opacity of the plotted elements
+        """
+
         disks = assembly.disk_elements
         shafts = assembly.shaft_elements
 
@@ -240,16 +258,12 @@ class Plots:
         max_I_value = max_I_disk.I
         min_I_value = min_I_disk.I
 
-        # max and min heights of a disk element
-        disk_max = 2
-        disk_min = 0.5
-
-
-        # width of a disk element
+        disk_max, disk_min = 2, 0.5
         width = 0.5
 
         num_segments = 6 # number of lines in a spring
         amplitude = 0.1  # spring "height"
+
         # plot springs connecting the disk elements
         for i, shaft in enumerate(shafts):
             if i < len(shafts):
