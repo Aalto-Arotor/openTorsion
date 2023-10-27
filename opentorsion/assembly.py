@@ -186,10 +186,6 @@ class Assembly:
         for i, stage in enumerate(stages):
             E[stage[0][0]][i] += stage[0][1]
             E[stage[1][0]][i] += stage[1][1]
-            try:
-                E[stage[2][0]][i] += stage[2][1]
-            except:
-                pass
 
         return E
 
@@ -290,9 +286,6 @@ class Assembly:
 
         # The mode shape matrix is normalized by multiplying with the inverse modal matrix
         phi_norm = phi @ M_modal_inv
-
-        # Multiplying the mass matrix with the normalized eigenvectors should result in identity matix
-        I = phi_norm.T @ M @ phi_norm
 
         # The diagonal modal damping matrix is achieved by applying the modal damping
         C_modal_elements = 2 * xi * np.sqrt(omegas)
@@ -504,6 +497,15 @@ class Assembly:
             Continuous system state matrix A
         B: ndarray
             Continuous system input matrix B
+        ts: float
+            Sample time for the discrete system
+
+        Returns
+        -------
+        Ad: ndarray
+            Discrete system state matrix A
+        Bd: ndarray
+            Discrete system input matrix B
         """
         m, n = A.shape
         nb = B.shape[1]
