@@ -21,26 +21,6 @@ class Plots:
 
         self.assembly = assembly
 
-    def campbell_diagram(self, num_modes=10, frequency_range=100):
-        """
-        Creates a Campbell diagram
-
-        Parameters
-        ----------
-        num_modes : int, optional
-            Number of modes to be plotted, default is 10
-        frequency_range : int, optional
-            Analysis frequency range, default is 100 Hz
-        """
-
-        omegas_damped, freqs, damping_ratios = self.assembly.modal_analysis()
-        freqs = freqs[:num_modes]
-        freqs = freqs[::2]
-
-        self.plot_campbell(frequency_range, freqs)
-
-        return
-
     def plot_campbell(self,
                       frequency_range_rpm=[0, 1000],
                       num_modes=5,

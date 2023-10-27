@@ -384,18 +384,20 @@ class Assembly:
         Returns
         -------
         ndarray
-            The eigenvalues in rad/s
+            The undamped eigenfrequencies in rad/s
         ndarray
-            The eigenfrequencies of the assembly
+            The damped eigenfrequencies in rad/s
         ndarray
             The damping ratios
         """
         if C is None:
             C = self.C
+
         M, K = self.M, self.K
         N = M.shape[0]
+        print(N)
         A = np.vstack([
-            np.hstack([np.zeros(N), np.eye(N)]),
+            np.hstack([np.zeros((N, N)), np.eye(N)]),
             np.hstack([-np.linalg.inv(M) @ K, -np.linalg.inv(M)@C])
         ])
 
@@ -424,7 +426,7 @@ class Assembly:
         vec = vec[:, ::2]
 
         inds = np.argsort(np.abs(lam))
-        eigenmodes = np.zeros(vec.shape, dytpe="complex128")
+        eigenmodes = np.zeros(vec.shape, dtype="complex128")
         for i, v in enumerate(inds):
             eigenmodes[:, i] = vec[:, v]
 

@@ -1,9 +1,4 @@
 import numpy as np
-import scipy.linalg as LA
-
-import sys
-sys.path.append("/Users/sampo/repos/openTorsion")
-
 import opentorsion as ot
 
 """
