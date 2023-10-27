@@ -53,11 +53,11 @@ class Assembly:
 
         self.dofs = self.check_dof()
 
-        self.M = self.M()
-        self.C = self.C()
-        self.K = self.K()
+        self.M = self.assemble_M()
+        self.C = self.assemble_C()
+        self.K = self.assemble_K()
 
-    def M(self):
+    def assemble_M(self):
         """
         Assembles the mass matrix
 
@@ -90,7 +90,7 @@ class Assembly:
 
         return M
 
-    def K(self):
+    def assemble_K(self):
         """
         Assembles the stiffness matrix
 
@@ -134,7 +134,7 @@ class Assembly:
 
         return K
 
-    def C(self):
+    def assemble_C(self):
         """
         Assembles the damping matrix
 
@@ -247,8 +247,8 @@ class Assembly:
         """
 
         if C is None:
-            C = self.C()
-        M, K = self.M(), self.K()
+            C = self.C
+        M, K = self.M, self.K
         Z = np.zeros(M.shape, dtype=np.float64)
 
         A = np.vstack([np.hstack([C, K]), np.hstack([-M, Z])])
