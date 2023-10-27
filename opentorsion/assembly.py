@@ -231,7 +231,7 @@ class Assembly:
 
     def state_matrix(self, C=None):
         """
-        Assembles the state-space matrices
+        Assembles the state matrices for eigenvalue calculation
 
         Parameters
         ----------
@@ -406,7 +406,7 @@ class Assembly:
         wd = np.imag(evals)
         damping_ratios = -np.real(evals) / np.abs(evals)
 
-        return wn[::-1], wd[::-1], damping_ratios[::-1]
+        return np.sort(wn), np.sort(wd), damping_ratios[::-1]
 
     def eigenmodes(self):
         """
@@ -430,7 +430,7 @@ class Assembly:
         for i, v in enumerate(inds):
             eigenmodes[:, i] = vec[:, v]
 
-        return eigenmodes
+        return lam, eigenmodes
 
     def check_dof(self):
         """

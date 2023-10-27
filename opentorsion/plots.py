@@ -96,17 +96,17 @@ class Plots:
         modes : int
             Number of eigenodes to be plotted
         """
-        eigenmodes = self.assembly.eigenmodes()
+        lam, eigenmodes = self.assembly.eigenmodes()
         phases = np.angle(eigenmodes)
         nodes = np.arange(0, self.assembly.dofs)
 
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
 
         for i in range(modes):
-            eigenvector = eigenmodes[:,i]
+            eigenvector = eigenmodes[:, i]
             max_disp = np.argmax(np.abs(eigenvector))
-            eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp,i])
-            self.plot_on_ax(self.assembly,axs[i],alpha=0.2)
+            eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp, i])
+            self.plot_on_ax(self.assembly,axs[i], alpha=0.2)
             axs[i].plot(nodes, np.real(eigenvector_rotated)/np.sqrt(np.sum(np.real(eigenvector_rotated)**2)),color='red')
             axs[i].plot([nodes,nodes],[np.abs(eigenvector_rotated),-np.abs(eigenvector_rotated)],'--',color='black')
             axs[i].set_ylim([-1.1,1.1])
