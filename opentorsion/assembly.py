@@ -1,7 +1,6 @@
 from copy import copy
 import numpy as np
 from scipy import linalg as LA
-from scipy.signal import lti
 
 from opentorsion.errors import DOF_mismatch_error
 
