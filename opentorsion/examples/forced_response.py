@@ -80,8 +80,7 @@ def forced_response():
     ot.Plots(assembly).plot_assembly()
 
     M, K = assembly.M, assembly.K  # Mass and stiffness matrices
-    assembly.xi = 0.02  # modal damping factor, a factor of 2 % is used
-    C = assembly.C_modal(M, K)  # Damping matrix
+    C = assembly.C_modal(M, K, xi=0.02)  # Damping matrix
 
     # Modal analysis
     A, B = assembly.state_matrix(C)
@@ -96,9 +95,9 @@ def forced_response():
     for rpm in np.linspace(0.1, 25, 5000):
         omegas, amplitudes = get_windmill_excitation(rpm)
         excitations = np.zeros((M.shape[0], omegas.shape[0]), dtype="complex128")
-        excitations[2] = amplitudes
+        excitations[2] = amplitudes # Excitation acts on the generator side
 
-        T_vib = assembly.vibratory_torque(excitations, omegas, k_shafts=np.array([k1, k2]))
+        T_vib = assembly.vibratory_torque(excitations, omegas, k_shafts=np.array([k1, k2]), C=C)
 
         VT_element1.append(np.sum(np.abs(T_vib[0])))
         VT_element2.append(np.sum(np.abs(T_vib[1])))
