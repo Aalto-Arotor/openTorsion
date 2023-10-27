@@ -1,9 +1,7 @@
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
-from scipy.signal import lti
-from scipy.signal import lsim
 from scipy import linalg as LA
+import matplotlib.patches as patches
 
 
 class Plots:
@@ -44,45 +42,65 @@ class Plots:
 
         return
 
-    def plot_campbell(self, frequency_range, modes, excitations=[1, 2, 3, 4]):
+    def plot_campbell(self,
+                      frequency_range_rpm=[0, 1000],
+                      num_modes=5,
+                      harmonics=[1, 2, 3, 4],
+                      operating_speeds_rpm=[]):
         """
         Plots the Campbell diagram
 
         Parameters
         ----------
-        frequency_range : int
-            Analysis frequency range
-        modes : int
+        frequency_range : list, optional
+            Analysis frequency range, default is 0 to 100 Hz
+        num_modes : int, optional
             Number of modes to be plotted
-        excitations : list, optional
-            List containing the numbers of harmonics, default is 1 through 4
-        """
+        harmonics : list, optional
+                List containing the harmonic multipliers
+            """
+        fig, ax = plt.subplots()
 
-        plt.rcParams.update(
-            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
-        )
-        legend, freq_num = [], [1, 2, 3, 4, 5]
-        for i, v in enumerate(modes):
-            plt.plot([0, frequency_range], [v, v], color="black")
-            legend.append("$f_{i}$={v} Hz".format(i=freq_num[i], v=v.round(2)))
-            plt.text(
-                (i * 0.1 + 0.3) * frequency_range,
-                v + 0.07 * frequency_range,
-                "$f_{i}$".format(i=freq_num[i]),
+        # Operating speeds
+        for i, operating_speed_rpm in enumerate(operating_speeds_rpm):
+            ax.plot([operating_speed_rpm, operating_speed_rpm],
+                    [0, harmonics[-1] * (frequency_range_rpm[1] + 50)/60],
+                    "--",
+                    color="red")
+            rectangle = patches.Rectangle(
+                (operating_speed_rpm*0.9, 0),
+                operating_speed_rpm*0.2,
+                harmonics[-1] * (frequency_range_rpm[1] + 50)/60,
+                color='blue',
+                alpha=0.2)
+            ax.add_patch(rectangle)
+
+        harmonics = sorted(harmonics)
+
+        undamped_nf, damped_nf, damping_ratios = self.assembly.modal_analysis()
+        freqs = undamped_nf[::2]/(2*np.pi)
+        freqs = freqs[:num_modes]
+
+        # Natural frequencies
+        for i, freq in enumerate(freqs):
+            ax.plot(frequency_range_rpm, [freq, freq], color="black",
+                    label=f"$f_{i}$={freq.round(2)} Hz")
+            ax.text(1.01*frequency_range_rpm[1], freq, f"$f_{i}$")
+
+        # Diagonal lines
+        for i, harmonic in enumerate(harmonics):
+            ax.plot(frequency_range_rpm,
+                    [0, harmonic * (frequency_range_rpm[1] + 50)/60],
+                    color="blue")
+            ax.text(
+                0.90 * frequency_range_rpm[1],
+                0.95 * (frequency_range_rpm[1] + 50) * harmonic / 60,
+                f"{harmonic}x"
             )
-        plt.legend(legend)
-
-        for i, v in enumerate(excitations):
-            plt.plot([0, frequency_range], [0, v * (frequency_range + 50)], color="C0")
-            plt.text(
-                0.90 * frequency_range,
-                0.95 * (frequency_range + 50) * v,
-                "{v}x".format(v=v),
-            )
-
-        plt.xlim([0, frequency_range])
-        plt.xlabel("Excitation frequency (Hz)")
-        plt.ylabel("Natural Frequency (Hz)")
+        ax.legend(loc='upper left')
+        ax.set_xlim(frequency_range_rpm)
+        ax.set_xlabel("Excitation frequency (rpm)")
+        ax.set_ylabel("Natural Frequency (Hz)")
         plt.show()
 
         return
@@ -115,7 +133,6 @@ class Plots:
 
         for mode in range(modes):
             mode *= 2
-            plot_vec = []
 
             this_mode = vec[:, inds[mode]]
             this_mode = np.abs(this_mode[-this_mode.size // 2 :])
