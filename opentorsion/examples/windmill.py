@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/sampo/repos/openTorsion")
-
 import opentorsion as ot
 
 
