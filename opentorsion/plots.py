@@ -173,7 +173,7 @@ class Plots:
         assembly = self.assembly
         fig, ax = plt.subplots(figsize=(5, 4))
         self.plot_on_ax(assembly, ax)
-        ax.set_xticks(np.arange(0, assembly._check_dof(), step=1))
+        ax.set_xticks(np.arange(0, assembly.dofs, step=1))
         ax.set_xlabel('node')
         ax.set_yticks([])
         ax.spines['top'].set_visible(False)

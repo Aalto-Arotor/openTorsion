@@ -77,7 +77,7 @@ def forced_response():
     disks.append(ot.Disk(2, J3))
 
     assembly = ot.Assembly(shafts, disk_elements=disks)
-    print(assembly)
+    ot.Plots(assembly).plot_assembly()
 
     M, K = assembly.M, assembly.K  # Mass and stiffness matrices
     assembly.xi = 0.02  # modal damping factor, a factor of 2 % is used
