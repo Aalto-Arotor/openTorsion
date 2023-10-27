@@ -8,7 +8,6 @@ def back_to_back_testbench():
     """
 
     # Powertrain component parameters such as stiffness (K) and moment of inertia (J).
-
     J_IM = 0.196  # Induction motor inertia (kgm^2)
     J_SRM = 0.575  # Synchronous reluctance motor inertia (kgm^2)
     Ig = 0  # Gear inertia

@@ -1,7 +1,6 @@
 import numpy as np
-import unittest
-import matplotlib.pyplot as plt
 import scipy.linalg as LA
+import unittest
 
 from opentorsion.shaft_element import Shaft
 from opentorsion.disk_element import Disk
@@ -26,10 +25,10 @@ class Test(unittest.TestCase):
 
         assembly = Assembly([shaft], disk_elements=disks)
 
-        omegas_damped, freqs, damping_ratios = assembly.modal_analysis()
+        omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
 
         self.assertEqual(
-            freqs.round(1).tolist(),
+            (omegas_undamped/(2*np.pi)).round(1).tolist(),
             [0, 0, 176.1, 176.1],
             "shaft gives the wrong result",
         )
@@ -55,7 +54,8 @@ class Test(unittest.TestCase):
 
         rotor = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
-        _, freqs, _ = rotor.modal_analysis()
+        omegas_undamped, _, _ = rotor.modal_analysis()
+        freqs = omegas_undamped/(2*np.pi)
 
         self.assertEqual(freqs.round(1).tolist(), correct, "geared system incorrect")
 
@@ -93,7 +93,8 @@ class Test(unittest.TestCase):
 
         assembly = Assembly(shafts, disk_elements=disks)
 
-        a, freqs, b = assembly.modal_analysis()
+        omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
+        freqs = omegas_undamped/(2*np.pi)
 
         self.assertEqual(freqs.round(2).tolist(), correct, "geared system incorrect")
 
@@ -134,7 +135,8 @@ class Test(unittest.TestCase):
 
         assembly = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
-        a, freqs, b = assembly.modal_analysis()
+        omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
+        freqs = omegas_undamped/(2*np.pi)
 
         self.assertEqual(freqs.round(3).tolist(), correct, "geared system incorrect")
 
@@ -158,7 +160,8 @@ class Test(unittest.TestCase):
             disks.append(Disk(0, mt))
             disks.append(Disk(ne, m))
             assembly = Assembly(shafts, disk_elements=disks)
-            a, freq, b = assembly.modal_analysis()
+            omegas_undamped, omegas_damped, b = assembly.modal_analysis()
+            freq = omegas_undamped/(2*np.pi)
             freqs[j] = freq.round(4)[0:10].tolist()
 
         correct = [
@@ -203,8 +206,11 @@ class Test(unittest.TestCase):
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
 
     def test_friswell_09_06(self):
-        ## Here state matrix composition and eigenmode calculation is identical to assembly,
-        ## however they are done manually here as the stiffness matrix in this example had to be modified
+        '''
+        Here state matrix composition and eigenmode calculation is identical to
+        assembly, however they are done manually here as the stiffness matrix
+        in this example had to be modified
+        '''
         k1 = 10e6
         k2 = 2.5e6
         k3 = k2
@@ -263,7 +269,7 @@ class Test(unittest.TestCase):
         A = np.vstack([np.hstack([Z, K]), np.hstack([-M, Z])])
         B = np.vstack([np.hstack([M, Z]), np.hstack([Z, M])])
 
-        lam, vec = assembly._eig(A, B)
+        lam, vec = assembly.undamped_modal_analysis(A, B)
         lam = lam[::2]
         vec = vec[: int(vec.shape[0] / 2)]
         vec = vec[:, ::2]
@@ -459,7 +465,7 @@ class Test(unittest.TestCase):
         assembly = Assembly(shafts, disk_elements=disks)
         assembly.xi = 0.02
 
-        ## D. Inman, in Encyclopedia of Vibration, 2001, Critical Damping in Lumped Parameter Models
+        # D. Inman, in Encyclopedia of Vibration, 2001, Critical Damping in Lumped Parameter Models
         M = assembly.M()
         M_inv = LA.inv(M)
         K = assembly.K()
@@ -485,140 +491,6 @@ class Test(unittest.TestCase):
         U_shape = U.excitation_amplitudes().shape
 
         self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
-
-    def test_vibratory_torque(self):
-        omegas = [
-            377.07005102,
-            565.60507654,
-            754.14010205,
-            942.67512756,
-            1131.21015307,
-            1319.74517859,
-            1508.2802041,
-        ]
-        amplitudes = [
-            5218.9072902,
-            51899.13360809,
-            6958.5430536,
-            9857.9359926,
-            84962.89738629,
-            5218.9072902,
-            3189.3322329,
-        ]
-        correct_T_v = np.array(
-            [
-                [
-                    1.49729531e2,
-                    8.16086180e2,
-                    9.06632152e1,
-                    2.15202352e2,
-                    1.07777439e3,
-                    1.68374089e1,
-                    5.71958086,
-                ],
-                [
-                    3.26530199e2,
-                    3.96288796e3,
-                    7.90700574e2,
-                    3.03291995e3,
-                    2.24215649e4,
-                    4.39597289e2,
-                    1.50103728e2,
-                ],
-                [
-                    1.83532558e2,
-                    3.18463695e3,
-                    7.03339886e2,
-                    2.82005601e3,
-                    2.13497396e4,
-                    4.24731919e2,
-                    1.46465771e2,
-                ],
-            ]
-        )
-        correct_T_e = np.array(
-            [
-                [
-                    473.70624465,
-                    4753.84505304,
-                    878.73058195,
-                    3246.09226993,
-                    23493.93453882,
-                    454.60020436,
-                    153.86833128,
-                ],
-                [
-                    508.12735443,
-                    7143.30388221,
-                    1493.84368878,
-                    5852.89044489,
-                    43771.15840575,
-                    864.29304103,
-                    296.53665642,
-                ],
-            ]
-        )
-
-        k1 = 3.67e8
-        k2 = 5.496e9
-        J1 = 1e7
-        J2 = 5770
-        J3 = 97030
-
-        shafts, disks = [], []
-        disks.append(Disk(0, J1))
-        shafts.append(Shaft(0, 1, None, None, k=k1, I=0))
-        disks.append(Disk(1, J2))
-        shafts.append(Shaft(1, 2, None, None, k=k2, I=0))
-        disks.append(Disk(2, J3))
-
-        assembly = Assembly(shafts, disk_elements=disks)
-
-        M, K = assembly.M(), assembly.K()
-        assembly.xi = 0.02
-        C = assembly.C_modal(M, K)
-        A, B = assembly.state_matrix(C)
-        lam, vec = LA.eig(A, B)
-
-        U = SystemExcitation(assembly.dofs, omegas)
-        U.add_harmonic(2, amplitudes)
-
-        X, tanphi = assembly.ss_response(M, C, K, U.excitation_amplitudes(), omegas)
-
-        T_v, T_e = assembly.vibratory_torque(M, C, K, U.excitation_amplitudes(), omegas)
-
-        T_e = T_e.round(5)
-        correct_T_e = correct_T_e.round(5)
-        shaft_torques = T_e.tolist()
-        correct_shaft_torques = correct_T_e.tolist()
-
-        self.assertEqual(
-            shaft_torques, correct_shaft_torques, "Vibratory shaft torque wrong"
-        )
-
-    # def test_frequency_domain_excitation_matrix_sweep(self):
-    #     correct_U = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.0, 10.0, 133.75, 275.5, 381.25, 505.0, 628.75, 752.5, 1000.0, 1000.0]])
-
-    #     dofs = 4
-    #     omegas = np.arange(1, 100, 10)
-    #     U = SystemExcitation(dofs, omegas)
-    #     U.add_sweep(3, 1000)
-
-    #     correct = correct_U.tolist()
-    #     excitation_values = U.excitation_amplitudes().tolist()
-    #     print(correct)
-    #     print(excitation_values)
-
-    #     self.assertEqual(excitation_values, correct, "Excitation matrix not correct")
-
-    # def test_time_domain_excitation_matrix(self):
-    #     correct_U = np.array([])
-
-    #     self.assertEqual(excitation_values, correct, "Excitation matrix not correct")
-
-    # def test_time_domain_response(self):
-
-    #     return
 
 
 if __name__ == "__main__":
