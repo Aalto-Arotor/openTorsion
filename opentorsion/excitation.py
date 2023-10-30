@@ -1,10 +1,4 @@
-import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy import linalg as LA
-from scipy.sparse import linalg as las
-from scipy.signal import lti
-from scipy.signal import lsim
 
 
 class SystemExcitation:
@@ -21,7 +15,12 @@ class SystemExcitation:
         Array of excitation amplitudes
     """
 
-    def __init__(self, dofs, omegas, shape=None, harmonic=True, transient=False):
+    def __init__(self,
+                 dofs,
+                 omegas,
+                 shape=None,
+                 harmonic=True,
+                 transient=False):
         """
         Parameters
         ----------
@@ -41,9 +40,6 @@ class SystemExcitation:
             print("Zero DOF system")
             return None
 
-        if omegas[0] < 10:
-            print("WARNGING: RESPONSES UNDER 10 rad/s are unstable")
-
         self.dofs = dofs
 
         self.omegas = omegas
@@ -53,7 +49,7 @@ class SystemExcitation:
 
         elif transient:
             self.U = np.zeros(shape)
-            pass  # TODO
+            # TODO
 
         else:
             self.U = None
@@ -63,7 +59,10 @@ class SystemExcitation:
     def time_domain_excitation(self, nodes, data):
         """
         Excitation matrix for transient analysis.
-        The function takes as input the node numbers where excitation data is inputted and the time domain excitation data. The excitation data must be listed in the same order as the listed nodes. The excitation data arrays must be of equal length.
+        The function takes as input the node numbers where excitation data is
+        inputted and the time domain excitation data. The excitation data
+        must be listed in the same order as the listed nodes. The excitation
+        data arrays must be of equal length.
 
         Parameters
         ----------
@@ -75,7 +74,8 @@ class SystemExcitation:
         Returns
         -------
         ndarray
-            Excitation matrix in time domain, containing excitation amplitudes for each time step
+            Excitation matrix in time domain, containing excitation amplitudes
+            for each time step
         """
 
         if len(nodes) < 1:
@@ -134,7 +134,9 @@ class SystemExcitation:
 
     def add_harmonic(self, node, amplitudes):
         """
-        Adds a harmonic excitaiton based on the omegas and amplitudes of the excitation this method should extensively check if all of the excitations have same size of omegas
+        Adds a harmonic excitaiton based on the omegas and amplitudes of the
+        excitation this method should extensively check if all of the
+        excitations have same size of omegas
 
         Parameters
         ----------
