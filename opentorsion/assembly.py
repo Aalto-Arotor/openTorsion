@@ -401,11 +401,12 @@ class Assembly:
         ])
 
         evals, evecs = np.linalg.eig(A)
+        evals = np.sort(evals, key=np.abs)
         wn = np.abs(evals)
         wd = np.imag(evals)
         damping_ratios = -np.real(evals) / np.abs(evals)
 
-        return np.sort(wn), np.sort(wd), damping_ratios[::-1]
+        return wn, wd, damping_ratios
 
     def eigenmodes(self):
         """
