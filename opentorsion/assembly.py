@@ -274,7 +274,6 @@ class Assembly:
         ndarray
             The full damping matrix
         """
-
         omegas, phi = LA.eig(K, M)
         omegas = np.absolute(omegas)
 
@@ -401,7 +400,7 @@ class Assembly:
         ])
 
         evals, evecs = np.linalg.eig(A)
-        evals = np.sort(evals, key=np.abs)
+        evals = sorted(evals, key=np.abs)
         wn = np.abs(evals)
         wd = np.imag(evals)
         damping_ratios = -np.real(evals) / np.abs(evals)
