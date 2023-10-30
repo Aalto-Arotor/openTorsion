@@ -395,7 +395,6 @@ class Assembly:
 
         M, K = self.M, self.K
         N = M.shape[0]
-        print(N)
         A = np.vstack([
             np.hstack([np.zeros((N, N)), np.eye(N)]),
             np.hstack([-np.linalg.inv(M) @ K, -np.linalg.inv(M)@C])
