@@ -274,7 +274,6 @@ class Assembly:
         ndarray
             The full damping matrix
         """
-
         omegas, phi = LA.eig(K, M)
         omegas = np.absolute(omegas)
 
@@ -395,18 +394,18 @@ class Assembly:
 
         M, K = self.M, self.K
         N = M.shape[0]
-        print(N)
         A = np.vstack([
             np.hstack([np.zeros((N, N)), np.eye(N)]),
             np.hstack([-np.linalg.inv(M) @ K, -np.linalg.inv(M)@C])
         ])
 
         evals, evecs = np.linalg.eig(A)
+        evals = sorted(evals, key=np.abs)
         wn = np.abs(evals)
         wd = np.imag(evals)
         damping_ratios = -np.real(evals) / np.abs(evals)
 
-        return np.sort(wn), np.sort(wd), damping_ratios[::-1]
+        return wn, wd, damping_ratios
 
     def eigenmodes(self):
         """
