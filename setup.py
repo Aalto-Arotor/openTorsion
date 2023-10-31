@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="opentorsion",
-    version="0.1.4",
+    version="0.2.2",
     author="Aalto ARotor",
     author_email="arotor.software@aalto.fi",
     description="Open source library for creating torsional finite element models",

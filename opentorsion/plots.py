@@ -1,9 +1,6 @@
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
-from scipy.signal import lti
-from scipy.signal import lsim
-from scipy import linalg as LA
+import matplotlib.patches as patches
 
 
 class Plots:
@@ -24,161 +21,98 @@ class Plots:
 
         self.assembly = assembly
 
-    def campbell_diagram(self, num_modes=10, frequency_range=100):
-        """
-        Creates a Campbell diagram
-
-        Parameters
-        ----------
-        num_modes : int, optional
-            Number of modes to be plotted, default is 10
-        frequency_range : int, optional
-            Analysis frequency range, default is 100 Hz
-        """
-
-        omegas_damped, freqs, damping_ratios = self.assembly.modal_analysis()
-        freqs = freqs[:num_modes]
-        freqs = freqs[::2]
-
-        self.plot_campbell(frequency_range, freqs)
-
-        return
-
-    def plot_campbell(self, frequency_range, modes, excitations=[1, 2, 3, 4]):
+    def plot_campbell(self,
+                      frequency_range_rpm=[0, 1000],
+                      num_modes=5,
+                      harmonics=[1, 2, 3, 4],
+                      operating_speeds_rpm=[]):
         """
         Plots the Campbell diagram
 
         Parameters
         ----------
-        frequency_range : int
-            Analysis frequency range
-        modes : int
+        frequency_range : list, optional
+            Analysis frequency range, default is 0 to 100 Hz
+        num_modes : int, optional
             Number of modes to be plotted
-        excitations : list, optional
-            List containing the numbers of harmonics, default is 1 through 4
-        """
+        harmonics : list, optional
+                List containing the harmonic multipliers
+            """
+        fig, ax = plt.subplots()
 
-        plt.rcParams.update(
-            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
-        )
-        legend, freq_num = [], [1, 2, 3, 4, 5]
-        for i, v in enumerate(modes):
-            plt.plot([0, frequency_range], [v, v], color="black")
-            legend.append("$f_{i}$={v} Hz".format(i=freq_num[i], v=v.round(2)))
-            plt.text(
-                (i * 0.1 + 0.3) * frequency_range,
-                v + 0.07 * frequency_range,
-                "$f_{i}$".format(i=freq_num[i]),
+        # Operating speeds
+        for i, operating_speed_rpm in enumerate(operating_speeds_rpm):
+            ax.plot([operating_speed_rpm, operating_speed_rpm],
+                    [0, harmonics[-1] * (frequency_range_rpm[1] + 50)/60],
+                    "--",
+                    color="red")
+            rectangle = patches.Rectangle(
+                (operating_speed_rpm*0.9, 0),
+                operating_speed_rpm*0.2,
+                harmonics[-1] * (frequency_range_rpm[1] + 50)/60,
+                color='blue',
+                alpha=0.2)
+            ax.add_patch(rectangle)
+
+        harmonics = sorted(harmonics)
+
+        undamped_nf, damped_nf, damping_ratios = self.assembly.modal_analysis()
+        freqs = undamped_nf[::2]/(2*np.pi)
+        freqs = freqs[:num_modes]
+
+        # Natural frequencies
+        for i, freq in enumerate(freqs):
+            ax.plot(frequency_range_rpm, [freq, freq], color="black",
+                    label=f"$f_{i}$={freq.round(2)} Hz")
+            ax.text(1.01*frequency_range_rpm[1], freq, f"$f_{i}$")
+
+        # Diagonal lines
+        for i, harmonic in enumerate(harmonics):
+            ax.plot(frequency_range_rpm,
+                    [0, harmonic * (frequency_range_rpm[1] + 50)/60],
+                    color="blue")
+            ax.text(
+                0.90 * frequency_range_rpm[1],
+                0.95 * (frequency_range_rpm[1] + 50) * harmonic / 60,
+                f"{harmonic}x"
             )
-        plt.legend(legend)
-
-        for i, v in enumerate(excitations):
-            plt.plot([0, frequency_range], [0, v * (frequency_range + 50)], color="C0")
-            plt.text(
-                0.90 * frequency_range,
-                0.95 * (frequency_range + 50) * v,
-                "{v}x".format(v=v),
-            )
-
-        plt.xlim([0, frequency_range])
-        plt.xlabel("Excitation frequency (Hz)")
-        plt.ylabel("Natural Frequency (Hz)")
+        ax.legend(loc='upper left')
+        ax.set_xlim(frequency_range_rpm)
+        ax.set_xlabel("Excitation frequency (rpm)")
+        ax.set_ylabel("Natural Frequency (Hz)")
         plt.show()
 
         return
-    
+
     def plot_eigenmodes(self, modes=5):
         """
         Updated eigenmode plot. Geared systems not supported.
-        The eigenvectors are plotted over the assembly schematic, and the trajectories are plotted with dashed lines.
-        Each plotted eigenvector is rotated so that the node with maximum abs displacement has phase of 0
+        The eigenvectors are plotted over the assembly schematic, and the
+        trajectories are plotted with dashed lines. Each plotted eigenvector is
+        rotated so that the node with maximum abs displacement has phase of 0
 
         Parameters
         ----------
         modes : int
             Number of eigenodes to be plotted
         """
-        eigenmodes = self.assembly.eigenmodes()
+        lam, eigenmodes = self.assembly.eigenmodes()
         phases = np.angle(eigenmodes)
         nodes = np.arange(0, self.assembly.dofs)
 
         fig_modes, axs = plt.subplots(modes, 1, sharex=True)
 
         for i in range(modes):
-            eigenvector = eigenmodes[:,i]
+            eigenvector = eigenmodes[:, i]
             max_disp = np.argmax(np.abs(eigenvector))
-            eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp,i])
-            
-            self.plot_on_ax(self.assembly,axs[i],alpha=0.2)
+            eigenvector_rotated = eigenvector * np.exp(-1.0j*phases[max_disp, i])
+            self.plot_on_ax(self.assembly,axs[i], alpha=0.2)
             axs[i].plot(nodes, np.real(eigenvector_rotated)/np.sqrt(np.sum(np.real(eigenvector_rotated)**2)),color='red')
             axs[i].plot([nodes,nodes],[np.abs(eigenvector_rotated),-np.abs(eigenvector_rotated)],'--',color='black')
             axs[i].set_ylim([-1.1,1.1])
         plt.show()
 
-    def figure_eigenmodes(self, modes=5):
-        """
-        Plots the eigenmodes of the powertrain
-
-        Parameters
-        ----------
-        modes : int, optional
-            Number of modes to be plotted, default is 5
-        """
-
-        fig_modes, axs = plt.subplots(modes, 1, sharex=True)
-        plt.ylim(-1.1, 1.1)
-
-        A, B = self.assembly.state_matrix()
-        lam, vec = self.assembly._eig(A, B)
-        inds = np.argsort(np.abs(lam))
-
-        nodes_g = []
-
-        if self.assembly.gear_elements is not None:
-            for element_g in self.assembly.gear_elements:
-                nodes_g.append(element_g.node)
-            nodes_g = nodes_g[1::2]
-
-        s = []
-
-        for mode in range(modes):
-            mode *= 2
-            plot_vec = []
-
-            this_mode = vec[:, inds[mode]]
-            this_mode = np.abs(this_mode[-this_mode.size // 2 :])
-
-            # Do not normalize rigid body mode
-            normalized_mode = this_mode / LA.norm(this_mode)
-
-            s = np.arange(1, normalized_mode.size + 1)
-
-            # At the moment, there is no discontinuity at gear nodes in the plot
-            axs[mode // 2].plot(s, np.real(normalized_mode), color="C0")
-            axs[mode // 2].scatter(s, np.real(normalized_mode), color="C0")
-            axs[mode // 2].text(
-                0.6,
-                -0.9,
-                "Mode {:d}: {:.2f} Hz".format(
-                    mode // 2, np.abs(lam[inds[mode]]) / (2 * np.pi)
-                ),
-            )
-
-            axs[mode // 2].set_ylim(-1.1, 1.1)
-
-        plt.rcParams.update(
-            {"text.usetex": False, "font.serif": ["Computer Modern Roman"]}
-        )
-        plt.xticks(s)
-        plt.xlabel("Node number")
-        # plt.ylabel('Relative displacement', loc='center')
-        plt.ylabel("                         Relative displacement", loc="bottom")
-
-        plt.show()
-
-        return
-
-    def torque_response_plot(self, omegas, T, show_plot=False, save=False):
+    def torque_response_plot(self, omegas, T, show_plot=False):
         """
         Plots forced response amplitude as a function of rotational speed.
 
@@ -190,11 +124,7 @@ class Plots:
             Drivetrain response amplitudes in Nm
         show_plot : bool, optional
             If True, plot is shown
-        save : bool
-            If True, plot is saved to a pdf, show_plot must be False if save == True
         """
-
-        c = np.pi / 30
 
         ax1 = plt.subplot(211)
         ax1.plot(omegas, T[0] * 1 / 1000, label="Shaft 1")
@@ -206,13 +136,11 @@ class Plots:
         ax2.plot(omegas, T[1] * (1 / 1000), label="Shaft 2")
         ax2.legend()
         plt.ylabel("Amplitude (kNm)", loc="center")
-        plt.xlabel("$\omega$ (RPM)")
+        plt.xlabel(r"$\omega$ (RPM)")
         plt.grid()
 
         if show_plot:
             plt.show()
-        if save:
-            plt.savefig("response.pdf")
 
     def plot_assembly(self, assembly=None):
         """
@@ -223,9 +151,9 @@ class Plots:
         assembly : openTorsion Assembly class instance
         """
         assembly = self.assembly
-        fig, ax = plt.subplots(figsize=(5,4))
+        fig, ax = plt.subplots(figsize=(5, 4))
         self.plot_on_ax(assembly, ax)
-        ax.set_xticks(np.arange(0, assembly._check_dof(), step=1))
+        ax.set_xticks(np.arange(0, assembly.dofs, step=1))
         ax.set_xlabel('node')
         ax.set_yticks([])
         ax.spines['top'].set_visible(False)
@@ -242,7 +170,7 @@ class Plots:
         Parameters:
         -----------
         assembly : openTorsion Assembly class instance
-            
+
         ax : matplotlib Axes class instance
             The Axes where the elements are plotted
         alpha : float, optional
@@ -256,13 +184,13 @@ class Plots:
         min_I_value = min_I_disk.I
         disk_max, disk_min = 2, 0.5
         width = 0.5
-        num_segments = 6 # number of lines in a spring
+        num_segments = 6  # number of lines in a spring
         amplitude = 0.1  # spring "height"
 
-        for i, shaft in enumerate(shafts): # plot springs connecting the disk elements
+        for i, shaft in enumerate(shafts):
             if i < len(shafts):
                 x1, y1 = shaft.nl+width/2, 0
-                x2, y2 = shaft.nr-width/2, 0                
+                x2, y2 = shaft.nr-width/2, 0
                 x_values = np.linspace(x1, x2, num_segments)
                 y_values = np.linspace(y1, y2, num_segments)
                 for i in range(0, num_segments):
@@ -273,9 +201,9 @@ class Plots:
                 for i in range(num_segments - 1):
                     ax.plot(x_values[i:i+2], y_values[i:i+2], color='k', alpha=alpha)
 
-        for i, disk in enumerate(disks): # plot disk elements
+        for i, disk in enumerate(disks):
             node = disk.node
-            height = (disk.I - min_I_value) / (max_I_value - min_I_value) * (disk_max - disk_min) + disk_min
+            height = (disk.I - min_I_value)/(max_I_value - min_I_value)*(disk_max - disk_min) + disk_min
             pos = (node-width/2, -height/2)
-            ax.add_patch(matplotlib.patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='darkgrey', linewidth=1.5, alpha=alpha))
+            ax.add_patch(patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='darkgrey', linewidth=1.5, alpha=alpha))
         return
