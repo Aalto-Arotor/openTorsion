@@ -35,7 +35,7 @@ class Shaft:
     """
 
     def __init__(
-        self, nl, nr, L, odl, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
+        self, nl, nr, L=None, odl=None, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
     ):
 
         if k is None:
@@ -44,7 +44,7 @@ class Shaft:
             self.odl = float(odl) * 1e-3
 
             # Calculate polar of inertia
-            A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
+            # A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
             J = np.pi * ((self.odl ** 4) - (self.idl ** 4)) / 32
 
             # Calculate mass moment of inertia
@@ -85,6 +85,6 @@ class Shaft:
         C = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.c
 
         return C
-    
+
     def __str__(self):
         return 'Shaft, nl: ' + str(self.nl) + ' nr: '  + str(self.nr) + ' L: ' + str(self.L) + ' odl: ' + str(self.odl) + ' k: ' + str(self.k) + ' I: ' + str(self.I) + ' c: ' + str(self.c)
