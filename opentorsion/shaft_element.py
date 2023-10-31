@@ -2,8 +2,11 @@ import numpy as np
 
 
 class Shaft:
-    """A 2-degree of freedom shaft object
-    A shaft with a constant circular cross-section can be defined using length and diameter values. Other types of shafts are defined using stiffness and moment of inertia values. Giving either the stiffness or inertia value overrides all stiffness and inertia calculations.
+    """
+    A 2-degree of freedom shaft object A shaft with a constant circular
+    cross-section can be defined using length and diameter values. Other types
+    of shafts are defined using stiffness and moment of inertia values. Giving
+    either the stiffness or inertia value overrides the given geometry.
 
     Arguments:
     ----------
@@ -11,13 +14,12 @@ class Shaft:
         Nodal position of the left end of the element
     nr: int
         Nodal position of the right end of the element
+    Keyword arguments:
+    ------------------
     L: float
         Length of the shaft element [mm]
     odl: float
         Outer diameter of the shaft [mm]
-
-    Keyword arguments:
-    ------------------
     idl: float
         Inner diameter of the shaft [mm]
     G: float
@@ -35,7 +37,7 @@ class Shaft:
     """
 
     def __init__(
-        self, nl, nr, L, odl, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
+        self, nl, nr, L=None, odl=None, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
     ):
 
         if k is None:
@@ -44,7 +46,7 @@ class Shaft:
             self.odl = float(odl) * 1e-3
 
             # Calculate polar of inertia
-            A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
+            # A = np.pi * ((self.odl ** 4) - (self.idl ** 4))
             J = np.pi * ((self.odl ** 4) - (self.idl ** 4)) / 32
 
             # Calculate mass moment of inertia
@@ -85,6 +87,6 @@ class Shaft:
         C = np.array([[1, -1], [-1, 1]], dtype=np.float64) * self.c
 
         return C
-    
+
     def __str__(self):
         return 'Shaft, nl: ' + str(self.nl) + ' nr: '  + str(self.nr) + ' L: ' + str(self.L) + ' odl: ' + str(self.odl) + ' k: ' + str(self.k) + ' I: ' + str(self.I) + ' c: ' + str(self.c)

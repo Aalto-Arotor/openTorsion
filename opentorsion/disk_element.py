@@ -52,7 +52,7 @@ class Disk:
             Damping matrix of disk element
         """
 
-        return np.array([self.c], dtype=np.float64) * self.c
+        return np.array([self.c], dtype=np.float64)
 
     def K(self):
         """Stiffness matrix of a disk element
