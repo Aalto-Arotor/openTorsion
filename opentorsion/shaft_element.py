@@ -2,8 +2,11 @@ import numpy as np
 
 
 class Shaft:
-    """A 2-degree of freedom shaft object
-    A shaft with a constant circular cross-section can be defined using length and diameter values. Other types of shafts are defined using stiffness and moment of inertia values. Giving either the stiffness or inertia value overrides all stiffness and inertia calculations.
+    """
+    A 2-degree of freedom shaft object A shaft with a constant circular
+    cross-section can be defined using length and diameter values. Other types
+    of shafts are defined using stiffness and moment of inertia values. Giving
+    either the stiffness or inertia value overrides the given geometry.
 
     Arguments:
     ----------
@@ -11,13 +14,12 @@ class Shaft:
         Nodal position of the left end of the element
     nr: int
         Nodal position of the right end of the element
+    Keyword arguments:
+    ------------------
     L: float
         Length of the shaft element [mm]
     odl: float
         Outer diameter of the shaft [mm]
-
-    Keyword arguments:
-    ------------------
     idl: float
         Inner diameter of the shaft [mm]
     G: float
