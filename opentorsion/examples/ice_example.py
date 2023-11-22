@@ -98,9 +98,9 @@ def calculate_dft_components(signal, t, num_harmonics):
     Parameters
     ----------
     signal: ndarray
-        Singal to be Fourier transformed
+        Cylinder torque
     t: ndarray
-        x-axis of the signal
+        Crankshaft rotation angle
     num_harmonics: float
         Number of harmonics considered
 
@@ -232,21 +232,21 @@ if __name__ == "__main__":
     for rpm in rpms:
         sum.append(calculate_response(rpm))
 
-    curve = np.genfromtxt('opentorsion/examples/torsional_vibration_data_fig32.csv', delimiter=',', names=True)
-    plt.plot(curve['x'], curve['y'], c='blue', label='article')
-    shaft_1 = [shaft[0] for shaft in sum]
-    plt.plot(rpms, shaft_1, c='red', label='calculated')
-    plt.xlabel('Engine speed (rpm)')
-    plt.ylabel('Vibratory torque (Nm)')
-    plt.title('Fig.32')
-    plt.legend()
-    plt.figure()
     curve = np.genfromtxt('opentorsion/examples/torsional_vibration_data_fig31.csv', delimiter=',', names=True)
     plt.plot(curve['x'], curve['y'], c='blue', label='article')
     shaft_8 = [shaft[7] for shaft in sum]
     plt.plot(rpms, shaft_8, c='red', label='calculated')
     plt.xlabel('Engine speed (rpm)')
     plt.ylabel('Vibratory torque (Nm)')
-    plt.title('Fig.31')
+    plt.title('Torque between the flywheel and the 6th cylinder (Fig.31)')
+    plt.legend()
+    plt.figure()
+    curve = np.genfromtxt('opentorsion/examples/torsional_vibration_data_fig32.csv', delimiter=',', names=True)
+    plt.plot(curve['x'], curve['y'], c='blue', label='article')
+    shaft_1 = [shaft[0] for shaft in sum]
+    plt.plot(rpms, shaft_1, c='red', label='calculated')
+    plt.xlabel('Engine speed (rpm)')
+    plt.ylabel('Vibratory torque (Nm)')
+    plt.title('Torque between the crankshaft pulley and the gear train (Fig.32)')
     plt.legend()
     plt.show()
