@@ -1,11 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
+# from pathlib import Path
+# import sys
+# path_root = Path(__file__).parents[2]
+# sys.path.append(str(path_root))
+import opentorsion
 from opentorsion.shaft_element import Shaft
 from opentorsion.disk_element import Disk
 from opentorsion.assembly import Assembly
 
 """
+Calculates the steady-state torsional vibration in the crankshaft of an internal combustion engine.
+Torque produced by each cylinder is calculated from the force produced by the pressure from ignition
+which is scaled according to the rotation speed of the crankshaft.
 Torsional vibration analysis based on https://doi.org/10.1243/14644193JMBD126
 """
 
@@ -177,7 +185,51 @@ def create_assembly(w):
     assembly = Assembly(shafts, disk_elements=disks)
     return assembly
 
-def calculate_response(rpm):
+def update_C(assembly, d, w):
+    '''
+    Updates the damping matrix C of assembly when using relative damping.
+
+    Parameters
+    ----------
+    assembly: openTorsion Assembly class instance
+        The assembly of whose damping matrix is to be updated
+    d: float
+        Loss factor property, used to calculate relative damping
+    w: float
+        Angular frequency of the system, used to calculate relative damping
+
+    Returns
+    -------
+    C: ndarray
+        The damping matrix assembled with new component specific damping coefficients
+    '''
+    if w!=0:
+        c_r = d/w
+    else:
+        c_r = 0
+    C = np.zeros((assembly.check_dof(), assembly.check_dof()))
+
+    if assembly.shaft_elements is not None:
+        for element in assembly.shaft_elements:
+            dof = np.array([element.nl, element.nr])
+            C[np.ix_(dof, dof)] += c_r*element.K()
+
+    if assembly.disk_elements is not None:
+        for element in assembly.disk_elements:
+            C[element.node, element.node] += element.C()
+
+    if assembly.gear_elements is not None:
+        for element in assembly.gear_elements:
+            C[element.node, element.node] += element.C()
+
+        # Build transformation matrix
+        E = assembly.E()
+        transform = assembly.T(E)
+        # Calculate transformed mass matrix
+        C = np.dot(np.dot(transform.T, C), transform)
+    return C
+
+def calculate_response1(rpm):
     '''
     Calculates the crankshafts response to the excitation at given rpm.
     
@@ -226,6 +278,55 @@ def calculate_response(rpm):
     sum_response = np.sum(np.abs(q_response), axis=1)
     return sum_response
 
+def calculate_response(rpm):
+    '''
+    Calculates the crankshafts response to the excitation at given rpm.
+    
+    Parameters
+    ----------
+    rpm: float
+        Current rotation speed in rpm
+
+    Returns
+    -------
+    sum_response: ndarray
+        Array containing maximum vibratory torque at current rotation speed for each shaft
+    '''
+    dof = 9
+    cylinder_torque, alpha = calculate_cylinder_torque(rpm)
+    dft_parameters, harmonics = calculate_dft_components(cylinder_torque, alpha, 25)
+    q = np.zeros([dof, len(harmonics)], dtype='complex128')
+    crankshaft = create_assembly(0)
+    M = crankshaft.M
+    K = crankshaft.K
+    d = 0.035
+    for i in range(len(harmonics)):
+        #build T vector
+        offset = 2 #offset to the first cylinder
+        T = np.zeros(dof, dtype='complex128')
+        T[offset]   = dft_parameters[i]
+        T[offset+1] = dft_parameters[i]*np.exp( 2*2j/3*np.pi*harmonics[i])
+        T[offset+2] = dft_parameters[i]*np.exp(-2*2j/3*np.pi*harmonics[i])
+        T[offset+3] = dft_parameters[i]*np.exp(   2j/3*np.pi*harmonics[i])
+        T[offset+4] = dft_parameters[i]*np.exp(  -2j/3*np.pi*harmonics[i])
+        T[offset+5] = dft_parameters[i]*np.exp( 3*2j/3*np.pi*harmonics[i])
+        w = harmonics[i]*rpm*2*np.pi/60
+        C = update_C(crankshaft, d, w)
+        receptance = np.linalg.inv(-w**2*M+1.0j*w*C+K)
+        q.T[i] = receptance @ T
+    q_response = (q.T[:, 1:] - q.T[:, :-1]).T
+    shaft_list = crankshaft.shaft_elements
+    shaft_ks = np.array([shaft.k for shaft in shaft_list])
+    q_response = (shaft_ks*q_response.T).T
+    for i in range(dof-1):
+        shaft_i = q_response[i]
+        sum_wave = np.zeros_like(alpha)
+        for i in range(len(shaft_i)):
+            this_wave = np.real(shaft_i[i]*np.exp(1.0j*harmonics[i]*alpha))
+            sum_wave += this_wave
+    sum_response = np.sum(np.abs(q_response), axis=1)
+    return sum_response
+
 if __name__ == "__main__":
     rpms = np.arange(1000, 2575, 25)
     sum = []
@@ -249,4 +350,8 @@ if __name__ == "__main__":
     plt.ylabel('Vibratory torque (Nm)')
     plt.title('Torque between the crankshaft pulley and the gear train (Fig.32)')
     plt.legend()
-    plt.show()
+    plt.figure()
+    # plt.show()
+
+    plots = opentorsion.Plots(create_assembly(0))
+    plots.torque_response_plot(rpms, [np.array(shaft_8), np.array(shaft_1)], True)
