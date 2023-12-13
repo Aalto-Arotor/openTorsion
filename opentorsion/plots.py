@@ -142,18 +142,14 @@ class Plots:
         if show_plot:
             plt.show()
 
-    def plot_assembly(self, assembly=None):
+    def plot_assembly(self):
         """
         Plots the given assembly as disk and spring elements
         Note: doesn't work with assemblies that have gears
-        Parameters:
-        -----------
-        assembly : openTorsion Assembly class instance
         """
-        assembly = self.assembly
         fig, ax = plt.subplots(figsize=(5, 4))
-        self.plot_on_ax(assembly, ax)
-        ax.set_xticks(np.arange(0, assembly.dofs, step=1))
+        self.plot_on_ax(self.assembly, ax)
+        ax.set_xticks(np.arange(0, self.assembly.dofs, step=1))
         ax.set_xlabel('node')
         ax.set_yticks([])
         ax.spines['top'].set_visible(False)
