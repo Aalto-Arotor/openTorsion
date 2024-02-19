@@ -145,13 +145,12 @@ class Plots:
     def plot_assembly(self):
         """
         Plots the given assembly as disk and spring elements
-        Note: doesn't work with assemblies that have gears
         """
         fig, ax = plt.subplots(figsize=(5, 4))
         self.plot_on_ax(self.assembly, ax)
         ax.set_xticks(np.arange(0, self.assembly.dofs, step=1))
         ax.set_xlabel('node')
-        # ax.set_yticks([])
+        ax.set_yticks([])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_visible(False)
@@ -179,10 +178,10 @@ class Plots:
         min_I_disk = min(disks, key=lambda disk: disk.I)
         max_I_value = max_I_disk.I
         min_I_value = min_I_disk.I
-        disk_max, disk_min = 2, 0.5
+        disk_max, disk_min = 1.8, 0.5
         width = 0.5
         num_segments = 6  # number of lines in a spring
-        amplitude = 0.1  # spring "height"
+        amplitude = 0.1   # spring "height"
 
         def draw_spring(left, right, y_pos):
             x1, y1 = left+width/2, -2*y_pos
@@ -196,31 +195,20 @@ class Plots:
                     y_values[i] -= amplitude
             for i in range(num_segments - 1):
                 ax.plot(x_values[i:i+2], y_values[i:i+2], color='k', alpha=alpha)
-
+        
         def draw_disk(disk, pos, i, color='darkgrey'):
             node = pos
             height = (disk.I - min_I_value)/(max_I_value - min_I_value)*(disk_max - disk_min) + disk_min
             pos = (node-width/2, -height/2-2*i)
             ax.add_patch(patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor=color, linewidth=1.5, alpha=alpha))
-
-        def draw_gear(gear, pos, i):
-            node = pos
-            height = (gear.I - min_I_value)/(max_I_value - min_I_value)*(disk_max - disk_min) + disk_min
-            pos = (node-width/2, -height/2-2*(i))
-            ax.add_patch(patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='red', linewidth=1.5, alpha=alpha))
-
-        for i,shaft in enumerate(shafts):
-            print(f'list index: {i}, shaft nodes: {shaft.nl}, {shaft.nr}')
-
+        
         gear_pos = {}
         for gear in gears:
             gear_pos[gear.node] = [gear, [gear.node, 0]]
         disk_pos = {}
         for disk in disks:
             disk_pos[disk.node] = disk
-        print(f'gear positions: {gear_pos}')
-        # print(f'gear positions: {disk_pos}')
-        parent_gear = None
+
         prev_nr = 0
         y_height = 0
         for i, shaft in enumerate(shafts):
@@ -231,79 +219,22 @@ class Plots:
                 y_height+=1
                 draw_spring(shaft.nl, shaft.nr, y_height)
                 prev_nr = shaft.nr
-                
             if shaft.nl in gear_pos:
                 draw_disk(gear_pos[shaft.nl][0], shaft.nl, y_height, 'red')
                 gear_pos[shaft.nl][1] = [shaft.nl, -2*y_height]
             else:
                 draw_disk(disk_pos[shaft.nl], shaft.nl, y_height)
-
             if shaft.nr in gear_pos:
                 draw_disk(gear_pos[shaft.nr][0], shaft.nr, y_height, 'red')
                 gear_pos[shaft.nr][1] = [shaft.nr, -2*y_height]
             else:
                 draw_disk(disk_pos[shaft.nr], shaft.nr, y_height)
-
-        # draw dashedlines
-        print(f'updated gear positions: {gear_pos}')
+        # draw dashedlines connecting gear to parent gear
         for node, gear_and_pos in gear_pos.items():
             gear = gear_and_pos[0]
             pos = gear_and_pos[1]
             if gear.stages is None:
                 pass
             else:
-                print([pos[0],gear.stages[0][0][0]])
-                print(gear_pos[gear.stages[0][0][0]][1][1])
-                plt.plot([pos[0],gear.stages[0][0][0],gear.stages[0][0][0]],[pos[1],pos[1],gear_pos[gear.stages[0][0][0]][1][1]],'k--', zorder=-1)
-
-
-
-
-        # for i, shaft in enumerate(shafts):
-        #     if shaft.nl in gear_pos:
-        #         for gear in gears:
-        #             if shaft.nl == gear.node:
-        #                 if gear.stages == None:
-        #                     draw_spring(shaft.nl, shaft.nr, 0)
-        #                     draw_disk(gear, gear.node, 0, 'red')
-        #                     parent_gear = gear
-        #                 else:
-        #                     parent_pos = gear.stages[0][0][0]
-        #                     draw_spring(parent_pos, parent_pos+1, g)
-        #                     draw_disk(gear, parent_pos, g, 'red')
-        #                     level.append(shaft.nr)
-        #                     g+=1
-        #     elif shaft.nl in level:
-        #         level.append(shaft.nr)
-        #     else:
-        #         draw_spring(shaft.nl, shaft.nr, 0)
-        # print(f'level: {level}')
-        # i=0
-        # j=1
-        # prev_level = level[0]
-        # for disk in disks:
-        #     if disk.node in level:
-        #         if len(level) >= 2:
-        #             print(f'lasku: {level[0]}-{prev_level}={level[0]-prev_level}')
-        #             print(f'level: {level}')
-        #             if level[0]-prev_level > 1:
-        #                 j+=1
-        #                 i=0
-        #             draw_spring(parent_gear.node+1+i, parent_gear.node+2+i, j)
-        #         draw_disk(disk, parent_gear.node+1+i, j)
-        #         prev_level = level[0]
-        #         level.pop(0)
-        #         i+=1
-        #     else:
-        #         draw_disk(disk, disk.node, 0)
-
-        # for i, disk in enumerate(disks):
-        #     draw_disk(disk, disk.node)
-        
-        # for i, gear in enumerate(gears):
-        #     node = gear.node
-        #     height = (gear.I - min_I_value)/(max_I_value - min_I_value)*(disk_max - disk_min) + disk_min
-        #     pos = (node-width/2, -height/2-2*(i))
-        #     ax.add_patch(patches.Rectangle(pos, width, height, fill=True, edgecolor='black', facecolor='red', linewidth=1.5, alpha=alpha))
-        
+                plt.plot([pos[0],pos[0],gear.stages[0][0][0],gear.stages[0][0][0]],[pos[1],pos[1]+1,pos[1]+1,gear_pos[gear.stages[0][0][0]][1][1]],'k--', zorder=-1)
         return
