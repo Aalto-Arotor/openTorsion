@@ -96,6 +96,8 @@ class Plots:
         modes : int
             Number of eigenodes to be plotted
         """
+        if self.assembly.gear_elements is not None:
+            raise NotImplementedError('Support for geared assemblies not implemented')
         lam, eigenmodes = self.assembly.eigenmodes()
         phases = np.angle(eigenmodes)
         nodes = np.arange(0, self.assembly.dofs)
