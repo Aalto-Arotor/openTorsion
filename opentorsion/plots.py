@@ -173,7 +173,10 @@ class Plots:
         """
         disks = assembly.disk_elements
         shafts = assembly.shaft_elements
-        gears = assembly.gear_elements
+        if assembly.gear_elements is not None:
+            gears = assembly.gear_elements
+        else:
+            gears = []
         max_I_disk = max(disks, key=lambda disk: disk.I)
         min_I_disk = min(disks, key=lambda disk: disk.I)
         max_I_value = max_I_disk.I
