@@ -96,6 +96,8 @@ class Plots:
         modes : int
             Number of eigenodes to be plotted
         """
+        if self.assembly.gear_elements is not None:
+            raise NotImplementedError('Support for geared assemblies not implemented')
         lam, eigenmodes = self.assembly.eigenmodes()
         phases = np.angle(eigenmodes)
         nodes = np.arange(0, self.assembly.dofs)
@@ -173,7 +175,10 @@ class Plots:
         """
         disks = assembly.disk_elements
         shafts = assembly.shaft_elements
-        gears = assembly.gear_elements
+        if assembly.gear_elements is not None:
+            gears = assembly.gear_elements
+        else:
+            gears = []
         max_I_disk = max(disks, key=lambda disk: disk.I)
         min_I_disk = min(disks, key=lambda disk: disk.I)
         max_I_value = max_I_disk.I
