@@ -53,22 +53,6 @@ opentorsion.gear\_element module
    :undoc-members:
    :show-inheritance:
 
-opentorsion.induction\_motor module
------------------------------------
-
-.. automodule:: opentorsion.induction_motor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-opentorsion.main module
------------------------
-
-.. automodule:: opentorsion.main
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 opentorsion.plots module
 ------------------------
 

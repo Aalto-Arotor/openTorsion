@@ -12,10 +12,10 @@ opentorsion.examples.forced\_response module
    :undoc-members:
    :show-inheritance:
 
-opentorsion.examples.tela module
+opentorsion.examples.roll module
 --------------------------------
 
-.. automodule:: opentorsion.examples.tela
+.. automodule:: opentorsion.examples.roll
    :members:
    :undoc-members:
    :show-inheritance:
