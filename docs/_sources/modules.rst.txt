@@ -1,4 +1,4 @@
-opentorsion
+API Reference
 ===========
 
 .. toctree::

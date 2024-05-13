@@ -1,4 +1,4 @@
-opentorsion.examples package
+Examples
 ============================
 
 Submodules

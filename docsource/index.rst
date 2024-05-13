@@ -17,8 +17,10 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
 
 .. toctree::
    :maxdepth: 1
-   :caption: openTorsion package:
+   :caption: Getting Started:
 
+   installation
+   usage
    modules
 
 
