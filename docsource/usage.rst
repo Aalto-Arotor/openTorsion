@@ -4,6 +4,8 @@ See :doc:`installation`, if you have not yet installed *openTorsion*. OpenTorsio
 
 .. code:: bash
 
+    import opentorsion as ot
+    
     k1 = 3.67e8  # Turbine shaft stiffness
     k2 = 5.496e9  # Rotor stiffness
     J1 = 1e7  # Turbine inertia

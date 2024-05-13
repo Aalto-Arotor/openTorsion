@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Unittests" href="opentorsion.tests.html" />
-    <link rel="prev" title="opentorsion package" href="opentorsion.html" /> 
+    <link rel="prev" title="Usage" href="usage.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,26 +48,27 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="opentorsion.html">opentorsion package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="opentorsion.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html">Unittests</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.examples.forced_response">opentorsion.examples.forced_response module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.examples.forced_response.forced_response"><code class="docutils literal notranslate"><span class="pre">forced_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.examples.forced_response.generator_torque"><code class="docutils literal notranslate"><span class="pre">generator_torque()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.examples.forced_response.get_windmill_excitation"><code class="docutils literal notranslate"><span class="pre">get_windmill_excitation()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.assembly">opentorsion.assembly module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.disk_element">opentorsion.disk_element module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.errors">opentorsion.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.excitation">opentorsion.excitation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.gear_element">opentorsion.gear_element module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.plots">opentorsion.plots module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion.shaft_element">opentorsion.shaft_element module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.html#module-opentorsion">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.examples.roll">opentorsion.examples.roll module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.examples.roll.back_to_back_testbench"><code class="docutils literal notranslate"><span class="pre">back_to_back_testbench()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.examples.windmill">opentorsion.examples.windmill module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.examples.windmill.windmill_assembly"><code class="docutils literal notranslate"><span class="pre">windmill_assembly()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.examples">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.tests.html">Unittests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -84,8 +85,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="opentorsion.html">opentorsion package</a></li>
       <li class="breadcrumb-item active">Examples</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/opentorsion.examples.rst.txt" rel="nofollow"> View page source</a>
@@ -158,7 +157,7 @@ gear_element.py documentation).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="opentorsion.html" class="btn btn-neutral float-left" title="opentorsion package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="opentorsion.tests.html" class="btn btn-neutral float-right" title="Unittests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

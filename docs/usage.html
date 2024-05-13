@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="modules.html" />
+    <link rel="next" title="Examples" href="opentorsion.examples.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
@@ -48,7 +48,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.tests.html">Unittests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -78,7 +80,9 @@
   <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
 <p>See <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a>, if you have not yet installed <em>openTorsion</em>. OpenTorsion can be used by creating a shaft-line finite element model. Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram with a shaft-line finite element model of a windmill based on model presented in <a class="reference external" href="https://doi.org/10.1109/TIE.2010.2087301">https://doi.org/10.1109/TIE.2010.2087301</a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">k1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>.67e8<span class="w">  </span><span class="c1"># Turbine shaft stiffness</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
+
+<span class="nv">k1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>.67e8<span class="w">  </span><span class="c1"># Turbine shaft stiffness</span>
 <span class="nv">k2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span>.496e9<span class="w">  </span><span class="c1"># Rotor stiffness</span>
 <span class="nv">J1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>1e7<span class="w">  </span><span class="c1"># Turbine inertia</span>
 <span class="nv">J2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5770</span><span class="w">  </span><span class="c1"># Rotor inner inertia</span>
@@ -119,7 +123,7 @@ plot_tools.plot_campbell<span class="o">(</span><span class="nv">frequency_range
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="modules.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="opentorsion.examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

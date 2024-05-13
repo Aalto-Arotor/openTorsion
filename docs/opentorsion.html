@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>opentorsion package &mdash; openTorsion  documentation</title>
+  <title>API Reference &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="opentorsion.examples.html" />
-    <link rel="prev" title="API Reference" href="modules.html" /> 
+    <link rel="prev" title="Unittests" href="opentorsion.tests.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,43 +47,83 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">opentorsion package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html">Unittests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.tests.html">Unittests</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.assembly">opentorsion.assembly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.assembly.Assembly"><code class="docutils literal notranslate"><span class="pre">Assembly</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.C_modal"><code class="docutils literal notranslate"><span class="pre">Assembly.C_modal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.E"><code class="docutils literal notranslate"><span class="pre">Assembly.E()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.T"><code class="docutils literal notranslate"><span class="pre">Assembly.T()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.assemble_C"><code class="docutils literal notranslate"><span class="pre">Assembly.assemble_C()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.assemble_K"><code class="docutils literal notranslate"><span class="pre">Assembly.assemble_K()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.assemble_M"><code class="docutils literal notranslate"><span class="pre">Assembly.assemble_M()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.check_dof"><code class="docutils literal notranslate"><span class="pre">Assembly.check_dof()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.continuous_2_discrete"><code class="docutils literal notranslate"><span class="pre">Assembly.continuous_2_discrete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.eigenmodes"><code class="docutils literal notranslate"><span class="pre">Assembly.eigenmodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.modal_analysis"><code class="docutils literal notranslate"><span class="pre">Assembly.modal_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.nongearK"><code class="docutils literal notranslate"><span class="pre">Assembly.nongearK()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.ss_response"><code class="docutils literal notranslate"><span class="pre">Assembly.ss_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.state_matrix"><code class="docutils literal notranslate"><span class="pre">Assembly.state_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.state_space"><code class="docutils literal notranslate"><span class="pre">Assembly.state_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.undamped_modal_analysis"><code class="docutils literal notranslate"><span class="pre">Assembly.undamped_modal_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly.vibratory_torque"><code class="docutils literal notranslate"><span class="pre">Assembly.vibratory_torque()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.assembly">opentorsion.assembly module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.assembly.Assembly"><code class="docutils literal notranslate"><span class="pre">Assembly</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.disk_element">opentorsion.disk_element module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.disk_element.Disk"><code class="docutils literal notranslate"><span class="pre">Disk</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.disk_element">opentorsion.disk_element</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.disk_element.Disk"><code class="docutils literal notranslate"><span class="pre">Disk</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.disk_element.Disk.C"><code class="docutils literal notranslate"><span class="pre">Disk.C()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.disk_element.Disk.K"><code class="docutils literal notranslate"><span class="pre">Disk.K()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.disk_element.Disk.M"><code class="docutils literal notranslate"><span class="pre">Disk.M()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.errors">opentorsion.errors module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.errors.DOF_mismatch_error"><code class="docutils literal notranslate"><span class="pre">DOF_mismatch_error</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.excitation">opentorsion.excitation module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation"><code class="docutils literal notranslate"><span class="pre">SystemExcitation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.errors">opentorsion.errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.errors.DOF_mismatch_error"><code class="docutils literal notranslate"><span class="pre">DOF_mismatch_error</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.gear_element">opentorsion.gear_element module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.gear_element.Gear"><code class="docutils literal notranslate"><span class="pre">Gear</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.excitation">opentorsion.excitation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation"><code class="docutils literal notranslate"><span class="pre">SystemExcitation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.add_harmonic"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.add_harmonic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.add_sweep"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.add_sweep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.excitation_amplitudes"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.excitation_amplitudes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.excitation_frequencies"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.excitation_frequencies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.time_domain_excitation"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.time_domain_excitation()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.plots">opentorsion.plots module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion.shaft_element">opentorsion.shaft_element module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.shaft_element.Shaft"><code class="docutils literal notranslate"><span class="pre">Shaft</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.gear_element">opentorsion.gear_element</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.gear_element.Gear"><code class="docutils literal notranslate"><span class="pre">Gear</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.gear_element.Gear.C"><code class="docutils literal notranslate"><span class="pre">Gear.C()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.gear_element.Gear.K"><code class="docutils literal notranslate"><span class="pre">Gear.K()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.gear_element.Gear.M"><code class="docutils literal notranslate"><span class="pre">Gear.M()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-opentorsion">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.plots">opentorsion.plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots.plot_assembly"><code class="docutils literal notranslate"><span class="pre">Plots.plot_assembly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots.plot_campbell"><code class="docutils literal notranslate"><span class="pre">Plots.plot_campbell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots.plot_eigenmodes"><code class="docutils literal notranslate"><span class="pre">Plots.plot_eigenmodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots.plot_on_ax"><code class="docutils literal notranslate"><span class="pre">Plots.plot_on_ax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.plots.Plots.torque_response_plot"><code class="docutils literal notranslate"><span class="pre">Plots.torque_response_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.shaft_element">opentorsion.shaft_element</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.shaft_element.Shaft"><code class="docutils literal notranslate"><span class="pre">Shaft</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.shaft_element.Shaft.C"><code class="docutils literal notranslate"><span class="pre">Shaft.C()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.shaft_element.Shaft.K"><code class="docutils literal notranslate"><span class="pre">Shaft.K()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.shaft_element.Shaft.M"><code class="docutils literal notranslate"><span class="pre">Shaft.M()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -105,8 +144,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">API Reference</a></li>
-      <li class="breadcrumb-item active">opentorsion package</li>
+      <li class="breadcrumb-item active">API Reference</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/opentorsion.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -116,60 +154,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="opentorsion-package">
-<h1>opentorsion package<a class="headerlink" href="#opentorsion-package" title="Permalink to this heading"></a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.examples.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.examples.html#module-opentorsion.examples.forced_response">opentorsion.examples.forced_response module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.examples.html#opentorsion.examples.forced_response.forced_response"><code class="docutils literal notranslate"><span class="pre">forced_response()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.examples.html#opentorsion.examples.forced_response.generator_torque"><code class="docutils literal notranslate"><span class="pre">generator_torque()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.examples.html#opentorsion.examples.forced_response.get_windmill_excitation"><code class="docutils literal notranslate"><span class="pre">get_windmill_excitation()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.examples.html#module-opentorsion.examples.roll">opentorsion.examples.roll module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.examples.html#opentorsion.examples.roll.back_to_back_testbench"><code class="docutils literal notranslate"><span class="pre">back_to_back_testbench()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.examples.html#module-opentorsion.examples.windmill">opentorsion.examples.windmill module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.examples.html#opentorsion.examples.windmill.windmill_assembly"><code class="docutils literal notranslate"><span class="pre">windmill_assembly()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.examples.html#module-opentorsion.examples">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.tests.html">Unittests</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.tests.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.tests.html#module-opentorsion.tests.tests">opentorsion.tests.tests module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test"><code class="docutils literal notranslate"><span class="pre">Test</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_frequency_domain_excitation_matrix_shape"><code class="docutils literal notranslate"><span class="pre">Test.test_frequency_domain_excitation_matrix_shape()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_friswell_09_06"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_09_06()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_friswell_09_09"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_09_09()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_friswell_ex971"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_ex971()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_friswell_pagex"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_pagex()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_mass_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_mass_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_modal_damping_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_modal_damping_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_shaft"><code class="docutils literal notranslate"><span class="pre">Test.test_shaft()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_stiffness_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_stiffness_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="opentorsion.tests.html#opentorsion.tests.tests.Test.test_stiffness_matrix_2"><code class="docutils literal notranslate"><span class="pre">Test.test_stiffness_matrix_2()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="opentorsion.tests.html#module-opentorsion.tests">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-opentorsion.assembly">
-<span id="opentorsion-assembly-module"></span><h2>opentorsion.assembly module<a class="headerlink" href="#module-opentorsion.assembly" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-assembly"></span><h2>opentorsion.assembly<a class="headerlink" href="#module-opentorsion.assembly" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.assembly.Assembly">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.assembly.</span></span><span class="sig-name descname"><span class="pre">Assembly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shaft_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disk_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gear_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.assembly.Assembly" title="Permalink to this definition"></a></dt>
@@ -540,7 +531,7 @@ one node, and each column corresponds to one frequency.</p>
 
 </section>
 <section id="module-opentorsion.disk_element">
-<span id="opentorsion-disk-element-module"></span><h2>opentorsion.disk_element module<a class="headerlink" href="#module-opentorsion.disk_element" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-disk-element"></span><h2>opentorsion.disk_element<a class="headerlink" href="#module-opentorsion.disk_element" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.disk_element.Disk">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.disk_element.</span></span><span class="sig-name descname"><span class="pre">Disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.disk_element.Disk" title="Permalink to this definition"></a></dt>
@@ -606,7 +597,7 @@ one node, and each column corresponds to one frequency.</p>
 
 </section>
 <section id="module-opentorsion.errors">
-<span id="opentorsion-errors-module"></span><h2>opentorsion.errors module<a class="headerlink" href="#module-opentorsion.errors" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-errors"></span><h2>opentorsion.errors<a class="headerlink" href="#module-opentorsion.errors" title="Permalink to this heading"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="opentorsion.errors.DOF_mismatch_error">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.errors.</span></span><span class="sig-name descname"><span class="pre">DOF_mismatch_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.errors.DOF_mismatch_error" title="Permalink to this definition"></a></dt>
@@ -615,7 +606,7 @@ one node, and each column corresponds to one frequency.</p>
 
 </section>
 <section id="module-opentorsion.excitation">
-<span id="opentorsion-excitation-module"></span><h2>opentorsion.excitation module<a class="headerlink" href="#module-opentorsion.excitation" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-excitation"></span><h2>opentorsion.excitation<a class="headerlink" href="#module-opentorsion.excitation" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.excitation.SystemExcitation">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.excitation.</span></span><span class="sig-name descname"><span class="pre">SystemExcitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dofs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omegas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.excitation.SystemExcitation" title="Permalink to this definition"></a></dt>
@@ -752,7 +743,7 @@ for each time step</p>
 
 </section>
 <section id="module-opentorsion.gear_element">
-<span id="opentorsion-gear-element-module"></span><h2>opentorsion.gear_element module<a class="headerlink" href="#module-opentorsion.gear_element" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-gear-element"></span><h2>opentorsion.gear_element<a class="headerlink" href="#module-opentorsion.gear_element" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.gear_element.Gear">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.gear_element.</span></span><span class="sig-name descname"><span class="pre">Gear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.gear_element.Gear" title="Permalink to this definition"></a></dt>
@@ -822,7 +813,7 @@ the use is constant.</p>
 
 </section>
 <section id="module-opentorsion.plots">
-<span id="opentorsion-plots-module"></span><h2>opentorsion.plots module<a class="headerlink" href="#module-opentorsion.plots" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-plots"></span><h2>opentorsion.plots<a class="headerlink" href="#module-opentorsion.plots" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.plots.Plots">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.plots.</span></span><span class="sig-name descname"><span class="pre">Plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assembly</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.plots.Plots" title="Permalink to this definition"></a></dt>
@@ -912,7 +903,7 @@ rotated so that the node with maximum abs displacement has phase of 0</p>
 
 </section>
 <section id="module-opentorsion.shaft_element">
-<span id="opentorsion-shaft-element-module"></span><h2>opentorsion.shaft_element module<a class="headerlink" href="#module-opentorsion.shaft_element" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-shaft-element"></span><h2>opentorsion.shaft_element<a class="headerlink" href="#module-opentorsion.shaft_element" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.shaft_element.Shaft">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.shaft_element.</span></span><span class="sig-name descname"><span class="pre">Shaft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.shaft_element.Shaft" title="Permalink to this definition"></a></dt>
@@ -956,17 +947,13 @@ either the stiffness or inertia value overrides the given geometry.</p>
 </dd></dl>
 
 </section>
-<section id="module-opentorsion">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-opentorsion" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="opentorsion.examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="opentorsion.tests.html" class="btn btn-neutral float-left" title="Unittests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

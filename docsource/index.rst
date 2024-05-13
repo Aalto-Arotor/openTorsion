@@ -21,7 +21,9 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
 
    installation
    usage
-   modules
+   opentorsion.examples
+   opentorsion.tests
+   opentorsion
 
 
 

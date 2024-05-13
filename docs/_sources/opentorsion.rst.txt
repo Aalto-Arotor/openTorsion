@@ -1,78 +1,62 @@
-opentorsion package
+API Reference
 ===================
-
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   opentorsion.examples
-   opentorsion.tests
 
 Submodules
 ----------
 
-opentorsion.assembly module
----------------------------
+opentorsion.assembly
+--------------------
 
 .. automodule:: opentorsion.assembly
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.disk\_element module
---------------------------------
+opentorsion.disk\_element
+-------------------------
 
 .. automodule:: opentorsion.disk_element
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.errors module
--------------------------
+opentorsion.errors
+------------------
 
 .. automodule:: opentorsion.errors
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.excitation module
------------------------------
+opentorsion.excitation
+----------------------
 
 .. automodule:: opentorsion.excitation
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.gear\_element module
---------------------------------
+opentorsion.gear\_element
+-------------------------
 
 .. automodule:: opentorsion.gear_element
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.plots module
-------------------------
+opentorsion.plots
+-----------------
 
 .. automodule:: opentorsion.plots
    :members:
    :undoc-members:
    :show-inheritance:
 
-opentorsion.shaft\_element module
----------------------------------
+opentorsion.shaft\_element
+--------------------------
 
 .. automodule:: opentorsion.shaft_element
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: opentorsion
-   :members:
-   :undoc-members:
-   :show-inheritance:
