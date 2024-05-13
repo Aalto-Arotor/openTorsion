@@ -34,6 +34,6 @@ Two examples are found in opentorsion/examples folder.
 
 ## Contact
 The main developers are Sampo Laine and Urho Hakonen from Arotor lab at Aalto University Finland.
-https://www.aalto.fi/en/industrial-internet-campus/aalto-arotor-lab
+https://www.aalto.fi/en/department-of-mechanical-engineering/aalto-arotor-lab
 
 For questions regarding the software please contact arotor.software@aalto.fi
