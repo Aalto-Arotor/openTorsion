@@ -3,12 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to openTorsion's documentation!
+OpenTorsion: Open-Source Software for Torsional Vibration Analysis
+==================================================================
+OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain. Supported features include
+
+* finite element model creation based on dimensions or datasheet specifications
+* natural frequency calculation
+* eigenmodes
+* forced response analysis
+* time-stepping simulation
+
 =======================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: openTorsion package:
 
    modules
 
