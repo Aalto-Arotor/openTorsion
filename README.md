@@ -19,7 +19,7 @@ Open-source software for torsional vibration analysis. Supported features includ
 
 ## Introduction
 OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time or frequency domain.
-Please note that the software is still in development and the authors are not able to responsibility for the functioning or effects of future changes. See the license for more information.
+Please note that the software is still in development and the authors are not able to take responsibility for the functioning or effects of future changes. See the license for more information.
 
 ## Documentation
 
