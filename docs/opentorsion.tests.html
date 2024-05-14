@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unittests &mdash; openTorsion  documentation</title>
+  <title>Tests &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -20,9 +20,7 @@
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="opentorsion.html" />
-    <link rel="prev" title="Examples" href="opentorsion.examples.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,32 +43,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Unittests</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.tests.tests">opentorsion.tests.tests module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#opentorsion.tests.tests.Test"><code class="docutils literal notranslate"><span class="pre">Test</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_frequency_domain_excitation_matrix_shape"><code class="docutils literal notranslate"><span class="pre">Test.test_frequency_domain_excitation_matrix_shape()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_friswell_09_06"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_09_06()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_friswell_09_09"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_09_09()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_friswell_ex971"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_ex971()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_friswell_pagex"><code class="docutils literal notranslate"><span class="pre">Test.test_friswell_pagex()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_mass_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_mass_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_modal_damping_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_modal_damping_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_shaft"><code class="docutils literal notranslate"><span class="pre">Test.test_shaft()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_stiffness_matrix"><code class="docutils literal notranslate"><span class="pre">Test.test_stiffness_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opentorsion.tests.tests.Test.test_stiffness_matrix_2"><code class="docutils literal notranslate"><span class="pre">Test.test_stiffness_matrix_2()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.tests">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
 </ul>
 
         </div>
@@ -87,7 +68,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Unittests</li>
+      <li class="breadcrumb-item active">Tests</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/opentorsion.tests.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,13 +78,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unittests">
-<h1>Unittests<a class="headerlink" href="#unittests" title="Permalink to this heading"></a></h1>
+  <section id="tests">
+<h1>Tests<a class="headerlink" href="#tests" title="Permalink to this heading"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-opentorsion.tests.tests">
-<span id="opentorsion-tests-tests-module"></span><h2>opentorsion.tests.tests module<a class="headerlink" href="#module-opentorsion.tests.tests" title="Permalink to this heading"></a></h2>
+<span id="opentorsion-tests-tests"></span><h2>opentorsion.tests.tests<a class="headerlink" href="#module-opentorsion.tests.tests" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="opentorsion.tests.tests.Test">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.tests.tests.</span></span><span class="sig-name descname"><span class="pre">Test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.tests.tests.Test" title="Permalink to this definition"></a></dt>
@@ -406,18 +387,12 @@
 </dd></dl>
 
 </section>
-<section id="module-opentorsion.tests">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-opentorsion.tests" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="opentorsion.examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="opentorsion.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

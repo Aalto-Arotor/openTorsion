@@ -1,21 +1,14 @@
-Unittests
+Tests
 =========================
 
 Submodules
 ----------
 
-opentorsion.tests.tests module
-------------------------------
+opentorsion.tests.tests
+-----------------------
 
 .. automodule:: opentorsion.tests.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: opentorsion.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:

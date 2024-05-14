@@ -1,8 +1,6 @@
-Quickstart
+Tutorial - Analyses
 =====
-See :doc:`installation`, if you have not yet installed *openTorsion*. OpenTorsion can be used by creating a shaft-line finite element model.
-
-Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram with a shaft-line finite element model of a windmill [#Sop2011]_.
+See :doc:`installation`, if you have not yet installed *openTorsion*. OpenTorsion can be used by creating a shaft-line finite element model. Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram with a shaft-line finite element model of a windmill based on model presented in https://doi.org/10.1109/TIE.2010.2087301.
 
 .. code:: bash
 
@@ -40,8 +38,4 @@ Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram wi
     plot_tools.plot_eigenmodes(modes=3)
     plot_tools.plot_campbell(frequency_range_rpm=[0, 300], num_modes=2)
 
-See more :doc:`opentorsion.examples` and :doc:`tutorials`.
-
-.. rubric:: References
-
-.. [#Sop2011] J. Sopanen, V. Ruuskanen, J. Nerg and J. Pyrhonen, "Dynamic Torque Analysis of a Wind Turbine Drive Train Including a Direct-Driven Permanent-Magnet Generator," in IEEE Transactions on Industrial Electronics, vol. 58, no. 9, pp. 3859-3867, Sept. 2011, doi: 10.1109/TIE.2010.2087301.
+See more :doc:`opentorsion.examples`.
