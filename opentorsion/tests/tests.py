@@ -2,12 +2,19 @@ import numpy as np
 import scipy.linalg as LA
 import unittest
 
-from opentorsion import Shaft
-from opentorsion import Disk
-from opentorsion import Gear
-from opentorsion import Assembly
-from opentorsion import SystemExcitation
-from opentorsion import Plots
+# For imports when running tests locally
+# import sys
+# from pathlib import Path
+# sys.path.append('..')
+
+from opentorsion import (
+    Shaft,
+    Disk,
+    Gear,
+    Assembly,
+    SystemExcitation,
+    Plots,
+)
 
 
 class Test(unittest.TestCase):
