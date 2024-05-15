@@ -11,9 +11,9 @@ import glob
 import numpy as np
 import scipy
 import opentorsion
-from opentorsion.shaft_element import Shaft
-from opentorsion.disk_element import Disk
-from opentorsion.assembly import Assembly
+from opentorsion import Shaft
+from opentorsion import Disk
+from opentorsion import Assembly
 
 def pressure_curve():
     '''Load digitized pressure curve from csv and pass it to interpolator'''

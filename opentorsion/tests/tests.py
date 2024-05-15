@@ -2,12 +2,12 @@ import numpy as np
 import scipy.linalg as LA
 import unittest
 
-from opentorsion.shaft_element import Shaft
-from opentorsion.disk_element import Disk
-from opentorsion.gear_element import Gear
-from opentorsion.assembly import Assembly
-from opentorsion.excitation import SystemExcitation
-from opentorsion.plots import Plots
+from opentorsion import Shaft
+from opentorsion import Disk
+from opentorsion import Gear
+from opentorsion import Assembly
+from opentorsion import SystemExcitation
+from opentorsion import Plots
 
 
 class Test(unittest.TestCase):

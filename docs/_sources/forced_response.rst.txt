@@ -1,7 +1,0 @@
-forced\_response module
-=======================
-
-.. automodule:: forced_response
-   :members:
-   :undoc-members:
-   :show-inheritance:

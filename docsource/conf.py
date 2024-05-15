@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'openTorsion'
-copyright = '2021, Aalto-Arotor'
+copyright = '2024, Aalto-Arotor'
 author = 'Aalto-Arotor'
 
 

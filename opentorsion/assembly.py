@@ -2,7 +2,7 @@ from copy import copy
 import numpy as np
 from scipy import linalg as LA
 
-from opentorsion.errors import DOF_mismatch_error
+from opentorsion.utils import DOF_mismatch_error
 
 
 class Assembly:
