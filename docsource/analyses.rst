@@ -1,41 +1,68 @@
 Tutorial - Analyses
-=====
-See :doc:`installation`, if you have not yet installed *openTorsion*. OpenTorsion can be used by creating a shaft-line finite element model. Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram with a shaft-line finite element model of a windmill based on model presented in https://doi.org/10.1109/TIE.2010.2087301.
+===================
+Torsional vibration analyses available in OpenTorsion include modal analysis, Campbell diagram, forced response and time-stepping simulation for transient response. An OpenTorsion assembly is reqired to run analyses.
+
+Modal analysis and Campbell diagram
+-----------------------------------
 
 .. code:: bash
 
     import opentorsion as ot
-    
-    k1 = 3.67e8  # Turbine shaft stiffness
-    k2 = 5.496e9  # Rotor stiffness
-    J1 = 1e7  # Turbine inertia
-    J2 = 5770  # Rotor inner inertia
-    J3 = 97030  # Rotor outer inertia
 
-    # Elements are initiated and added to corresponding list
-    shafts, disks = [], []
-    disks.append(ot.Disk(0, J1))
-    shafts.append(ot.Shaft(0, 1, None, None, k=k1, I=0))
-    disks.append(ot.Disk(1, J2))
-    shafts.append(ot.Shaft(1, 2, None, None, k=k2, I=0))
-    disks.append(ot.Disk(2, J3))
+    # An example assembly
+    # Creating 4 shaft elements using stiffness values
+    # Syntax: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad])
+    shaft1 = ot.Shaft(0, 1, L=None, odl=None, k=25e+6)
+    shaft2 = ot.Shaft(1, 2, L=None, odl=None, k=25e+6)
+    shaft3 = ot.Shaft(2, 3, L=None, odl=None, k=25e+6)
+    shaft4 = ot.Shaft(3, 4, L=None, odl=None, k=25e+6)
 
-    # An assembly is initiated with the lists of powertrain elements
-    assembly = ot.Assembly(shafts, disk_elements=disks)
-    
-    # Calculation of the eigenfrequencies of the powertrain
-    omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
+    # Creating 5 disk elements
+    # Syntax: ot.Disk(node, inertia [kgm^2])
+    disk1 = ot.Disk(0, I=100)
+    disk2 = ot.Disk(1, I=10)
+    disk3 = ot.Disk(2, I=50)
+    disk4 = ot.Disk(3, I=10)
+    disk5 = ot.Disk(4, I=80)
 
-    # Print eigenfrequencies.
-    # The list contains each eigenfrequency twice: e.g. eigenfrequencies = [1st, 1st, 2nd, 2nd, 3rd, 3rd, ...]
-    print("Eigenfrequencies: ", omegas_undamped.round(3))
+    # Adding the elements to lists corresponding to an element type
+    shafts = [shaft1, shaft2, shaft3, shaft4]
+    disks = [disk1, disk2, disk3, disk4, disk5]
 
-    # Initiate plotting tools calling Plots(assembly)
+    # Syntax: ot.Assembly(shaft_elements, disk_elements)
+    assembly = ot.Assembly(shaft_elements=shafts, disk_elements=disks)
+
+    # initialize OpenTorsion plotting tools
     plot_tools = ot.Plots(assembly)
 
-    # Plot eigenmodes, input number of eigenmodes
-    plot_tools.plot_assembly()
+    # Calculation of the system's eigenfrequencies
+    omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
+    # Print eigenfrequencies.
+    # The list contains each eigenfrequency twice, i.e., eigenfrequencies = [1st, 1st, 2nd, 2nd, 3rd, 3rd, ...]
+    print("Eigenfrequencies [rad/s]: ", omegas_undamped.round(3))
+
+    # Plot eigenmodes, takes as parameter the number of eigenmodes to be plotted
     plot_tools.plot_eigenmodes(modes=3)
+
+    # Campbell plot, takes as parameter the rotational frequency range [rpm] and number of eigenfrequencies to be plotted
     plot_tools.plot_campbell(frequency_range_rpm=[0, 300], num_modes=2)
 
-See more :doc:`opentorsion.examples`.
+.. figure:: figs/mode_example.svg
+   :width: 100%
+   :align: center
+   :alt: Eigenmode plot.
+   :target: .
+
+.. figure:: figs/campbell.svg
+   :width: 100%
+   :align: center
+   :alt: Campbell diagram.
+   :target: .
+
+Forced response
+---------------
+
+Transient response
+------------------
+
+
