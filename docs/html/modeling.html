@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modal analysis and Campbell diagram &mdash; openTorsion  documentation</title>
+  <title>Tutorial - Modelling &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Steady-state forced response" href="forced_response.html" />
-    <link rel="prev" title="Tutorial - Analyses" href="analyses.html" /> 
+    <link rel="next" title="Tutorial - Analyses" href="analyses.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,21 +48,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">opentorsion package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="modeling.html">Tutorial - Modelling</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="analyses.html">Tutorial - Analyses</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Modal analysis and Campbell diagram</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forced_response.html">Steady-state forced response</a></li>
-<li class="toctree-l3"><a class="reference internal" href="transient_response.html">Transient response</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial - Modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyses.html">Tutorial - Analyses</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">opentorsion.examples package</a></li>
 </ul>
 
         </div>
@@ -80,10 +75,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="analyses.html">Tutorial - Analyses</a></li>
-      <li class="breadcrumb-item active">Modal analysis and Campbell diagram</li>
+      <li class="breadcrumb-item active">Tutorial - Modelling</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/modal_analysis.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/modeling.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -91,17 +85,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="modal-analysis-and-campbell-diagram">
-<h1>Modal analysis and Campbell diagram<a class="headerlink" href="#modal-analysis-and-campbell-diagram" title="Permalink to this heading"></a></h1>
+  <section id="tutorial-modelling">
+<h1>Tutorial - Modelling<a class="headerlink" href="#tutorial-modelling" title="Permalink to this heading"></a></h1>
+<p>OpenTorsion is a Python library for torsional vibration analysis. OpenTorsion includes tools for creating shaft-line finite element models and running torsional vibration analyses.</p>
+<p>OpenTorsion’s modelling method is based on the shaft-line finite element method <a class="footnote-reference brackets" href="#fri2010" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Torsional vibration models are created using lumped elements with inertia, stiffness and damping. Elements supported in openTorsion include <code class="docutils literal notranslate"><span class="pre">Shaft</span></code>, <code class="docutils literal notranslate"><span class="pre">Disk</span></code> and <code class="docutils literal notranslate"><span class="pre">Gear</span></code>, defined in their respective classes. The elements are then combined into an <code class="docutils literal notranslate"><span class="pre">Assembly</span></code>, which represents a system model. Below, an example system is modelled using openTorsion.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
 
-<span class="c1"># An example assembly</span>
 <span class="c1"># Creating 4 shaft elements using stiffness values</span>
 <span class="c1"># Syntax: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad])</span>
 <span class="nv">shaft1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
 <span class="nv">shaft2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
 <span class="nv">shaft3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
 <span class="nv">shaft4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
+
+<span class="c1"># Creating a hollow shaft using dimension and material parameter values</span>
+<span class="c1"># Syntax: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], inner diameter [mm], shear modulus [Pa], density [kg/m^3])</span>
+<span class="nv">shaft5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">5</span>,<span class="w"> </span><span class="m">6</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span><span class="m">400</span>,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span><span class="m">80</span>,<span class="w"> </span><span class="nv">idl</span><span class="o">=</span><span class="m">40</span>,<span class="w"> </span><span class="nv">G</span><span class="o">=</span>79e9,<span class="w"> </span><span class="nv">rho</span><span class="o">=</span><span class="m">7850</span><span class="o">)</span>
 
 <span class="c1"># Creating 5 disk elements</span>
 <span class="c1"># Syntax: ot.Disk(node, inertia [kgm^2])</span>
@@ -110,53 +109,46 @@
 <span class="nv">disk3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">50</span><span class="o">)</span>
 <span class="nv">disk4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">10</span><span class="o">)</span>
 <span class="nv">disk5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">80</span><span class="o">)</span>
+<span class="nv">disk6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">6</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">80</span><span class="o">)</span>
+
+<span class="c1"># Creating a gear element</span>
+<span class="c1"># Gears consist of a parent gear and one or more child gear</span>
+<span class="c1"># Syntax: ot.Gear(node, inertia [kgm^2], gear radius [mm], parent)</span>
+<span class="nv">gear1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Gear<span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">2</span>,<span class="w"> </span><span class="nv">R</span><span class="o">=</span><span class="m">50</span>,<span class="w"> </span><span class="nv">parent</span><span class="o">=</span>None<span class="o">)</span><span class="w">  </span><span class="c1"># parent gear</span>
+<span class="nv">gear2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Gear<span class="o">(</span><span class="m">5</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">5</span>,<span class="w"> </span><span class="nv">R</span><span class="o">=</span><span class="m">150</span>,<span class="w"> </span><span class="nv">parent</span><span class="o">=</span>gear1<span class="o">)</span><span class="w">  </span><span class="c1"># child gear</span>
 
 <span class="c1"># Adding the elements to lists corresponding to an element type</span>
-<span class="nv">shafts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>shaft1,<span class="w"> </span>shaft2,<span class="w"> </span>shaft3,<span class="w"> </span>shaft4<span class="o">]</span>
-<span class="nv">disks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>disk1,<span class="w"> </span>disk2,<span class="w"> </span>disk3,<span class="w"> </span>disk4,<span class="w"> </span>disk5<span class="o">]</span>
+<span class="nv">shafts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>shaft1,<span class="w"> </span>shaft2,<span class="w"> </span>shaft3,<span class="w"> </span>shaft4,<span class="w"> </span>shaft5<span class="o">]</span>
+<span class="nv">disks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>disk1,<span class="w"> </span>disk2,<span class="w"> </span>disk3,<span class="w"> </span>disk4,<span class="w"> </span>disk5,<span class="w"> </span>disk6<span class="o">]</span>
+<span class="nv">gears</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>gear1,<span class="w"> </span>gear2<span class="o">]</span>
 
-<span class="c1"># Syntax: ot.Assembly(shaft_elements, disk_elements)</span>
-<span class="nv">assembly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Assembly<span class="o">(</span><span class="nv">shaft_elements</span><span class="o">=</span>shafts,<span class="w"> </span><span class="nv">disk_elements</span><span class="o">=</span>disks<span class="o">)</span>
+<span class="c1"># Syntax: ot.Assembly(shaft_elements, disk_elements, gear_elements)</span>
+<span class="nv">assembly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Assembly<span class="o">(</span><span class="nv">shaft_elements</span><span class="o">=</span>shafts,<span class="w"> </span><span class="nv">disk_elements</span><span class="o">=</span>disks,<span class="w"> </span><span class="nv">gear_elements</span><span class="o">=</span>gears<span class="o">)</span>
 
-<span class="c1"># initialize OpenTorsion plotting tools</span>
-<span class="nv">plot_tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Plots<span class="o">(</span>assembly<span class="o">)</span>
-
-<span class="c1"># Calculation of the system&#39;s eigenfrequencies</span>
-omegas_undamped,<span class="w"> </span>omegas_damped,<span class="w"> </span><span class="nv">damping_ratios</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.modal_analysis<span class="o">()</span>
-<span class="c1"># Print eigenfrequencies.</span>
-<span class="c1"># The list contains each eigenfrequency twice, i.e., eigenfrequencies = [1st, 1st, 2nd, 2nd, 3rd, 3rd, ...]</span>
-print<span class="o">(</span><span class="s2">&quot;Eigenfrequencies [rad/s]: &quot;</span>,<span class="w"> </span>omegas_undamped.round<span class="o">(</span><span class="m">3</span><span class="o">))</span>
-
-<span class="c1"># Plot eigenmodes, takes as parameter the number of eigenmodes to be plotted</span>
-plot_tools.plot_eigenmodes<span class="o">(</span><span class="nv">modes</span><span class="o">=</span><span class="m">3</span><span class="o">)</span>
-
-<span class="c1"># Campbell plot takes as parameter</span>
-<span class="c1"># - the rotational frequency range [rpm]</span>
-<span class="c1"># - number of eigenfrequencies to be plotted</span>
-<span class="c1"># - number of harmonics to be plotted</span>
-<span class="c1"># - operating speed range</span>
-plot_tools.plot_campbell<span class="o">(</span>
-<span class="w">    </span><span class="nv">frequency_range_rpm</span><span class="o">=[</span><span class="m">0</span>,<span class="w"> </span><span class="m">5000</span><span class="o">]</span>,
-<span class="w">    </span><span class="nv">num_modes</span><span class="o">=</span><span class="m">3</span>,
-<span class="w">    </span><span class="nv">harmonics</span><span class="o">=[</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span><span class="o">]</span>,
-<span class="w">    </span><span class="nv">operating_speeds_rpm</span><span class="o">=[</span><span class="m">3600</span><span class="o">]</span>
-<span class="o">)</span>
+<span class="c1"># Assembly can be visualized using openTorsion plotting tools.</span>
+<span class="nv">plot_tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Plots<span class="o">(</span>assembly<span class="o">)</span><span class="w">  </span><span class="c1"># initialize plot tools</span>
+plot_tools.plot_assembly<span class="o">()</span>
 </pre></div>
 </div>
 <figure class="align-center">
-<a class="reference external image-reference" href="."><img alt="Eigenmode plot." src="_images/mode_example.svg" width="100%" /></a>
+<a class="reference external image-reference" href="."><img alt="Visualization of assembly." src="_images/assembly_example.svg" width="100%" /></a>
 </figure>
-<figure class="align-center">
-<a class="reference external image-reference" href="."><img alt="Campbell diagram." src="_images/campbell_example.svg" width="100%" /></a>
-</figure>
+<p>See <a class="reference internal" href="analyses.html"><span class="doc">Tutorial - Analyses</span></a> for an introduction on performing torsional vibration analyses using openTorsion.</p>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="fri2010" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Friswell MI, Penny JET, Garvey SD, Lees AW. Dynamics of Rotating Machines. Cambridge University Press; 2010.</p>
+</aside>
+</aside>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="analyses.html" class="btn btn-neutral float-left" title="Tutorial - Analyses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="forced_response.html" class="btn btn-neutral float-right" title="Steady-state forced response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analyses.html" class="btn btn-neutral float-right" title="Tutorial - Analyses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

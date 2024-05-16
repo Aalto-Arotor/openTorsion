@@ -49,4 +49,3 @@ Plots
    :members:
    :undoc-members:
    :show-inheritance:
-

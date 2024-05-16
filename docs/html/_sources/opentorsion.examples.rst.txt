@@ -25,7 +25,7 @@ opentorsion.examples.windmill
    :members:
    :undoc-members:
    :show-inheritance:
-   
+ 
 opentorsion.examples.ICE_example
 --------------------------------
 

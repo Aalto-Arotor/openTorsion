@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transient response &mdash; openTorsion  documentation</title>
+  <title>Modal analysis and Campbell diagram &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="opentorsion.examples.html" />
-    <link rel="prev" title="Steady-state forced response" href="forced_response.html" /> 
+    <link rel="next" title="Steady-state forced response" href="forced_response.html" />
+    <link rel="prev" title="Tutorial - Analyses" href="analyses.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,21 +48,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">opentorsion package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">Tutorial - Modelling</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="analyses.html">Tutorial - Analyses</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="modal_analysis.html">Modal analysis and Campbell diagram</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Modal analysis and Campbell diagram</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forced_response.html">Steady-state forced response</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Transient response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transient_response.html">Transient response</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">opentorsion.examples package</a></li>
 </ul>
 
         </div>
@@ -81,9 +81,9 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="analyses.html">Tutorial - Analyses</a></li>
-      <li class="breadcrumb-item active">Transient response</li>
+      <li class="breadcrumb-item active">Modal analysis and Campbell diagram</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/transient_response.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/modal_analysis.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -91,14 +91,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="transient-response">
-<h1>Transient response<a class="headerlink" href="#transient-response" title="Permalink to this heading"></a></h1>
-<p>Time-stepping simulation example. Calculating transient response requires an assembly and excitation.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>numpy<span class="w"> </span>as<span class="w"> </span>np
-import<span class="w"> </span>matplotlib.pyplot<span class="w"> </span>as<span class="w"> </span>plt
-from<span class="w"> </span>scipy.signal<span class="w"> </span>import<span class="w"> </span>dlsim
-
-import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
+  <section id="modal-analysis-and-campbell-diagram">
+<h1>Modal analysis and Campbell diagram<a class="headerlink" href="#modal-analysis-and-campbell-diagram" title="Permalink to this heading"></a></h1>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
 
 <span class="c1"># An example assembly</span>
 <span class="c1"># Creating 4 shaft elements using stiffness values</span>
@@ -123,56 +118,36 @@ import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="
 <span class="c1"># Syntax: ot.Assembly(shaft_elements, disk_elements)</span>
 <span class="nv">assembly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Assembly<span class="o">(</span><span class="nv">shaft_elements</span><span class="o">=</span>shafts,<span class="w"> </span><span class="nv">disk_elements</span><span class="o">=</span>disks<span class="o">)</span>
 
-<span class="c1"># Defining and impulse excitation</span>
-<span class="nv">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.002
-<span class="nv">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.arange<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>.500,<span class="w"> </span>dt<span class="o">)</span>
-<span class="nv">impulse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.zeros<span class="o">((</span>len<span class="o">(</span>t<span class="o">)</span>,<span class="w"> </span>assembly.dofs<span class="o">))</span>
-<span class="nv">ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.arange<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">2000</span>,<span class="w"> </span>int<span class="o">(</span><span class="m">2000</span>/8<span class="o">))</span>
-impulse<span class="o">[</span><span class="m">22</span>:30,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ramp
-impulse<span class="o">[</span><span class="m">30</span>,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span>
-impulse<span class="o">[</span><span class="m">31</span>:39,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ramp<span class="o">[</span>::-1<span class="o">]</span>
+<span class="c1"># initialize OpenTorsion plotting tools</span>
+<span class="nv">plot_tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Plots<span class="o">(</span>assembly<span class="o">)</span>
 
-plt.plot<span class="o">(</span>t,<span class="w"> </span>impulse<span class="o">[</span>:,0<span class="o">]</span>,<span class="w"> </span><span class="nv">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="o">)</span>
-plt.title<span class="o">(</span><span class="s2">&quot;Impulse excitation&quot;</span><span class="o">)</span>
-plt.xlabel<span class="o">(</span><span class="s2">&quot;Times (s)&quot;</span><span class="o">)</span>
-plt.ylabel<span class="o">(</span><span class="s2">&quot;Torque (Nm)&quot;</span><span class="o">)</span>
-plt.show<span class="o">()</span>
+<span class="c1"># Calculation of the system&#39;s eigenfrequencies</span>
+omegas_undamped,<span class="w"> </span>omegas_damped,<span class="w"> </span><span class="nv">damping_ratios</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.modal_analysis<span class="o">()</span>
+<span class="c1"># Print eigenfrequencies.</span>
+<span class="c1"># The list contains each eigenfrequency twice, i.e., eigenfrequencies = [1st, 1st, 2nd, 2nd, 3rd, 3rd, ...]</span>
+print<span class="o">(</span><span class="s2">&quot;Eigenfrequencies [rad/s]: &quot;</span>,<span class="w"> </span>omegas_undamped.round<span class="o">(</span><span class="m">3</span><span class="o">))</span>
 
-<span class="c1"># Discrete-time LTI state-space model</span>
-A,<span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.state_space<span class="o">()</span>
-Ad,<span class="w"> </span><span class="nv">Bd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.continuous_2_discrete<span class="o">(</span>A,<span class="w"> </span>B,<span class="w"> </span>dt<span class="o">)</span>
-<span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.eye<span class="o">(</span>A.shape<span class="o">[</span><span class="m">1</span><span class="o">])</span>
-<span class="nv">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.zeros<span class="o">((</span>C.shape<span class="o">[</span><span class="m">0</span><span class="o">]</span>,<span class="w"> </span>B.shape<span class="o">[</span><span class="m">1</span><span class="o">]))</span>
-<span class="nv">sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>Ad,<span class="w"> </span>Bd,<span class="w"> </span>C,<span class="w"> </span>D,<span class="w"> </span>dt<span class="o">)</span>
+<span class="c1"># Plot eigenmodes, takes as parameter the number of eigenmodes to be plotted</span>
+plot_tools.plot_eigenmodes<span class="o">(</span><span class="nv">modes</span><span class="o">=</span><span class="m">3</span><span class="o">)</span>
 
-<span class="c1"># scipy.signal.dlsim used for time-step simulation</span>
-tout,<span class="w"> </span>yout,<span class="w"> </span><span class="nv">xout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dlsim<span class="o">(</span>sys,<span class="w"> </span>impulse,<span class="w"> </span>t<span class="o">)</span>
-<span class="c1"># simulation result is nodal rotational angles and speeds</span>
-angles,<span class="w"> </span><span class="nv">speeds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.split<span class="o">(</span>yout,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="nv">axis</span><span class="o">=</span><span class="m">1</span><span class="o">)</span>
-
-<span class="c1"># initiate 4 subplots for the 4 shafts</span>
-fig,<span class="w"> </span><span class="nv">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>plt.subplots<span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="nv">figsize</span><span class="o">=(</span><span class="m">8</span>,<span class="w"> </span><span class="m">8</span><span class="o">))</span>
-
-<span class="c1"># Shaft stiffness values are used to calculate the torque from the angle differences</span>
-<span class="nv">shaft_stiffness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>25e+6,<span class="w"> </span>25e+6,<span class="w"> </span>25e+6,<span class="w"> </span>25e+6<span class="o">]</span>
-
-<span class="c1"># Loop over the 4 shafts to plot the response for each of them</span>
-<span class="k">for</span><span class="w"> </span>n<span class="w"> </span><span class="k">in</span><span class="w"> </span>range<span class="o">(</span><span class="m">4</span><span class="o">)</span>:
-<span class="w">    </span><span class="c1"># Plot the shaft response in newton meters</span>
-<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.plot<span class="o">(</span>t,<span class="w"> </span>shaft_stiffness<span class="o">[</span>n<span class="o">]</span>*<span class="o">(</span>angles<span class="o">[</span>:,<span class="o">(</span>n+1<span class="o">)]</span>-angles<span class="o">[</span>:,n<span class="o">])</span>,<span class="w"> </span><span class="nv">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="o">)</span>
-
-<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_title<span class="o">(</span>f<span class="s1">&#39;Torque at shaft {n+1}&#39;</span><span class="o">)</span>
-<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_xlabel<span class="o">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="o">)</span>
-<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_ylabel<span class="o">(</span><span class="s1">&#39;Torque (Nm)&#39;</span><span class="o">)</span>
-plt.tight_layout<span class="o">()</span>
-plt.show<span class="o">()</span>
+<span class="c1"># Campbell plot takes as parameter</span>
+<span class="c1"># - the rotational frequency range [rpm]</span>
+<span class="c1"># - number of eigenfrequencies to be plotted</span>
+<span class="c1"># - number of harmonics to be plotted</span>
+<span class="c1"># - operating speed range</span>
+plot_tools.plot_campbell<span class="o">(</span>
+<span class="w">    </span><span class="nv">frequency_range_rpm</span><span class="o">=[</span><span class="m">0</span>,<span class="w"> </span><span class="m">5000</span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">num_modes</span><span class="o">=</span><span class="m">3</span>,
+<span class="w">    </span><span class="nv">harmonics</span><span class="o">=[</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">operating_speeds_rpm</span><span class="o">=[</span><span class="m">3600</span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
 </div>
 <figure class="align-center">
-<a class="reference external image-reference" href="."><img alt="Impulse excitation." src="_images/impulse.svg" width="100%" /></a>
+<a class="reference external image-reference" href="."><img alt="Eigenmode plot." src="_images/mode_example.svg" width="100%" /></a>
 </figure>
 <figure class="align-center">
-<a class="reference external image-reference" href="."><img alt="Torque at shafts 1, 2, 3 and 4." src="_images/transient_response.svg" width="100%" /></a>
+<a class="reference external image-reference" href="."><img alt="Campbell diagram." src="_images/campbell_example.svg" width="100%" /></a>
 </figure>
 </section>
 
@@ -180,8 +155,8 @@ plt.show<span class="o">()</span>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="forced_response.html" class="btn btn-neutral float-left" title="Steady-state forced response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="opentorsion.examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="analyses.html" class="btn btn-neutral float-left" title="Tutorial - Analyses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="forced_response.html" class="btn btn-neutral float-right" title="Steady-state forced response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
