@@ -1,9 +1,5 @@
-Tutorial - Analyses
-===================
-Torsional vibration analyses available in OpenTorsion include modal analysis, Campbell diagram, forced response and time-stepping simulation for transient response. An OpenTorsion assembly is reqired to run analyses.
-
 Modal analysis and Campbell diagram
------------------------------------
+===================================
 
 .. code:: bash
 
@@ -44,8 +40,17 @@ Modal analysis and Campbell diagram
     # Plot eigenmodes, takes as parameter the number of eigenmodes to be plotted
     plot_tools.plot_eigenmodes(modes=3)
 
-    # Campbell plot, takes as parameter the rotational frequency range [rpm] and number of eigenfrequencies to be plotted
-    plot_tools.plot_campbell(frequency_range_rpm=[0, 300], num_modes=2)
+    # Campbell plot takes as parameter
+    # - the rotational frequency range [rpm]
+    # - number of eigenfrequencies to be plotted
+    # - number of harmonics to be plotted
+    # - operating speed range
+    plot_tools.plot_campbell(
+        frequency_range_rpm=[0, 5000],
+        num_modes=3,
+        harmonics=[1, 2, 3],
+        operating_speeds_rpm=[3600]
+    )
 
 .. figure:: figs/mode_example.svg
    :width: 100%
@@ -58,11 +63,3 @@ Modal analysis and Campbell diagram
    :align: center
    :alt: Campbell diagram.
    :target: .
-
-Forced response
----------------
-
-Transient response
-------------------
-
-

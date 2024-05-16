@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial - Analyses &mdash; openTorsion  documentation</title>
+  <title>Modal analysis and Campbell diagram &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="opentorsion.examples.html" />
-    <link rel="prev" title="Tutorial - Modelling" href="modeling.html" /> 
+    <link rel="next" title="Forced response" href="forced_response.html" />
+    <link rel="prev" title="Tutorial - Analyses" href="analyses.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,10 +54,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">Tutorial - Modelling</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial - Analyses</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#modal-analysis-and-campbell-diagram">Modal analysis and Campbell diagram</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#forced-response">Forced response</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-response">Transient response</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="analyses.html">Tutorial - Analyses</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Modal analysis and Campbell diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forced_response.html">Forced response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transient_response.html">Transient response</a></li>
 </ul>
 </li>
 </ul>
@@ -80,9 +80,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Tutorial - Analyses</li>
+          <li class="breadcrumb-item"><a href="analyses.html">Tutorial - Analyses</a></li>
+      <li class="breadcrumb-item active">Modal analysis and Campbell diagram</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/analyses.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/modal_analysis.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -90,11 +91,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="tutorial-analyses">
-<h1>Tutorial - Analyses<a class="headerlink" href="#tutorial-analyses" title="Permalink to this heading"></a></h1>
-<p>Torsional vibration analyses available in OpenTorsion include modal analysis, Campbell diagram, forced response and time-stepping simulation for transient response. An OpenTorsion assembly is reqired to run analyses.</p>
-<section id="modal-analysis-and-campbell-diagram">
-<h2>Modal analysis and Campbell diagram<a class="headerlink" href="#modal-analysis-and-campbell-diagram" title="Permalink to this heading"></a></h2>
+  <section id="modal-analysis-and-campbell-diagram">
+<h1>Modal analysis and Campbell diagram<a class="headerlink" href="#modal-analysis-and-campbell-diagram" title="Permalink to this heading"></a></h1>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
 
 <span class="c1"># An example assembly</span>
@@ -132,8 +130,17 @@ print<span class="o">(</span><span class="s2">&quot;Eigenfrequencies [rad/s]: &q
 <span class="c1"># Plot eigenmodes, takes as parameter the number of eigenmodes to be plotted</span>
 plot_tools.plot_eigenmodes<span class="o">(</span><span class="nv">modes</span><span class="o">=</span><span class="m">3</span><span class="o">)</span>
 
-<span class="c1"># Campbell plot, takes as parameter the rotational frequency range [rpm] and number of eigenfrequencies to be plotted</span>
-plot_tools.plot_campbell<span class="o">(</span><span class="nv">frequency_range_rpm</span><span class="o">=[</span><span class="m">0</span>,<span class="w"> </span><span class="m">300</span><span class="o">]</span>,<span class="w"> </span><span class="nv">num_modes</span><span class="o">=</span><span class="m">2</span><span class="o">)</span>
+<span class="c1"># Campbell plot takes as parameter</span>
+<span class="c1"># - the rotational frequency range [rpm]</span>
+<span class="c1"># - number of eigenfrequencies to be plotted</span>
+<span class="c1"># - number of harmonics to be plotted</span>
+<span class="c1"># - operating speed range</span>
+plot_tools.plot_campbell<span class="o">(</span>
+<span class="w">    </span><span class="nv">frequency_range_rpm</span><span class="o">=[</span><span class="m">0</span>,<span class="w"> </span><span class="m">5000</span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">num_modes</span><span class="o">=</span><span class="m">3</span>,
+<span class="w">    </span><span class="nv">harmonics</span><span class="o">=[</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">operating_speeds_rpm</span><span class="o">=[</span><span class="m">3600</span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
 </div>
 <figure class="align-center">
@@ -143,20 +150,13 @@ plot_tools.plot_campbell<span class="o">(</span><span class="nv">frequency_range
 <a class="reference external image-reference" href="."><img alt="Campbell diagram." src="_images/campbell.svg" width="100%" /></a>
 </figure>
 </section>
-<section id="forced-response">
-<h2>Forced response<a class="headerlink" href="#forced-response" title="Permalink to this heading"></a></h2>
-</section>
-<section id="transient-response">
-<h2>Transient response<a class="headerlink" href="#transient-response" title="Permalink to this heading"></a></h2>
-</section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modeling.html" class="btn btn-neutral float-left" title="Tutorial - Modelling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="opentorsion.examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="analyses.html" class="btn btn-neutral float-left" title="Tutorial - Analyses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="forced_response.html" class="btn btn-neutral float-right" title="Forced response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

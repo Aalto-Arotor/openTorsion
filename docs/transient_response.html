@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transient response &mdash; openTorsion  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="opentorsion.examples.html" />
+    <link rel="prev" title="Forced response" href="forced_response.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            openTorsion
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="modeling.html">Tutorial - Modelling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="analyses.html">Tutorial - Analyses</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="modal_analysis.html">Modal analysis and Campbell diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forced_response.html">Forced response</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Transient response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">openTorsion</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="analyses.html">Tutorial - Analyses</a></li>
+      <li class="breadcrumb-item active">Transient response</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/transient_response.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="transient-response">
+<h1>Transient response<a class="headerlink" href="#transient-response" title="Permalink to this heading"></a></h1>
+<p>Time-stepping simulation example. Calculating transient response requires an assembly and excitation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>numpy<span class="w"> </span>as<span class="w"> </span>np
+import<span class="w"> </span>matplotlib.pyplot<span class="w"> </span>as<span class="w"> </span>plt
+from<span class="w"> </span>scipy.signal<span class="w"> </span>import<span class="w"> </span>dlsim
+
+import<span class="w"> </span>opentorsion<span class="w"> </span>as<span class="w"> </span>ot
+
+<span class="c1"># An example assembly</span>
+<span class="c1"># Creating 4 shaft elements using stiffness values</span>
+<span class="c1"># Syntax: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad])</span>
+<span class="nv">shaft1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
+<span class="nv">shaft2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
+<span class="nv">shaft3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
+<span class="nv">shaft4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Shaft<span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span><span class="nv">L</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">odl</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">k</span><span class="o">=</span>25e+6<span class="o">)</span>
+
+<span class="c1"># Creating 5 disk elements</span>
+<span class="c1"># Syntax: ot.Disk(node, inertia [kgm^2])</span>
+<span class="nv">disk1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
+<span class="nv">disk2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">10</span><span class="o">)</span>
+<span class="nv">disk3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">50</span><span class="o">)</span>
+<span class="nv">disk4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">10</span><span class="o">)</span>
+<span class="nv">disk5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Disk<span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="nv">I</span><span class="o">=</span><span class="m">80</span><span class="o">)</span>
+
+<span class="c1"># Adding the elements to lists corresponding to an element type</span>
+<span class="nv">shafts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>shaft1,<span class="w"> </span>shaft2,<span class="w"> </span>shaft3,<span class="w"> </span>shaft4<span class="o">]</span>
+<span class="nv">disks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>disk1,<span class="w"> </span>disk2,<span class="w"> </span>disk3,<span class="w"> </span>disk4,<span class="w"> </span>disk5<span class="o">]</span>
+
+<span class="c1"># Syntax: ot.Assembly(shaft_elements, disk_elements)</span>
+<span class="nv">assembly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ot.Assembly<span class="o">(</span><span class="nv">shaft_elements</span><span class="o">=</span>shafts,<span class="w"> </span><span class="nv">disk_elements</span><span class="o">=</span>disks<span class="o">)</span>
+
+<span class="c1"># Defining and impulse excitation</span>
+<span class="nv">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.002
+<span class="nv">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.arange<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>.500,<span class="w"> </span>dt<span class="o">)</span>
+<span class="nv">impulse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.zeros<span class="o">((</span>len<span class="o">(</span>t<span class="o">)</span>,<span class="w"> </span>assembly.dofs<span class="o">))</span>
+<span class="nv">ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.arange<span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="m">2000</span>,<span class="w"> </span>int<span class="o">(</span><span class="m">2000</span>/8<span class="o">))</span>
+impulse<span class="o">[</span><span class="m">22</span>:30,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ramp
+impulse<span class="o">[</span><span class="m">30</span>,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2000</span>
+impulse<span class="o">[</span><span class="m">31</span>:39,0<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ramp<span class="o">[</span>::-1<span class="o">]</span>
+
+plt.plot<span class="o">(</span>t,<span class="w"> </span>impulse<span class="o">[</span>:,0<span class="o">]</span>,<span class="w"> </span><span class="nv">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="o">)</span>
+plt.title<span class="o">(</span><span class="s2">&quot;Impulse excitation&quot;</span><span class="o">)</span>
+plt.xlabel<span class="o">(</span><span class="s2">&quot;Times (s)&quot;</span><span class="o">)</span>
+plt.ylabel<span class="o">(</span><span class="s2">&quot;Torque (Nm)&quot;</span><span class="o">)</span>
+plt.show<span class="o">()</span>
+
+<span class="c1"># Discrete-time LTI state-space model</span>
+A,<span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.state_space<span class="o">()</span>
+Ad,<span class="w"> </span><span class="nv">Bd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>assembly.continuous_2_discrete<span class="o">(</span>A,<span class="w"> </span>B,<span class="w"> </span>dt<span class="o">)</span>
+<span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.eye<span class="o">(</span>A.shape<span class="o">[</span><span class="m">1</span><span class="o">])</span>
+<span class="nv">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.zeros<span class="o">((</span>C.shape<span class="o">[</span><span class="m">0</span><span class="o">]</span>,<span class="w"> </span>B.shape<span class="o">[</span><span class="m">1</span><span class="o">]))</span>
+<span class="nv">sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>Ad,<span class="w"> </span>Bd,<span class="w"> </span>C,<span class="w"> </span>D,<span class="w"> </span>dt<span class="o">)</span>
+
+<span class="c1"># scipy.signal.dlsim used for time-step simulation</span>
+tout,<span class="w"> </span>yout,<span class="w"> </span><span class="nv">xout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dlsim<span class="o">(</span>sys,<span class="w"> </span>impulse,<span class="w"> </span>t<span class="o">)</span>
+<span class="c1"># simulation result is nodal rotational angles and speeds</span>
+angles,<span class="w"> </span><span class="nv">speeds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>np.split<span class="o">(</span>yout,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="nv">axis</span><span class="o">=</span><span class="m">1</span><span class="o">)</span>
+
+<span class="c1"># initiate 4 subplots for the 4 shafts</span>
+fig,<span class="w"> </span><span class="nv">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>plt.subplots<span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="nv">figsize</span><span class="o">=(</span><span class="m">8</span>,<span class="w"> </span><span class="m">8</span><span class="o">))</span>
+
+<span class="c1"># Shaft stiffness values are used to calculate the torque from the angle differences</span>
+<span class="nv">shaft_stiffness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>25e+6,<span class="w"> </span>25e+6,<span class="w"> </span>25e+6,<span class="w"> </span>25e+6<span class="o">]</span>
+
+<span class="c1"># Loop over the 4 shafts to plot the response for each of them</span>
+<span class="k">for</span><span class="w"> </span>n<span class="w"> </span><span class="k">in</span><span class="w"> </span>range<span class="o">(</span><span class="m">4</span><span class="o">)</span>:
+<span class="w">    </span><span class="c1"># Plot the shaft response in newton meters</span>
+<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.plot<span class="o">(</span>t,<span class="w"> </span>shaft_stiffness<span class="o">[</span>n<span class="o">]</span>*<span class="o">(</span>angles<span class="o">[</span>:,<span class="o">(</span>n+1<span class="o">)]</span>-angles<span class="o">[</span>:,n<span class="o">])</span>,<span class="w"> </span><span class="nv">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="o">)</span>
+
+<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_title<span class="o">(</span>f<span class="s1">&#39;Torque at shaft {n+1}&#39;</span><span class="o">)</span>
+<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_xlabel<span class="o">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="o">)</span>
+<span class="w">    </span>axes<span class="o">[</span>n<span class="o">]</span>.set_ylabel<span class="o">(</span><span class="s1">&#39;Torque (Nm)&#39;</span><span class="o">)</span>
+plt.tight_layout<span class="o">()</span>
+plt.show<span class="o">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference external image-reference" href="."><img alt="Impulse excitation." src="_images/impulse.svg" width="100%" /></a>
+</figure>
+<figure class="align-center">
+<a class="reference external image-reference" href="."><img alt="Torque at shafts 1, 2, 3 and 4." src="_images/transient_response.svg" width="100%" /></a>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="forced_response.html" class="btn btn-neutral float-left" title="Forced response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="opentorsion.examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aalto-Arotor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
