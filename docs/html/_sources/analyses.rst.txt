@@ -7,5 +7,5 @@ Torsional vibration analyses available in OpenTorsion include modal analysis, Ca
 
    modal_analysis
    forced_response
-   transient_analysis
+   transient_response
 
