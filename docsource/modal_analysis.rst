@@ -58,7 +58,7 @@ Modal analysis and Campbell diagram
    :alt: Eigenmode plot.
    :target: .
 
-.. figure:: figs/campbell.svg
+.. figure:: figs/campbell_example.svg
    :width: 100%
    :align: center
    :alt: Campbell diagram.
