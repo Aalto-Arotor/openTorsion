@@ -1,4 +1,4 @@
-Forced response
+Steady-state forced response
 ===============
 Forced response example. Calculating forced response requires an assembly and excitation.
 
