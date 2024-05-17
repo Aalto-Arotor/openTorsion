@@ -15,12 +15,7 @@ class SystemExcitation:
         Array of excitation amplitudes
     """
 
-    def __init__(self,
-                 dofs,
-                 omegas,
-                 shape=None,
-                 harmonic=True,
-                 transient=False):
+    def __init__(self, dofs, omegas, shape=None, harmonic=True, transient=False):
         """
         Parameters
         ----------

@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
         omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
 
         self.assertEqual(
-            (omegas_undamped/(2*np.pi)).round(1).tolist(),
+            (omegas_undamped / (2 * np.pi)).round(1).tolist(),
             [0, 0, 176.1, 176.1],
             "shaft gives the wrong result",
         )
@@ -62,7 +62,7 @@ class Test(unittest.TestCase):
         rotor = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
         omegas_undamped, _, _ = rotor.modal_analysis()
-        freqs = omegas_undamped/(2*np.pi)
+        freqs = omegas_undamped / (2 * np.pi)
 
         self.assertEqual(freqs.round(1).tolist(), correct, "geared system incorrect")
 
@@ -101,7 +101,7 @@ class Test(unittest.TestCase):
         assembly = Assembly(shafts, disk_elements=disks)
 
         omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
-        freqs = omegas_undamped/(2*np.pi)
+        freqs = omegas_undamped / (2 * np.pi)
 
         self.assertEqual(freqs.round(2).tolist(), correct, "geared system incorrect")
 
@@ -143,7 +143,7 @@ class Test(unittest.TestCase):
         assembly = Assembly(shafts, disk_elements=disks, gear_elements=gears)
 
         omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
-        freqs = omegas_undamped/(2*np.pi)
+        freqs = omegas_undamped / (2 * np.pi)
 
         self.assertEqual(freqs.round(3).tolist(), correct, "geared system incorrect")
 
@@ -168,7 +168,7 @@ class Test(unittest.TestCase):
             disks.append(Disk(ne, m))
             assembly = Assembly(shafts, disk_elements=disks)
             omegas_undamped, omegas_damped, b = assembly.modal_analysis()
-            freq = omegas_undamped/(2*np.pi)
+            freq = omegas_undamped / (2 * np.pi)
             freqs[j] = freq.round(4)[0:10].tolist()
 
         correct = [
@@ -213,9 +213,9 @@ class Test(unittest.TestCase):
         self.assertEqual(freqs, correct, "Shaft discretization not correct")
 
     def test_friswell_09_06(self):
-        '''
+        """
         Test calculating eigenmodes
-        '''
+        """
         k1 = 10e6
         k2 = 2.5e6
         k3 = k2
@@ -272,9 +272,7 @@ class Test(unittest.TestCase):
         lam, vec = assembly.eigenmodes()
         eigenmodes = np.abs(vec)
 
-        self.assertEqual(
-           eigenmodes.shape, (9, 9), "Eigenmode calculation not correct"
-        )
+        self.assertEqual(eigenmodes.shape, (9, 9), "Eigenmode calculation not correct")
 
     def test_mass_matrix(self):
         correct_M = np.array([[10, 0], [0, 10]])

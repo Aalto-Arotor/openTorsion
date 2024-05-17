@@ -296,7 +296,7 @@ class Assembly:
         return C
 
     def ss_response(self, excitations, omegas, C=None):
-        '''
+        """
         Calculation of the steady-state torsional response.
 
         Parameters
@@ -315,15 +315,15 @@ class Assembly:
             Displacement response
         complex ndarray
             Speed response
-        '''
+        """
         if C is None:
             C = self.C
         N = self.M.shape[0]
-        q_matrix = np.zeros((N, len(omegas)), dtype='complex128')
-        w_matrix = np.zeros((N, len(omegas)), dtype='complex128')
+        q_matrix = np.zeros((N, len(omegas)), dtype="complex128")
+        w_matrix = np.zeros((N, len(omegas)), dtype="complex128")
 
         for i, w in enumerate(omegas):
-            receptance = np.linalg.inv(-self.M*w**2 + w*1.0j*C + self.K)
+            receptance = np.linalg.inv(-self.M * w ** 2 + w * 1.0j * C + self.K)
             q = receptance @ excitations[:, i]
             w = q * 1.0j * w
             q_matrix[:, i] = q.ravel()
@@ -394,10 +394,12 @@ class Assembly:
 
         M, K = self.M, self.K
         N = M.shape[0]
-        A = np.vstack([
-            np.hstack([np.zeros((N, N)), np.eye(N)]),
-            np.hstack([-np.linalg.inv(M) @ K, -np.linalg.inv(M)@C])
-        ])
+        A = np.vstack(
+            [
+                np.hstack([np.zeros((N, N)), np.eye(N)]),
+                np.hstack([-np.linalg.inv(M) @ K, -np.linalg.inv(M) @ C]),
+            ]
+        )
 
         evals, evecs = np.linalg.eig(A)
         evals = sorted(evals, key=np.abs)
@@ -458,7 +460,7 @@ class Assembly:
         return max(nodes) + 1
 
     def state_space(self, C=None):
-        '''
+        """
         State space matrices of the second order system.
 
         Parameters
@@ -472,17 +474,14 @@ class Assembly:
             State matrix A
         B_sys: ndarray
             Input matrix B
-        '''
+        """
         if C is None:
             C = self.C
         M, K = self.M, self.K
         Z = np.zeros(M.shape)
         I_mat = np.eye(M.shape[0])
         M_inv = LA.inv(M)
-        A_sys = np.vstack([
-            np.hstack([Z, I_mat]),
-            np.hstack([-M_inv @ K, -M_inv @ C])
-        ])
+        A_sys = np.vstack([np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])])
         B_sys = np.vstack([Z, M_inv])
 
         return A_sys, B_sys
@@ -511,9 +510,9 @@ class Assembly:
         m, n = A.shape
         nb = B.shape[1]
         s = np.concatenate([A, B], axis=1)
-        s = np.concatenate([s, np.zeros((nb, n+nb))], axis=0)
-        S = LA.expm(s*ts)
+        s = np.concatenate([s, np.zeros((nb, n + nb))], axis=0)
+        S = LA.expm(s * ts)
         Ad = S[0:n, 0:n]
-        Bd = S[0:n, n:n+nb+1]
+        Bd = S[0:n, n : n + nb + 1]
 
         return Ad, Bd

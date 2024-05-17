@@ -68,4 +68,13 @@ class Disk:
         return K
 
     def __str__(self):
-        return 'Disk, pos: ' + str(self.node) + ' I:'  + str(self.I) + ' c: ' + str(self.c) + ' k: ' + str(self.k)
+        return (
+            "Disk, pos: "
+            + str(self.node)
+            + " I:"
+            + str(self.I)
+            + " c: "
+            + str(self.c)
+            + " k: "
+            + str(self.k)
+        )

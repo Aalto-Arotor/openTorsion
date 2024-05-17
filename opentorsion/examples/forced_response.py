@@ -90,9 +90,11 @@ def forced_response():
     for rpm in np.linspace(0.1, 25, 5000):
         omegas, amplitudes = get_windmill_excitation(rpm)
         excitations = np.zeros((M.shape[0], omegas.shape[0]), dtype="complex128")
-        excitations[2] = amplitudes # Excitation acts on the generator side
+        excitations[2] = amplitudes  # Excitation acts on the generator side
 
-        T_vib = assembly.vibratory_torque(excitations, omegas, k_shafts=np.array([k1, k2]), C=C)
+        T_vib = assembly.vibratory_torque(
+            excitations, omegas, k_shafts=np.array([k1, k2]), C=C
+        )
 
         VT_element1.append(np.sum(np.abs(T_vib[0])))
         VT_element2.append(np.sum(np.abs(T_vib[1])))

@@ -37,7 +37,18 @@ class Shaft:
     """
 
     def __init__(
-        self, nl, nr, L=None, odl=None, idl=0, G=80e9, E=200e9, rho=8000, k=None, I=0.0, c=0.0
+        self,
+        nl,
+        nr,
+        L=None,
+        odl=None,
+        idl=0,
+        G=80e9,
+        E=200e9,
+        rho=8000,
+        k=None,
+        I=0.0,
+        c=0.0,
     ):
 
         if k is None:
@@ -89,4 +100,19 @@ class Shaft:
         return C
 
     def __str__(self):
-        return 'Shaft, nl: ' + str(self.nl) + ' nr: '  + str(self.nr) + ' L: ' + str(self.L) + ' odl: ' + str(self.odl) + ' k: ' + str(self.k) + ' I: ' + str(self.I) + ' c: ' + str(self.c)
+        return (
+            "Shaft, nl: "
+            + str(self.nl)
+            + " nr: "
+            + str(self.nr)
+            + " L: "
+            + str(self.L)
+            + " odl: "
+            + str(self.odl)
+            + " k: "
+            + str(self.k)
+            + " I: "
+            + str(self.I)
+            + " c: "
+            + str(self.c)
+        )

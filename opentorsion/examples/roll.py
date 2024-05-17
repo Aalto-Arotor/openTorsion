@@ -59,4 +59,4 @@ if __name__ == "__main__":
     assembly = back_to_back_testbench()
     # Calculate natural frequencies
     omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
-    print(omegas_undamped.round(3)/(2*np.pi))
+    print(omegas_undamped.round(3) / (2 * np.pi))
