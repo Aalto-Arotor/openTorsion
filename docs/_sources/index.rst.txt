@@ -18,6 +18,8 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
 * forced response analysis
 * time-stepping simulation
 
+OpenTorsion github page: https://github.com/Aalto-Arotor/openTorsion
+
 =======================================
 
 .. toctree::
@@ -35,3 +37,7 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
 
    tutorials
    examples
+
+Contact
+-------
+The main developers are Sampo Laine and Urho Hakonen from Arotor lab at Aalto University Finland https://www.aalto.fi/en/department-of-mechanical-engineering/aalto-arotor-lab. For questions regarding the software please contact arotor.software@aalto.fi.

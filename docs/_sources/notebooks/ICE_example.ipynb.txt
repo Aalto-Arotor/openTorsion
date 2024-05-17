@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "cb9f3348",
+   "id": "ed5d30fe",
    "metadata": {},
    "source": [
     "# Steady-state torsional vibration in the crankshaft of an internal combustion engine\n",
@@ -13,7 +13,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "bda3f1bf",
+   "id": "6c0e2f6f",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -22,15 +22,13 @@
     "import scipy\n",
     "\n",
     "import opentorsion\n",
-    "from opentorsion import Shaft\n",
-    "from opentorsion import Disk\n",
-    "from opentorsion import Assembly"
+    "from opentorsion import Shaft, Disk, Assembly"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "9d8c7801",
+   "id": "b938a552",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -44,7 +42,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "a0001078",
+   "id": "11a64081",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -58,7 +56,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "95a4b86f",
+   "id": "73d3a5a0",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -97,7 +95,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "6845c336",
+   "id": "cdc2e94e",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -151,7 +149,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "95f8bf3c",
+   "id": "f7ab717a",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -186,7 +184,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "c0bb45d0",
+   "id": "083a1a75",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -246,7 +244,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "a4223049",
+   "id": "05931ab7",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -299,7 +297,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "c2e4c868",
+   "id": "dd60e398",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -362,7 +360,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "e579f97f",
+   "id": "6c41d2d1",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -406,7 +404,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "65295031",
+   "id": "6d0b86a7",
    "metadata": {},
    "outputs": [
     {
@@ -462,7 +460,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "82514341",
+   "id": "6e0f0d44",
    "metadata": {},
    "source": [
     "[1] Mendes AS, Meirelles PS, Zampieri DE. Analysis of torsional vibration in internal combustion engines: Modelling and experimental validation. Proceedings of the Institution of Mechanical Engineers, Part K: Journal of Multi-body Dynamics. 2008;222(2):155-178. doi:10.1243/14644193JMBD126"

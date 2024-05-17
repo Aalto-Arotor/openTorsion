@@ -23,7 +23,7 @@ Please note that the software is still in development and the authors are not ab
 
 ## Documentation
 
-[openTorsion documentation](https://aalto-arotor.github.io/openTorsion/)
+See [openTorsion documentation](https://aalto-arotor.github.io/openTorsion/) for [installation](https://aalto-arotor.github.io/openTorsion/installation.html), [tutorials](https://aalto-arotor.github.io/openTorsion/tutorials.html), [examples](https://aalto-arotor.github.io/openTorsion/opentorsion.examples.html) and [API Reference](https://aalto-arotor.github.io/openTorsion/opentorsion.html).
 
 ## Quickstart
 Install openTorsion by running the command ```pip install opentorsion```. Folder ```opentorsion``` includes the software. Folder ```examples``` contains scripts to run example powertrains and analyses.
