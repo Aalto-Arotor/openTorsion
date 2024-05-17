@@ -1,4 +1,4 @@
-Transient response
+Tutorial - Transient response
 ==================
 Time-stepping simulation example. Calculating transient response requires an assembly and excitation.
 
@@ -78,13 +78,13 @@ Time-stepping simulation example. Calculating transient response requires an ass
     plt.show()
 
 .. figure:: figs/impulse.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Impulse excitation.
    :target: .
 
 .. figure:: figs/transient_response.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Torque at shafts 1, 2, 3 and 4.
    :target: .

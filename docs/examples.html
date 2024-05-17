@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial - Analyses &mdash; openTorsion  documentation</title>
+  <title>Examples &mdash; openTorsion  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -18,11 +18,12 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Modal analysis and Campbell diagram" href="modal_analysis.html" />
-    <link rel="prev" title="Tutorial - Modelling" href="modeling.html" /> 
+    <link rel="next" title="Modal analysis and steady-state forced response calculation example" href="notebooks/modal_analysis_and_forced_response.html" />
+    <link rel="prev" title="Tutorial - Transient response" href="transient_response.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,21 +49,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">opentorsion package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opentorsion.html">API Reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="modeling.html">Tutorial - Modelling</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial - Analyses</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modal_analysis.html">Modal analysis and Campbell diagram</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forced_response.html">Steady-state forced response</a></li>
-<li class="toctree-l3"><a class="reference internal" href="transient_response.html">Transient response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/modal_analysis_and_forced_response.html">Modal analysis and steady-state forced response calculation example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ICE_example.html">Steady-state torsional vibration in the crankshaft of an internal combustion engine</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="opentorsion.examples.html">opentorsion.examples package</a></li>
 </ul>
 
         </div>
@@ -79,10 +75,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">Tutorial - Analyses</li>
+      <li class="breadcrumb-item active">Examples</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/analyses.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -90,14 +85,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="tutorial-analyses">
-<h1>Tutorial - Analyses<a class="headerlink" href="#tutorial-analyses" title="Permalink to this heading"></a></h1>
-<p>Torsional vibration analyses available in OpenTorsion include modal analysis, Campbell diagram, forced response and time-stepping simulation for transient response. An OpenTorsion assembly is reqired to run analyses.</p>
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modal_analysis.html">Modal analysis and Campbell diagram</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forced_response.html">Steady-state forced response</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transient_response.html">Transient response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/modal_analysis_and_forced_response.html">Modal analysis and steady-state forced response calculation example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ICE_example.html">Steady-state torsional vibration in the crankshaft of an internal combustion engine</a></li>
 </ul>
 </div>
 </section>
@@ -106,8 +99,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modeling.html" class="btn btn-neutral float-left" title="Tutorial - Modelling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="modal_analysis.html" class="btn btn-neutral float-right" title="Modal analysis and Campbell diagram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="transient_response.html" class="btn btn-neutral float-left" title="Tutorial - Transient response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/modal_analysis_and_forced_response.html" class="btn btn-neutral float-right" title="Modal analysis and steady-state forced response calculation example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

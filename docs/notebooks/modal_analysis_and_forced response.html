@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modal analysis and steady-state forced response calculation example &mdash; openTorsion  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            openTorsion
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../opentorsion.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openTorsion</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Modal analysis and steady-state forced response calculation example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/modal_analysis_and_forced response.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Modal-analysis-and-steady-state-forced-response-calculation-example">
+<h1>Modal analysis and steady-state forced response calculation example<a class="headerlink" href="#Modal-analysis-and-steady-state-forced-response-calculation-example" title="Permalink to this heading"></a></h1>
+<p>Based on the article “Dynamic Torque Analysis of a Wind Turbine Drive Train Including a Direct-Driven Permanent-Magnet Generator” [1].</p>
+<p>[1] J. Sopanen, V. Ruuskanen, J. Nerg and J. Pyrhonen, “Dynamic Torque Analysis of a Wind Turbine Drive Train Including a Direct-Driven Permanent-Magnet Generator,” in IEEE Transactions on Industrial Electronics, vol. 58, no. 9, pp. 3859-3867, Sept. 2011, <a class="reference external" href="https://doi.org/10.1109/TIE.2010.2087301">https://doi.org/10.1109/TIE.2010.2087301</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">opentorsion</span> <span class="k">as</span> <span class="nn">ot</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generator_torque</span><span class="p">(</span><span class="n">rpm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator torque as a function of rotor rotating speed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rated_T</span> <span class="o">=</span> <span class="mf">2.9e6</span>
+
+    <span class="k">if</span> <span class="n">rpm</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">torque</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">elif</span> <span class="n">rpm</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="mf">0.125</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">15</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">rated_T</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rated_T</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="mi">15</span>
+
+        <span class="n">torque</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">rpm</span> <span class="o">+</span> <span class="n">b</span>
+
+    <span class="k">elif</span> <span class="n">rpm</span> <span class="o">&lt;</span> <span class="mi">22</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">rated_T</span> <span class="o">*</span> <span class="mi">15</span>
+
+        <span class="n">torque</span> <span class="o">=</span> <span class="n">P</span> <span class="o">/</span> <span class="n">rpm</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">torque</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">torque</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_windmill_excitation</span><span class="p">(</span><span class="n">rpm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cogging torque and torque ripple as harmonic excitation.</span>
+<span class="sd">    (Table III from https://doi.org/10.1109/TIE.2010.2087301)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f_s</span> <span class="o">=</span> <span class="n">rpm</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+    <span class="n">omegas</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">vs</span> <span class="o">*</span> <span class="n">f_s</span>
+
+    <span class="n">rated_T</span> <span class="o">=</span> <span class="mf">2.9e6</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="mf">0.0018</span><span class="p">,</span> <span class="mf">0.0179</span><span class="p">,</span> <span class="mf">0.0024</span><span class="p">,</span> <span class="mf">0.0034</span><span class="p">,</span> <span class="mf">0.0117</span><span class="p">,</span> <span class="mf">0.0018</span><span class="p">,</span> <span class="mf">0.0011</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="n">generator_torque</span><span class="p">(</span><span class="n">rpm</span><span class="p">)</span>
+    <span class="n">amplitudes</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="n">rated_T</span> <span class="o">*</span> <span class="mf">0.0176</span>
+
+    <span class="k">return</span> <span class="n">omegas</span><span class="p">,</span> <span class="n">amplitudes</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forced_response</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    First a model of a windmill is created as a system of three lumped masses</span>
+<span class="sd">    connected by two shafts. The assembly is given harmonic excitation as</span>
+<span class="sd">    input. Finally, the system response is calculated and plotted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Parameters of the mechanical model</span>
+    <span class="n">k1</span> <span class="o">=</span> <span class="mf">3.67e8</span>  <span class="c1"># Nm/rad</span>
+    <span class="n">k2</span> <span class="o">=</span> <span class="mf">5.496e9</span>  <span class="c1"># Nm/rad</span>
+    <span class="n">J1</span> <span class="o">=</span> <span class="mf">1e7</span>  <span class="c1"># kgm^2</span>
+    <span class="n">J2</span> <span class="o">=</span> <span class="mi">5770</span>  <span class="c1"># kgm^2</span>
+    <span class="n">J3</span> <span class="o">=</span> <span class="mi">97030</span>  <span class="c1"># kgm^2</span>
+
+    <span class="c1"># Creating assembly</span>
+    <span class="n">shafts</span><span class="p">,</span> <span class="n">disks</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">disks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">J1</span><span class="p">))</span>
+    <span class="n">shafts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ot</span><span class="o">.</span><span class="n">Shaft</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k1</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">disks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J2</span><span class="p">))</span>
+    <span class="n">shafts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ot</span><span class="o">.</span><span class="n">Shaft</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k2</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">disks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">J3</span><span class="p">))</span>
+
+    <span class="n">assembly</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Assembly</span><span class="p">(</span><span class="n">shafts</span><span class="p">,</span> <span class="n">disk_elements</span><span class="o">=</span><span class="n">disks</span><span class="p">)</span>
+
+    <span class="n">M</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">assembly</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="n">assembly</span><span class="o">.</span><span class="n">K</span>  <span class="c1"># Mass and stiffness matrices</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">assembly</span><span class="o">.</span><span class="n">C_modal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">xi</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>  <span class="c1"># Damping matrix</span>
+
+    <span class="c1"># Modal analysis</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">assembly</span><span class="o">.</span><span class="n">state_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="n">omegas_undamped</span><span class="p">,</span> <span class="n">omegas_damped</span><span class="p">,</span> <span class="n">damping_ratios</span> <span class="o">=</span> <span class="n">assembly</span><span class="o">.</span><span class="n">modal_analysis</span><span class="p">()</span>
+
+    <span class="c1"># Print eigenfrequencies.</span>
+    <span class="c1"># The list contains each eigenfrequency twice: e.g. eigenfrequencies = [1st, 1st, 2nd, 2nd, 3rd, 3rd, ...]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eigenfrequencies: &quot;</span><span class="p">,</span> <span class="n">omegas_undamped</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="c1"># Initiate plotting tools calling Plots(assembly)</span>
+    <span class="n">plot_tools</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Plots</span><span class="p">(</span><span class="n">assembly</span><span class="p">)</span>
+
+    <span class="c1"># Plot eigenmodes, input number of eigenmodes</span>
+    <span class="n">plot_tools</span><span class="o">.</span><span class="n">plot_assembly</span><span class="p">()</span>
+    <span class="n">plot_tools</span><span class="o">.</span><span class="n">plot_eigenmodes</span><span class="p">(</span><span class="n">modes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">plot_tools</span><span class="o">.</span><span class="n">plot_campbell</span><span class="p">(</span><span class="n">frequency_range_rpm</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">num_modes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Steady-state forced response analysis</span>
+    <span class="n">VT_element1</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">VT_element2</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># The excitation depends on the rotational speed of the system.</span>
+    <span class="c1"># Here the response is calculated at each rotational speed.</span>
+    <span class="c1"># The responses at each rotational speed are summed to get the total response.</span>
+    <span class="k">for</span> <span class="n">rpm</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">5000</span><span class="p">):</span>
+        <span class="n">omegas</span><span class="p">,</span> <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">get_windmill_excitation</span><span class="p">(</span><span class="n">rpm</span><span class="p">)</span>
+        <span class="n">excitations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">omegas</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;complex128&quot;</span><span class="p">)</span>
+        <span class="n">excitations</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">amplitudes</span> <span class="c1"># Excitation acts on the generator side</span>
+
+        <span class="n">T_vib</span> <span class="o">=</span> <span class="n">assembly</span><span class="o">.</span><span class="n">vibratory_torque</span><span class="p">(</span><span class="n">excitations</span><span class="p">,</span> <span class="n">omegas</span><span class="p">,</span> <span class="n">k_shafts</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">]),</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">)</span>
+
+        <span class="n">VT_element1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">T_vib</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">VT_element2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">T_vib</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="n">T_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">VT_element1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">VT_element2</span><span class="p">)]</span>
+    <span class="p">)</span>  <span class="c1"># Total response (shaft torque)</span>
+
+    <span class="n">plot_tools</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Plots</span><span class="p">(</span><span class="n">assembly</span><span class="p">)</span>
+    <span class="n">plot_tools</span><span class="o">.</span><span class="n">torque_response_plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span> <span class="n">T_e</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">forced_response</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Eigenfrequencies:  [   0.       0.      58.34    58.34  1034.115 1034.115]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_modal_analysis_and_forced_response_5_1.png" src="../_images/notebooks_modal_analysis_and_forced_response_5_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_modal_analysis_and_forced_response_5_2.png" src="../_images/notebooks_modal_analysis_and_forced_response_5_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_modal_analysis_and_forced_response_5_3.png" src="../_images/notebooks_modal_analysis_and_forced_response_5_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_modal_analysis_and_forced_response_5_4.png" src="../_images/notebooks_modal_analysis_and_forced_response_5_4.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aalto-Arotor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

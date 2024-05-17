@@ -1,5 +1,5 @@
-Examples
-============================
+Example modules
+===============
 Examples, which can be run locally. For instructions on how to use `openTorsion`, please refer to :doc:`tutorials`.
 
 opentorsion.examples.forced\_response

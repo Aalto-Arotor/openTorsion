@@ -1,4 +1,4 @@
-Steady-state forced response
+Tutorial - Steady-state forced response
 ===============
 Forced response example. Calculating forced response requires an assembly and excitation.
 
@@ -79,7 +79,7 @@ Forced response example. Calculating forced response requires an assembly and ex
     plt.show()
 
 .. figure:: figs/forced_response.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Torque at shafts 1, 2, 3 and 4.
    :target: .

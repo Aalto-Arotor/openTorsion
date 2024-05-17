@@ -28,7 +28,7 @@ author = 'Aalto-Arotor'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'numpydoc'
+    'sphinx.ext.autodoc', 'numpydoc', 'nbsphinx'
 ]
 
 autosummary_generate = True

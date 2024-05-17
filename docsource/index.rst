@@ -3,6 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. figure:: ../figures/opentorsion_logo.png
+   :width: 80%
+   :align: center
+   :alt: Torque at shafts 1, 2, 3 and 4.
+   :target: .
 OpenTorsion: Open-Source Software for Torsional Vibration Analysis
 ==================================================================
 OpenTorsion includes tools for creating shaft-line finite element models and calculation of torsional response in time and frequency domain. Supported features include
@@ -29,4 +34,4 @@ OpenTorsion includes tools for creating shaft-line finite element models and cal
    :caption: User Guide:
 
    tutorials
-   opentorsion.examples
+   examples

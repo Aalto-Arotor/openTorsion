@@ -47,31 +47,10 @@ OpenTorsion's modelling method is based on the shaft-line finite element method 
     plot_tools.plot_assembly()
 
 .. figure:: figs/assembly_example.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Visualization of assembly.
    :target: .
-
-..
-   1. Shaft element
-   ----------------
-   Shaft element has two torsional degrees of freedom, i.e., two nodes. Nodes describe the connections of elements and their relative positions in the assembly. ``Shaft`` has a left node ``nl`` and a right node ``nr``. Nodes should be defined with care to ensure the elements are connected correctly. ``Shaft`` requires a torsional stiffness value ``k``. Additionally, inertia ``I`` and damping ``c`` values can be provided.
-
-   Alternatively, a shaft with a constant circular cross-section can be defined using values of length ``L``, outer diameter ``odl``, inner diameter ``idl``, material density ``rho`` and shear modulus ``G``, which are used to calculate torsional stiffness and mass moment of inertia.
-
-   2. Disk element
-   ---------------
-   Disk elements represent lumped masses, i.e., components which add inertia to the system but the stiffness can be neglected. ``Disk`` takes as parameters a node number ``n`` and mass moment of inertia ``I``. Damping and torsional stiffness values can also be given for the disk element if desired.
-
-   3. Gear element
-   ---------------
-   Gear elements are used to model gear drives. Gears consist of a parent gear and one or more child gear, i.e., a gear can have multiple children but only one parent. ``Gear`` takes as parameters a node number ``n``, mass moment of inertia ``I`` and gear radius ``R``. The value ``R`` can be either gear radius, teeth count or gear ratio as long as the use is constant.
-
-   4. Assembly
-   -----------
-   Assembly represents a complete system model. ``Assembly`` takes as parameters lists, each containing elements of one type.
-
-See :doc:`analyses` for an introduction on performing torsional vibration analyses using openTorsion.
 
 .. rubric:: References
 

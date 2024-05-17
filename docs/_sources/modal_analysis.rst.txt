@@ -1,4 +1,4 @@
-Modal analysis and Campbell diagram
+Tutorial - Modal analysis and Campbell diagram
 ===================================
 
 .. code:: bash
@@ -53,13 +53,13 @@ Modal analysis and Campbell diagram
     )
 
 .. figure:: figs/mode_example.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Eigenmode plot.
    :target: .
 
 .. figure:: figs/campbell_example.svg
-   :width: 100%
+   :width: 80%
    :align: center
    :alt: Campbell diagram.
    :target: .
