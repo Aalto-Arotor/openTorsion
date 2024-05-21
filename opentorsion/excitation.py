@@ -162,3 +162,78 @@ class SystemExcitation:
         """
 
         return self.U
+
+
+class TransientExcitations():
+  """
+  This class is for creating transient excitations. The excitations
+  currently availible are step and impulse.
+
+  Attributes
+  ----------
+  ts : float
+      Time step size
+  t_excite : float
+      Time instance for applying the excitation
+  magnitude : float
+      Excitation magnitude
+  """
+
+  def __init__(self, ts, t_excite, magnitude):
+    """
+    Parameters
+    ----------
+    ts : float
+        Time step size
+    t_excite : float
+        Time instance for applying the excitation
+    magnitude : float
+        Excitation magnitude
+    """
+
+    self.ts = ts
+    self.excite = t_excite
+    self.magnitude = magnitude
+    self.impulse = 0
+
+  def step_next(self, t):
+    """
+    Calculates the next step excitation.
+
+    Parameters
+    ----------
+    t : float
+        Current time step
+
+    Returns
+    -------
+    float
+        Torque magnitude of the next step excitation
+    """
+
+    if t >= self.excite:
+        return self.magnitude
+    return 0
+
+  def impulse_next(self, t):
+    """
+    Calculates the next impulse excitation.
+
+    Parameters
+    ----------
+    t : float
+        Current time step
+
+    Returns
+    -------
+    float
+        Torque magnitude of the next excitation
+    """
+
+    width = 0.1
+    if self.excite <= t <= self.excite + width:
+        self.impulse += self.magnitude * (self.ts / width)
+    elif self.excite + width <= t <= self.excite + 2 * width:
+        self.impulse -= self.magnitude * (self.ts / width)
+
+    return self.impulse

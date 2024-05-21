@@ -365,6 +365,42 @@ class Test(unittest.TestCase):
 
         self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
 
+    def test_state_space(self):
+        correct_A = np.array(
+            [[0, 0, 0, 1, 0, 0],
+             [0, 0, 0, 0, 1, 0],
+             [0, 0, 0, 0, 0, 1],
+             [-4.0e2, 4.0e2, 0, -1.5, 1, 0],
+             [3.89189189e3, -4.10810811e3, -1.29729730e3, 9.72972973, -1.08648649e1, -8.10810811e-1],
+             [0, -1.33333333e2, -8.00000000e2, 0, -8.33333333e-2, -1.5]]
+        )
+        correct_B = np.array(
+            [[0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 0],
+             [1, -0, -0],
+             [0, 9.72972973, 0],
+             [0, 0, 1]]
+        )
+
+        shafts = [Shaft(0, 1, k=400, c=1),
+                  Shaft(2, 3, k=800, c=0.5)]
+       
+        disks = [Disk(0, I=1, c=0.5),
+                Disk(1, I=1e-1, c=0.1),
+                Disk(2, I=1e-1, c=0.1),
+                Disk(3, I=1, c=1)]
+
+        gear1 = Gear(1, 0, 10)
+        gear2 = Gear(2, 0, 60, parent=gear1)
+        gears = [gear1, gear2]
+
+        shaftline = Assembly(shafts, disks, gear_elements=gears)
+        A, B = shaftline.state_space()
+
+        self.assertEqual(A, correct_A, "State matrix not correct")
+        self.assertEqual(B, correct_B, "Input matrix not correct")
+
 
 if __name__ == "__main__":
     unittest.main()
