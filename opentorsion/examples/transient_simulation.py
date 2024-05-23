@@ -4,13 +4,7 @@ multilpying the rotational stiffness of the shaft with the difference in angular
 displacement of its disks. """
 import matplotlib.pylab as plt
 import numpy as np
-from opentorsion import (
-    Shaft,
-    Disk,
-    Gear,
-    Assembly
-)
-from opentorsion.excitation import TransientExcitations
+import opentorsion as ot
 
 
 # MODEL PARAMETERS
@@ -60,31 +54,31 @@ def drivetrain_assembly():
     """
     # Creating shaft elements
     # Syntax is: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad], damping)
-    shaft1 = Shaft(0, 1, L=None, odl=None, k=k1, c=c1)
-    shaft2 = Shaft(1, 2, L=None, odl=None, k=k2, c=c2)
-    shaft3 = Shaft(3, 4, L=None, odl=None, k=k3, c=c3)
+    shaft1 = ot.Shaft(0, 1, L=None, odl=None, k=k1, c=c1)
+    shaft2 = ot.Shaft(1, 2, L=None, odl=None, k=k2, c=c2)
+    shaft3 = ot.Shaft(3, 4, L=None, odl=None, k=k3, c=c3)
 
     shafts = [shaft1, shaft2, shaft3]
 
     # Creating disk elements
     # Syntax is: ot.Disk(node, Inertia [kgm^2], damping)
-    disk1 = Disk(0, I=I1)
-    disk2 = Disk(1, I=I2)
-    disk3 = Disk(2, I=I3, c=d3)
-    disk4 = Disk(3, I=I4, c=d4)
-    disk5 = Disk(4, I=I5, c=d5)
+    disk1 = ot.Disk(0, I=I1)
+    disk2 = ot.Disk(1, I=I2)
+    disk3 = ot.Disk(2, I=I3, c=d3)
+    disk4 = ot.Disk(3, I=I4, c=d4)
+    disk5 = ot.Disk(4, I=I5, c=d5)
 
     disks = [disk1, disk2, disk3, disk4, disk5]
 
     # Creating gear elements with a gear ratio of 80 / 10 = 8
     # Syntax is: ot.Gear(node, Inertia [kgm^2], radius/teeth, parent)
-    gear1 = Gear(2, 0, z1)
-    gear2 = Gear(3, 0, z2, parent=gear1)
+    gear1 = ot.Gear(2, 0, z1)
+    gear2 = ot.Gear(3, 0, z2, parent=gear1)
     gears = [gear1, gear2]
 
 
     # Creating an assembly of the elements
-    drivetrain = Assembly(shafts, disks, gear_elements=gears)
+    drivetrain = ot.Assembly(shafts, disks, gear_elements=gears)
     return drivetrain
 
 
@@ -191,7 +185,7 @@ def transient_simulation():
     t_excite = 3    # Time (s)
     magnitude = 30  # Torque (Nm)
     # Syntax is: ot.TransientExcitations(Time step [s], Time for applying excitation [s], Magnitude [Nm])
-    excitations = TransientExcitations(ts, t_excite, magnitude)
+    excitations = ot.TransientExcitations(ts, t_excite, magnitude)
 
     """ Calculating the states of the model for a step excitation. The next state is calculated by adding the product
     of the discrete state matrix and the state vector with the product of the discrete input matrix and the input vector. 
