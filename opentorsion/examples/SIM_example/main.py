@@ -6,82 +6,6 @@ import opentorsion as ot
 import matplotlib.pylab as plt
 import numpy as np
 from pi_controller import PI
-#from opentorsion.excitation import TransientExcitations
-
-
-class TransientExcitations():
-  """
-  This class is for creating transient excitations. The excitations
-  currently availible are step and impulse.
-
-  Attributes
-  ----------
-  ts : float
-      Time step size
-  t_excite : float
-      Time instance for applying the excitation
-  magnitude : float
-      Excitation magnitude
-  """
-
-  def __init__(self, ts, t_excite, magnitude):
-    """
-    Parameters
-    ----------
-    ts : float
-        Time step size
-    t_excite : float
-        Time instance for applying the excitation
-    magnitude : float
-        Excitation magnitude
-    """
-
-    self.ts = ts
-    self.excite = t_excite
-    self.magnitude = magnitude
-    self.impulse = 0
-
-  def step_next(self, t):
-    """
-    Calculates the next step excitation.
-
-    Parameters
-    ----------
-    t : float
-        Current time step
-
-    Returns
-    -------
-    float
-        Torque magnitude of the next step excitation
-    """
-
-    if t >= self.excite:
-        return self.magnitude
-    return 0
-
-  def impulse_next(self, t):
-    """
-    Calculates the next impulse excitation.
-
-    Parameters
-    ----------
-    t : float
-        Current time step
-
-    Returns
-    -------
-    float
-        Torque magnitude of the next excitation
-    """
-
-    width = 0.1
-    if self.excite <= t <= self.excite + width:
-        self.impulse += self.magnitude * (self.ts / width)
-    elif self.excite + width <= t <= self.excite + 2 * width:
-        self.impulse -= self.magnitude * (self.ts / width)
-
-    return self.impulse
 
 
 # MODEL PARAMETERS
@@ -240,7 +164,7 @@ if __name__ == "__main__":
     magnitude = 30  # Torque (Nm)
 
     # Syntax is: ot.TransientExcitations(Time step [s], Time for applying excitation [s], Magnitude [Nm])
-    excitations = TransientExcitations(ts, t_excite, magnitude)
+    excitations = ot.TransientExcitations(ts, t_excite, magnitude)
 
 
     """ Calculating the states of the model for a step excitation. The next state is calculated by adding the product
@@ -251,7 +175,7 @@ if __name__ == "__main__":
     t_end = 6                                             # Simulation time
     x0 = np.zeros(2 * drivetrain.M.shape[0])              # Initial state 
     u0 = np.zeros(drivetrain.M.shape[0])                  # Input vector
-    iterations = np.linspace(0, t_end, int(t_end/0.001))  # Iterations based on simulation time and time step
+    iterations = np.linspace(0, t_end, int(t_end/ts))     # Iterations based on simulation time and time step
     rpm = 60 / (2 * np.pi)                                # Conversion from rad/s to RPM
     states_step = []
     rpms = []
