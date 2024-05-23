@@ -2,10 +2,15 @@
 simulated using discerete-time state-space form. The shaft torque is calculated by 
 multilpying the rotational stiffness of the shaft with the difference in angular 
 displacement of its disks. """
-import opentorsion as ot
 import matplotlib.pylab as plt
 import numpy as np
-from pi_controller import PI
+from opentorsion import (
+    Shaft,
+    Disk,
+    Gear,
+    Assembly,
+    TransientExcitations
+)
 
 
 # MODEL PARAMETERS
@@ -15,6 +20,32 @@ I3, k3, c3, d3 = 0.5, 1000, 5, 0.2
 I4, d4 = 0.1, 0.2
 I5, d5 = 1, 5
 z1, z2 = 10, 80   # Number of teeth in gear elements
+
+
+class PI():
+
+  def __init__(self, Kp, Ki, dt, setpoint, limit):
+    
+    self.Kp = Kp
+    self.Ki = Ki
+    self.dt = dt
+    self.setpoint = setpoint
+    self.limit = limit
+    self.integral_error = 0
+
+  def next_step(self, x):
+    
+    error = self.setpoint - x
+    self.integral_error += error*self.Ki*self.dt
+    out = self.integral_error + error*self.Kp
+
+    if self.integral_error > self.limit:
+        self.integral_error = self.limit
+
+    if out > self.limit:
+        return self.limit
+
+    return out
 
 
 def drivetrain_assembly():
@@ -29,32 +60,33 @@ def drivetrain_assembly():
     """
     # Creating shaft elements
     # Syntax is: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad], damping)
-    shaft1 = ot.Shaft(0, 1, L=None, odl=None, k=k1, c=c1)
-    shaft2 = ot.Shaft(1, 2, L=None, odl=None, k=k2, c=c2)
-    shaft3 = ot.Shaft(3, 4, L=None, odl=None, k=k3, c=c3)
+    shaft1 = Shaft(0, 1, L=None, odl=None, k=k1, c=c1)
+    shaft2 = Shaft(1, 2, L=None, odl=None, k=k2, c=c2)
+    shaft3 = Shaft(3, 4, L=None, odl=None, k=k3, c=c3)
 
     shafts = [shaft1, shaft2, shaft3]
 
     # Creating disk elements
     # Syntax is: ot.Disk(node, Inertia [kgm^2], damping)
-    disk1 = ot.Disk(0, I=I1)
-    disk2 = ot.Disk(1, I=I2)
-    disk3 = ot.Disk(2, I=I3, c=d3)
-    disk4 = ot.Disk(3, I=I4, c=d4)
-    disk5 = ot.Disk(4, I=I5, c=d5)
+    disk1 = Disk(0, I=I1)
+    disk2 = Disk(1, I=I2)
+    disk3 = Disk(2, I=I3, c=d3)
+    disk4 = Disk(3, I=I4, c=d4)
+    disk5 = Disk(4, I=I5, c=d5)
 
     disks = [disk1, disk2, disk3, disk4, disk5]
 
     # Creating gear elements with a gear ratio of 80 / 10 = 8
     # Syntax is: ot.Gear(node, Inertia [kgm^2], radius/teeth, parent)
-    gear1 = ot.Gear(2, 0, z1)
-    gear2 = ot.Gear(3, 0, z2, parent=gear1)
+    gear1 = Gear(2, 0, z1)
+    gear2 = Gear(3, 0, z2, parent=gear1)
     gears = [gear1, gear2]
 
 
     # Creating an assembly of the elements
-    drivetrain = ot.Assembly(shafts, disks, gear_elements=gears)
+    drivetrain = Assembly(shafts, disks, gear_elements=gears)
     return drivetrain
+
 
 def shaft_torque(states, k_list, idx_list, ratio_list):
     """ Calculates the shaft torque between the given indices. 
@@ -131,15 +163,13 @@ def plot_torque(t, torques):
     plt.show()
 
 
-if __name__ == "__main__":
-
+def transient_simulation():
     """ Creating model assembly and calculating the discrete state and input matrices. """
     drivetrain = drivetrain_assembly()
     A, B = drivetrain.state_space()
     ts = 0.001  # Time step
     # Syntax is: self.continuous_2_discrete(state matrix, input matrix, time step)
     Ad, Bd = drivetrain.continuous_2_discrete(A, B, ts=0.001)
-
 
     """ The model can be controlled with a simple PI controller. A PI controller calculates the error, i.e. the 
     diffrence between the desired model output and the real model output also referred to as a negative feedback 
@@ -150,10 +180,8 @@ if __name__ == "__main__":
     Ki = 3
     target = 200 # RPM
     limit = 20   # Torque (Nm)
-
     # Syntax is: ot.PI(Proportional gain, Integral gain, Time step [s], Target velocity [RPM], Limit [Nm])
     controller = PI(Kp, Ki, ts, target, limit)
-
 
     """ Transient excitations for the model can be created using the TransientExcitations class. The instance 
     can currently be used to simulate step and impulse excitations. The step and impulse excitations are obtained 
@@ -162,10 +190,8 @@ if __name__ == "__main__":
     # Parameters
     t_excite = 3    # Time (s)
     magnitude = 30  # Torque (Nm)
-
     # Syntax is: ot.TransientExcitations(Time step [s], Time for applying excitation [s], Magnitude [Nm])
-    excitations = ot.TransientExcitations(ts, t_excite, magnitude)
-
+    excitations = TransientExcitations(ts, t_excite, magnitude)
 
     """ Calculating the states of the model for a step excitation. The next state is calculated by adding the product
     of the discrete state matrix and the state vector with the product of the discrete input matrix and the input vector. 
@@ -190,17 +216,19 @@ if __name__ == "__main__":
     states_step = np.array(states_step)
     rpms = np.array(rpms)
 
-
     """ Calculating torque responses. """
     i = z2 / z1   # Gear ratio
     # Syntax is: shaft_torque(states matrix, stiffnesses list, indices list, ratios list)
     torques_step = shaft_torque(states_step, [k1, k2, k3], [0, 1, 2], [1, 1, i])
 
-
     """ Plotting model velocity and shaft torques. """
     # Syntax is: plot_rmp(time vector, velocity vector, target velocity)
     plot_rpm(iterations, rpms, target)
-
     # Syntax is: plot_torque(time vector, torque vector)
     plot_torque(iterations, torques_step)
-    
+
+
+if __name__ == "__main__":
+
+    """ Simulate the transient torque response in a model. """
+    transient_simulation()
