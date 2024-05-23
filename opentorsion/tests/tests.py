@@ -13,6 +13,7 @@ from opentorsion import (
     Gear,
     Assembly,
     SystemExcitation,
+    TransientExcitations,
     Plots,
 )
 
