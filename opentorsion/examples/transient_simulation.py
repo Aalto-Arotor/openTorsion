@@ -168,7 +168,7 @@ def transient_simulation():
     """ The model can be controlled with a simple PI controller. A PI controller calculates the error, i.e. the 
     diffrence between the desired model output and the real model output also referred to as a negative feedback 
     loop. This error is passed to the proportional and intergal part of the controller. In this part, the signal 
-    is turned into a more suitable input to the model. We use the controller PI from pi_controller.py. """
+    is turned into a more suitable input to the model. We use the controller PI defined above. """
     # Parameters
     Kp = 3
     Ki = 3
