@@ -8,9 +8,9 @@ from opentorsion import (
     Shaft,
     Disk,
     Gear,
-    Assembly,
-    TransientExcitations
+    Assembly
 )
+from opentorsion.excitation import TransientExcitations
 
 
 # MODEL PARAMETERS
