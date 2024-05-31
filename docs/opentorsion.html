@@ -108,6 +108,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.SystemExcitation.time_domain_excitation"><code class="docutils literal notranslate"><span class="pre">SystemExcitation.time_domain_excitation()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#opentorsion.excitation.TransientExcitations"><code class="docutils literal notranslate"><span class="pre">TransientExcitations</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.TransientExcitations.impulse_next"><code class="docutils literal notranslate"><span class="pre">TransientExcitations.impulse_next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opentorsion.excitation.TransientExcitations.step_next"><code class="docutils literal notranslate"><span class="pre">TransientExcitations.step_next()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-opentorsion.plots">Plots</a><ul>
@@ -836,6 +841,77 @@ data arrays must be of equal length.</p>
 <dd class="field-even"><dl class="simple">
 <dt>ndarray</dt><dd><p>Excitation matrix in time domain, containing excitation amplitudes
 for each time step</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="opentorsion.excitation.TransientExcitations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">opentorsion.excitation.</span></span><span class="sig-name descname"><span class="pre">TransientExcitations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_excite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.excitation.TransientExcitations" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is for creating transient excitations. The excitations
+currently availible are step and impulse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ts</strong><span class="classifier">float</span></dt><dd><p>Time step size</p>
+</dd>
+<dt><strong>t_excite</strong><span class="classifier">float</span></dt><dd><p>Time instance for applying the excitation</p>
+</dd>
+<dt><strong>magnitude</strong><span class="classifier">float</span></dt><dd><p>Excitation magnitude</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#opentorsion.excitation.TransientExcitations.impulse_next" title="opentorsion.excitation.TransientExcitations.impulse_next"><code class="xref py py-obj docutils literal notranslate"><span class="pre">impulse_next</span></code></a>(t)</p></td>
+<td><p>Calculates the next impulse excitation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#opentorsion.excitation.TransientExcitations.step_next" title="opentorsion.excitation.TransientExcitations.step_next"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_next</span></code></a>(t)</p></td>
+<td><p>Calculates the next step excitation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="opentorsion.excitation.TransientExcitations.impulse_next">
+<span class="sig-name descname"><span class="pre">impulse_next</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.excitation.TransientExcitations.impulse_next" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the next impulse excitation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>t</strong><span class="classifier">float</span></dt><dd><p>Current time step</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Torque magnitude of the next excitation</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opentorsion.excitation.TransientExcitations.step_next">
+<span class="sig-name descname"><span class="pre">step_next</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#opentorsion.excitation.TransientExcitations.step_next" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the next step excitation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>t</strong><span class="classifier">float</span></dt><dd><p>Current time step</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Torque magnitude of the next step excitation</p>
 </dd>
 </dl>
 </dd>

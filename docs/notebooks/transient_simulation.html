@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulating transient torque response &mdash; openTorsion  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Steady-state torsional vibration in the crankshaft of an internal combustion engine" href="ICE_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            openTorsion
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../opentorsion.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="modal_analysis_and_forced_response.html">Modal analysis and steady-state forced response calculation example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ICE_example.html">Steady-state torsional vibration in the crankshaft of an internal combustion engine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulating transient torque response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1.-Lumped-element-model">1. Lumped element model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1.1-Create-model">1.1 Create model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1.2-Visualize-model">1.2 Visualize model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#2-Discrete-time-state-space-form">2 Discrete-time state-space form</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#2.1-State-space">2.1 State-space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.2-Discrete-time">2.2 Discrete-time</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#3-Simulation">3 Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#3.1-Controlling-the-model">3.1 Controlling the model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.2-Excitations-for-the-model">3.2 Excitations for the model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.3-Simulating-torque-response">3.3 Simulating torque response</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#3.4-Visualizing-torque-response">3.4 Visualizing torque response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#4-Impulse-example">4 Impulse example</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openTorsion</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">Simulating transient torque response</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/transient_simulation.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">opentorsion</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">opentorsion</span> <span class="k">as</span> <span class="nn">ot</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Collecting opentorsion
+  Downloading opentorsion-0.2.5-py3-none-any.whl (20 kB)
+Requirement already satisfied: matplotlib in /usr/local/lib/python3.10/dist-packages (from opentorsion) (3.7.1)
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages (from opentorsion) (1.25.2)
+Requirement already satisfied: scipy in /usr/local/lib/python3.10/dist-packages (from opentorsion) (1.11.4)
+Requirement already satisfied: contourpy&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (1.2.1)
+Requirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (0.12.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (4.51.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (1.4.5)
+Requirement already satisfied: packaging&gt;=20.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (24.0)
+Requirement already satisfied: pillow&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (9.4.0)
+Requirement already satisfied: pyparsing&gt;=2.3.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (3.1.2)
+Requirement already satisfied: python-dateutil&gt;=2.7 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;opentorsion) (2.8.2)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.7-&gt;matplotlib-&gt;opentorsion) (1.16.0)
+Installing collected packages: opentorsion
+Successfully installed opentorsion-0.2.5
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TransientExcitations</span><span class="p">():</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  This class is for creating transient excitations. The excitations</span>
+<span class="sd">  currently availible are a step and an impulse.</span>
+
+<span class="sd">  Attributes</span>
+<span class="sd">  ----------</span>
+<span class="sd">  ts : float</span>
+<span class="sd">      Time step size</span>
+<span class="sd">  t_excite : float</span>
+<span class="sd">      Time instance for applying the excitation</span>
+<span class="sd">  magnitude : float</span>
+<span class="sd">      Excitation magnitude</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">t_excite</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ts : float</span>
+<span class="sd">        Time step size</span>
+<span class="sd">    t_excite : float</span>
+<span class="sd">        Time instance for applying the excitation</span>
+<span class="sd">    magnitude : float</span>
+<span class="sd">        Excitation magnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">excite</span> <span class="o">=</span> <span class="n">t_excite</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="n">magnitude</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">impulse</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="k">def</span> <span class="nf">step_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the next step excitation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Current time step</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Torque magnitude of the next step excitation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excite</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span>
+    <span class="k">return</span> <span class="mi">0</span>
+
+  <span class="k">def</span> <span class="nf">impulse_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the next impulse excitation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Current time step</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Torque magnitude of the next excitation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excite</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excite</span> <span class="o">+</span> <span class="n">width</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">impulse</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">excite</span> <span class="o">+</span> <span class="n">width</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excite</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">width</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">impulse</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impulse</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PI</span><span class="p">():</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  This class creates a discrete PI controller for a system.</span>
+
+<span class="sd">  Attributes</span>
+<span class="sd">  ----------</span>
+<span class="sd">  Kp : float</span>
+<span class="sd">      Proportional gain</span>
+<span class="sd">  Ki : float</span>
+<span class="sd">      Integral gain</span>
+<span class="sd">  dt : float</span>
+<span class="sd">      Time step</span>
+<span class="sd">  setpoint : float</span>
+<span class="sd">      Desired system output</span>
+<span class="sd">  limit : float</span>
+<span class="sd">      Output limit for integrator and controller</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Kp</span><span class="p">,</span> <span class="n">Ki</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Kp : float</span>
+<span class="sd">        Proportional gain</span>
+<span class="sd">    Ki : float</span>
+<span class="sd">        Integral gain</span>
+<span class="sd">    dt : float</span>
+<span class="sd">        Time step</span>
+<span class="sd">    setpoint : float</span>
+<span class="sd">        Desired output</span>
+<span class="sd">    limit : float</span>
+<span class="sd">        Output limit for integrator and controller</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">=</span> <span class="n">Kp</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span> <span class="o">=</span> <span class="n">Ki</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="n">setpoint</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+  <span class="k">def</span> <span class="nf">next_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the next controller output, taking into account the controller gains and limit.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        Current system output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Controller output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">-</span> <span class="n">x</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">+=</span> <span class="n">error</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Ki</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">+</span> <span class="n">error</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Kp</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+<section id="Simulating-transient-torque-response">
+<h1>Simulating transient torque response<a class="headerlink" href="#Simulating-transient-torque-response" title="Permalink to this heading"></a></h1>
+<section id="1.-Lumped-element-model">
+<h2>1. Lumped element model<a class="headerlink" href="#1.-Lumped-element-model" title="Permalink to this heading"></a></h2>
+<p><img alt="Lumped_mass_model.png" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAALQCAMAAAD4oy1kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEOUExURf///+bm5vX19d7e3hEREVBQUPf39x4eHgAAADo6OoiIiMPDwwsLC+rq6vv7+3l5eQYGBllZWWZmZkdHR6KiojIyMuLi4kBAQJKSkqenp52dnV1dXb29vWJiYtvb23Jycn9/f8nJyU1NTd/f3ygoKC0tLdTU1ExMTD8/P5eXl6+vr21tbcjIyENUchcsUXNzc2FhYYyMjNfX11RUVLi4uFpaWjMzM29vb7Kysmtra8zMzHt7e2dnZ0RERLq6utDQ0ChGfXOW07nK6Tlhp9Dc8KG44S1Pih00YOjt+CI+biY5XBgYGLOzs62trYODgyRAcRszW+Lp9tbg8sTT7Nzk9Ke848rX7kRyxO3y+QAAAHnZeMoAAABadFJOU///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ANHWim8AAAAJcEhZcwAADsMAAA7DAcdvqGQAACXbSURBVHhe7d3NiuvKfjfgBgssFgiDZn0JnuyJwQODTZJ3nYQz2pBweHP/V5KqkvzZkl1Lbcndrec5YbXcW1aV1apf/vr0GwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwG1X7s7Eo9u0UwM9TlNH2V/NqV5aXEbgoNu3U2ar8+DuA76goN3W9Dxn4Hl8dym36betjBVhty1JVCPwMyyKVfOs2Aa99qADD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" /></p>
+<p>We begin by creating an assembly of the lumped element model. The model consists of 5 lumped inertia elements and 3 shaft elements. In addition, 2 of the inertia elements are also gear elements. Since the disk elements are added to the smae nodes as the gear elements, ineria is added to the system through the disks. Therfore, inertia is not added separatey to the gear elements. The parameters used are presented in the tables below.</p>
+<p>Disk elements:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Inertia <span class="math notranslate nohighlight">\((I_i)\)</span></p></th>
+<th class="head"><p>External damping <span class="math notranslate nohighlight">\((d_i)\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Disk 1</p></td>
+<td><p>0.5</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Disk 2</p></td>
+<td><p>0.1</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Disk 3</p></td>
+<td><p>0.5</p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Disk 4</p></td>
+<td><p>0.1</p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-even"><td><p>Disk 5</p></td>
+<td><p>1.0</p></td>
+<td><p>5.0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Shaft elements:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Stiffness <span class="math notranslate nohighlight">\((k_i)\)</span></p></th>
+<th class="head"><p>Internal damping <span class="math notranslate nohighlight">\((c_i)\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Shaft 1</p></td>
+<td><p>5000</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Shaft 2</p></td>
+<td><p>500</p></td>
+<td><p>0.8</p></td>
+</tr>
+<tr class="row-even"><td><p>Shaft 3</p></td>
+<td><p>500</p></td>
+<td><p>0.2</p></td>
+</tr>
+</tbody>
+</table>
+<section id="1.1-Create-model">
+<h3>1.1 Create model<a class="headerlink" href="#1.1-Create-model" title="Permalink to this heading"></a></h3>
+<p>When creating the model, attention needs to be payed to defining the nodes. The nodes start from 0 and each disk is connected eiter via a shaft or a gear element. In the model below, nodes 2 and 3 are connected via gear elements, while the rest of the nodes are connected via shafts.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Creating a model assembly &quot;&quot;&quot;</span>
+
+<span class="c1"># Model parameters</span>
+<span class="n">I1</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">I2</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mf">0.8</span>
+<span class="n">I3</span><span class="p">,</span> <span class="n">k3</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">d3</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.2</span>
+<span class="n">I4</span><span class="p">,</span> <span class="n">d4</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span>
+<span class="n">I5</span><span class="p">,</span> <span class="n">d5</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span>
+
+<span class="c1"># Number of teeth in gear elements</span>
+<span class="n">z1</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">80</span>
+
+<span class="c1"># Creating shaft elements</span>
+<span class="c1"># Syntax is: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad], damping)</span>
+<span class="n">shaft1</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Shaft</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c1</span><span class="p">)</span>
+<span class="n">shaft2</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Shaft</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c2</span><span class="p">)</span>
+<span class="n">shaft3</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Shaft</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c3</span><span class="p">)</span>
+
+<span class="n">shafts</span> <span class="o">=</span> <span class="p">[</span><span class="n">shaft1</span><span class="p">,</span> <span class="n">shaft2</span><span class="p">,</span> <span class="n">shaft3</span><span class="p">]</span>
+
+<span class="c1"># Creating disk elements</span>
+<span class="c1"># Syntax is: ot.Disk(node, Inertia [kgm^2], damping)</span>
+<span class="n">disk1</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I1</span><span class="p">)</span>
+<span class="n">disk2</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I2</span><span class="p">)</span>
+<span class="n">disk3</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">d3</span><span class="p">)</span>
+<span class="n">disk4</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I4</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">d4</span><span class="p">)</span>
+<span class="n">disk5</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Disk</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">d5</span><span class="p">)</span>
+
+<span class="n">disks</span> <span class="o">=</span> <span class="p">[</span><span class="n">disk1</span><span class="p">,</span> <span class="n">disk2</span><span class="p">,</span> <span class="n">disk3</span><span class="p">,</span> <span class="n">disk4</span><span class="p">,</span> <span class="n">disk5</span><span class="p">]</span>
+
+<span class="c1"># Creating gear elements with a gear ratio of 80 / 10 = 8</span>
+<span class="c1"># Syntax is: ot.Gear(node, Inertia [kgm^2], radius/teeth, parent)</span>
+<span class="n">gear1</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Gear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z1</span><span class="p">)</span>
+<span class="n">gear2</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Gear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">gear1</span><span class="p">)</span>
+<span class="n">gears</span> <span class="o">=</span> <span class="p">[</span><span class="n">gear1</span><span class="p">,</span> <span class="n">gear2</span><span class="p">]</span>
+
+
+<span class="c1"># Creating an assembly of the elements</span>
+<span class="n">drivetrain</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Assembly</span><span class="p">(</span><span class="n">shafts</span><span class="p">,</span> <span class="n">disks</span><span class="p">,</span> <span class="n">gear_elements</span><span class="o">=</span><span class="n">gears</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.2-Visualize-model">
+<h3>1.2 Visualize model<a class="headerlink" href="#1.2-Visualize-model" title="Permalink to this heading"></a></h3>
+<p>The model can also be visualized in openTorsion using the Plots class and its method plot_assembly. This is demonstrated below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a plot_tool object for visualizations</span>
+<span class="n">plot_tools</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Plots</span><span class="p">(</span><span class="n">drivetrain</span><span class="p">)</span>
+
+<span class="c1"># The assembly can be visualized using the plot_assembly method</span>
+<span class="n">plot_tools</span><span class="o">.</span><span class="n">plot_assembly</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_transient_simulation_9_0.png" src="../_images/notebooks_transient_simulation_9_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="2-Discrete-time-state-space-form">
+<h2>2 Discrete-time state-space form<a class="headerlink" href="#2-Discrete-time-state-space-form" title="Permalink to this heading"></a></h2>
+<section id="2.1-State-space">
+<h3>2.1 State-space<a class="headerlink" href="#2.1-State-space" title="Permalink to this heading"></a></h3>
+<p>In order to simulate the transient response in the model, it needs to be expressed mathematically. State-space form is a common way to express the rate of change in systems. In this example we will only be needing the following state-space equation</p>
+<p><span class="math">\begin{equation}
+\mathbf{\dot{x}}(t) = \mathbf{A} \mathbf{x}(t) + \mathbf{B}\mathbf{u}(t),
+\end{equation}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is the state vector and <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> the input vector. Matrices <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> are commonly referred to as state and input matrix. The state vector is constructed as</p>
+<p>:nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>begin{equation}
+mathbf{x} =
+left(
+begin{array}{c}</p>
+<blockquote>
+<div><p>theta_1          \
+theta_2          \
+vdots            \
+theta_n          \
+dot{theta}_1    \
+dot{theta}_2    \
+vdots            \
+dot{theta}_n    \</p>
+</div></blockquote>
+<p>end{array}
+right),
+end{equation}`</p>
+<p>where <span class="math notranslate nohighlight">\(\theta\)</span> is the angular displacement of a disk. Our rotating model can be derived into state-space form by representing inertia, stifness and damping in matrix form. The rate of change is then</p>
+<p><span class="math">\begin{equation}
+\dot{\mathbf{x}}(t) =
+\underbrace{
+\begin{bmatrix}
+\boldsymbol{0} & \mathbf{I} \\
+-\mathbf{M}^{-1}\mathbf{K} & -\mathbf{M}^{-1}\mathbf{C}
+\end{bmatrix}}_\mathbf{A}
+\mathbf{x}(t)
++
+\underbrace{
+\begin{bmatrix}
+\boldsymbol{0} \\
+\mathbf{M}^{-1}
+\end{bmatrix}}_\mathbf{B}
+\mathbf{u}(t).
+\end{equation}</span></p>
+<p>In rotor dynamics, matrices <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{K}\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> are know as the mass, stiffness, and damping matrix. In openTorsion the state matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and the input matrix <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> can be calculated by calling the state_space method of the Assembly class. This is demonstrated below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Calculating the state and input matrices &quot;&quot;&quot;</span>
+
+<span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">state_space</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.2-Discrete-time">
+<h3>2.2 Discrete-time<a class="headerlink" href="#2.2-Discrete-time" title="Permalink to this heading"></a></h3>
+<p>In order to calculate the states in the model, the model needs to be discretized into a finite number of steps. State-space form in discrete-time can be expressed as</p>
+<p><span class="math">\begin{equation}
+\mathbf{x}(h+1) =
+\mathbf{A_d}\mathbf{x}(h)
++
+\mathbf{B_d}\mathbf{u}(h),
+\end{equation}</span></p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{A_d}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B_d}\)</span> is the discrete state and input matrix. They can be calculated using matrix exponential and a constant time step <span class="math notranslate nohighlight">\(\Delta t\)</span></p>
+<p><span class="math">\begin{equation}
+\begin{bmatrix}
+\mathbf{Ad} & \mathbf{Bd} \\
+\boldsymbol{0} & \mathbf{I}
+\end{bmatrix}
+= \exp(
+\begin{bmatrix}
+\mathbf{A} & \mathbf{B} \\
+\boldsymbol{0} & \boldsymbol{0}
+\end{bmatrix}
+\Delta t).
+\end{equation}</span></p>
+<p>In openTorsion the discrete state and input matrices can be calculated by calling the continuous_2_discrete method of the Assembly class. This is demonstrated in the code block below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Discretization of the state and input matrices &quot;&quot;&quot;</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="mf">0.001</span>  <span class="c1"># Time step</span>
+<span class="c1"># Syntax is: self.continuous_2_discrete(state matrix, input matrix, time step)</span>
+<span class="n">Ad</span><span class="p">,</span> <span class="n">Bd</span> <span class="o">=</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">continuous_2_discrete</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="3-Simulation">
+<h2>3 Simulation<a class="headerlink" href="#3-Simulation" title="Permalink to this heading"></a></h2>
+<section id="3.1-Controlling-the-model">
+<h3>3.1 Controlling the model<a class="headerlink" href="#3.1-Controlling-the-model" title="Permalink to this heading"></a></h3>
+<p><img alt="PI_block.png" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAALQCAMAAAD4oy1kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAD5UExURf///3JycgAAAFBQUPf39x4eHgYGBsnJyZ2dnTIyMvX19ebm5pubm4yMjPv7+01NTaenp3l5eRERES0tLdTU1AsLC+rq6peXlzMzM11dXeLi4kdHRzo6Ora2tn9/fz8/P6+vr4iIiEBAQKKiosPDw1lZWWZmZmFhYaampp6enigoKN7e3tDQ0Li4uMHBwXNzc2JiYt/f39vb23t7e21tbZKSkufn57e3t4eHh7+/v8fHxxgYGO/v7yAgIEhISHBwcGBgYI+Pj2hoaAgICBAQEHh4eNfX15+fn8/Pz1hYWDAwMDg4OL29vYODg2tra+Xl5URERGdnZwAAAEstDFcAAABTdFJOU/////////////////////////////////////////////////////////////////////////////////////////////////////////////8AZol+WQAAAAlwSFlzAAAOwwAADsMBx2+oZAAANcdJREFUeF7t3bu2qjAXhuE9aGwsHFa2NjbegpYWjmHB/V/NnjMJCCqSEMMK4X3+w/aAyCF8axIO/gMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAO3qnaPfuNabdwjAMjcqbq7R7+xJwABLMXnCnBbXd2jUOEV4PTvAoAot48V4LY6uEcfXbZH9+jVZb8PD8Cv3wUAqQxVgIeLe/jBthruOJxSAX77LgBIxvUB1tVOsrCqrmd5IgFnmFzaXuXRXV8W51qeHPb3hzyuq83lUN3kkRnkoK/1+wDNSPfylvt0b0D9eF3ddvKKIgMBzM5VgHV1lGw7SBJJfu0OmloHU5jpq7U8NbG2kSg8nSrJNXGvdvK6BKD8f32Sj2oW9irAe7Wtq6uO1HygP6B8XN642e+q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" /></p>
+<p>The model can be controlled using a simple PI controller. The controller calculates the error, i.e. the diffrence between the desired model output and the current model output, commonly referred to as a negative feedback loop. This error is passed to the controller’s proportional and intergal parts. Here, the signal is transalted into a more suitable input for the model. A class for such a controller is created below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PI</span><span class="p">():</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  This class creates a discrete PI controller for a system.</span>
+
+<span class="sd">  Attributes</span>
+<span class="sd">  ----------</span>
+<span class="sd">  Kp : float</span>
+<span class="sd">      Proportional gain</span>
+<span class="sd">  Ki : float</span>
+<span class="sd">      Integral gain</span>
+<span class="sd">  dt : float</span>
+<span class="sd">      Time step</span>
+<span class="sd">  setpoint : float</span>
+<span class="sd">      Desired system output</span>
+<span class="sd">  limit : float</span>
+<span class="sd">      Output limit for integrator and controller</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Kp</span><span class="p">,</span> <span class="n">Ki</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Kp : float</span>
+<span class="sd">        Proportional gain</span>
+<span class="sd">    Ki : float</span>
+<span class="sd">        Integral gain</span>
+<span class="sd">    dt : float</span>
+<span class="sd">        Time step</span>
+<span class="sd">    setpoint : float</span>
+<span class="sd">        Desired output</span>
+<span class="sd">    limit : float</span>
+<span class="sd">        Output limit for integrator and controller</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">=</span> <span class="n">Kp</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span> <span class="o">=</span> <span class="n">Ki</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="n">setpoint</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+  <span class="k">def</span> <span class="nf">next_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the next controller output, taking into account the controller gains and limit.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        Current system output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Controller output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">-</span> <span class="n">x</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">+=</span> <span class="n">error</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Ki</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">+</span> <span class="n">error</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Kp</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integral_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Creating controller  &quot;&quot;&quot;</span>
+
+<span class="c1"># Parameters</span>
+<span class="n">Kp</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">Ki</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">target</span> <span class="o">=</span> <span class="mi">200</span> <span class="c1"># RPM</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="mi">20</span>   <span class="c1"># Torque (Nm)</span>
+
+<span class="c1"># Syntax is: ot.PI(Proportional gain, Integral gain, Time step [s], Target velocity [RPM], Limit [Nm])</span>
+<span class="n">controller</span> <span class="o">=</span> <span class="n">PI</span><span class="p">(</span><span class="n">Kp</span><span class="p">,</span> <span class="n">Ki</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.2-Excitations-for-the-model">
+<h3>3.2 Excitations for the model<a class="headerlink" href="#3.2-Excitations-for-the-model" title="Permalink to this heading"></a></h3>
+<p>Excitations load the model with a torque, most often, acting in the opposite direction of rotating direction. OpenTorsion is equiped with a class for creting a transient step and impulse excitation. An excitation object is created in the code block below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Creating a transient excitation object &quot;&quot;&quot;</span>
+
+<span class="c1"># Parameters</span>
+<span class="n">t_excite</span> <span class="o">=</span> <span class="mi">3</span>    <span class="c1"># Time (s)</span>
+<span class="n">magnitude</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># Torque (Nm)</span>
+
+<span class="c1"># Syntax is: ot.TransientExcitations(Time step [s], Time for applying excitation [s], Magnitude [Nm])</span>
+<span class="n">excitations</span> <span class="o">=</span> <span class="n">TransientExcitations</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">t_excite</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.3-Simulating-torque-response">
+<h3>3.3 Simulating torque response<a class="headerlink" href="#3.3-Simulating-torque-response" title="Permalink to this heading"></a></h3>
+<p>Simulating the torque response begins with calculating all the states of the model for the simulated time. An initial state needs to be defined, after which the next state can be calculated by adding the product of the discrete state matrix <span class="math notranslate nohighlight">\(\mathbf{A_d}\)</span> and the previous state vector <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> with the product of discrete input matrix <span class="math notranslate nohighlight">\(\mathbf{B_d}\)</span> and the input vector <span class="math notranslate nohighlight">\(\mathbf{u}\)</span>. You might remember this from the first equation in section <span class="math notranslate nohighlight">\(2.2\)</span>.</p>
+<p>The shapes of vector <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> can be obtained from the shape of mass matrix <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>. Keep in mind that the state vector holds both the angular displacement and velocity, making it twice the size of the input vector. The controller and excitations object can be used to calculate the input vector <span class="math notranslate nohighlight">\(\mathbf{u}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Calculating the states of the model for a step excitation &quot;&quot;&quot;</span>
+
+<span class="c1"># Defining necessary variables</span>
+<span class="n">t_end</span> <span class="o">=</span> <span class="mi">6</span>                                             <span class="c1"># Simulation time</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>              <span class="c1"># Initial state</span>
+<span class="n">u0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>                  <span class="c1"># Input vector</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_end</span><span class="o">/</span><span class="mf">0.001</span><span class="p">))</span>  <span class="c1"># Iterations based on simulation time and time step</span>
+<span class="n">rpm</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>                                <span class="c1"># Conversion from rad/s to RPM</span>
+<span class="n">states_step</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">rpms</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Calculating all the states</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterations</span><span class="p">:</span>
+    <span class="n">u0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">next_step</span><span class="p">(</span><span class="n">x0</span><span class="p">[</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">rpm</span><span class="p">)</span>
+    <span class="n">u0</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">excitations</span><span class="o">.</span><span class="n">step_next</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">Ad</span> <span class="o">@</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">Bd</span> <span class="o">@</span> <span class="n">u0</span>
+    <span class="n">states_step</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="n">rpms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">[</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">rpm</span><span class="p">)</span>
+<span class="n">states_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">states_step</span><span class="p">)</span>
+<span class="n">rpms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rpms</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The following function can be used to plot the velocity of the model compared to the target velocity. It takes a time and velocity vector as inputs as well as the target velocity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Plots the angular velocity of a model &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">plot_rpm</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rpm</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : array</span>
+<span class="sd">        Time vector</span>
+<span class="sd">    rpm : array</span>
+<span class="sd">        Velocity vector</span>
+<span class="sd">    target : float</span>
+<span class="sd">        Target velocity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rpm</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Model velocity&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Target velocity&#39;</span><span class="p">)</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Angular velocity&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Velocity (RPM)&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Plotting the velocity of the model &quot;&quot;&quot;</span>
+
+<span class="c1"># Syntax is: plot_rmp(time vector, velocity vector, target velocity)</span>
+<span class="n">plot_rpm</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">rpm</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_transient_simulation_26_0.png" src="../_images/notebooks_transient_simulation_26_0.png" />
+</div>
+</div>
+<p>Now that the states are known, the shaft torque can be calculated. This can be done according to</p>
+<p><span class="math">\begin{equation}
+T_i = k_i(\theta_i - \theta_{i+1}).
+\end{equation}</span></p>
+<p>In addition, possible gear ratios needs to be accounted for when calculating the shaft torque. In openTorsion both gear elements are merged into one rotating disk, where the rotation angle is affected by the gear ratio. Therfore, the rotation angle of the gear disk or the following disk needs to be eiter multiplied or divided with the gear ratio. In case the gear ratio is bigger than 1, the gear elemet is divided with the gear ratio. On the other hand, if the gear ratio is smaller than 1, the
+disk sequent to the gear element is multipied with the gear ratio. This is demonstrated in equation</p>
+<p><span class="math">\begin{equation}
+T_i = k_i(\frac{\theta_i}{i} - \theta_{i+1}),
+\end{equation}</span> when <span class="math notranslate nohighlight">\(i &gt; 1\)</span> and</p>
+<p><span class="math">\begin{equation}
+T_i = k_i(\theta_i - \theta_{i+1} i),
+\end{equation}</span> when <span class="math notranslate nohighlight">\(i &lt; 1\)</span>.</p>
+<p>We define a separate function for calculating the shaft torque in the model at all points of interest.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Calculates the shaft torque between desired indices. Keep in mind that a</span>
+<span class="sd">gear ratio over 1 should be passed to the function at the index of the gear</span>
+<span class="sd">element, while a gear ratio under one should be passed to the index after the</span>
+<span class="sd">gear element. In addition, the indecies in the index list should correspond to</span>
+<span class="sd">the disk prior to the shaft. &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">shaft_torque</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">k_list</span><span class="p">,</span> <span class="n">idx_list</span><span class="p">,</span> <span class="n">ratio_list</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    states : ndarray</span>
+<span class="sd">        Matrix with the calculated states</span>
+<span class="sd">    k_list : list</span>
+<span class="sd">        List with stiffnesses</span>
+<span class="sd">    idx_list : list</span>
+<span class="sd">        List with indices</span>
+<span class="sd">    ratio_list : list</span>
+<span class="sd">        List with gear ratios</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Calculated shaft torque</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  <span class="n">torques</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">k_list</span><span class="p">):</span>
+      <span class="k">if</span> <span class="n">ratio_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+          <span class="n">T</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">states</span><span class="p">[:,</span> <span class="n">idx_list</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="o">/</span> <span class="n">ratio_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">states</span><span class="p">[:,</span> <span class="n">idx_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+      <span class="k">else</span><span class="p">:</span>
+          <span class="n">T</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">states</span><span class="p">[:,</span> <span class="n">idx_list</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">states</span><span class="p">[:,</span> <span class="n">idx_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">ratio_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+      <span class="n">torques</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">torques</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Calculating torque responses &quot;&quot;&quot;</span>
+
+<span class="n">i</span> <span class="o">=</span> <span class="n">z2</span> <span class="o">/</span> <span class="n">z1</span>   <span class="c1"># Gear ratio</span>
+<span class="c1"># Syntax is: shaft_torque(states matrix, stiffnesses list, indices list, ratios list)</span>
+<span class="n">torques_step</span> <span class="o">=</span> <span class="n">shaft_torque</span><span class="p">(</span><span class="n">states_step</span><span class="p">,</span> <span class="p">[</span><span class="n">k2</span><span class="p">,</span> <span class="n">k3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.4-Visualizing-torque-response">
+<h3>3.4 Visualizing torque response<a class="headerlink" href="#3.4-Visualizing-torque-response" title="Permalink to this heading"></a></h3>
+<p>The torque responses can be plotted using the following function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Plots the shaft torques in a model &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">plot_torque</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">torques</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : array</span>
+<span class="sd">        Time vector</span>
+<span class="sd">    torques : array</span>
+<span class="sd">        Torque vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">torque</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">torques</span><span class="p">):</span>
+      <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">torque</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Shaft </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Simulated torque response&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Torque (Nm)&quot;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Plotting shaft torques &quot;&quot;&quot;</span>
+
+<span class="c1"># Syntax is: plot_torque(time vector, torque vector)</span>
+<span class="n">plot_torque</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">torques_step</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_transient_simulation_32_0.png" src="../_images/notebooks_transient_simulation_32_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="4-Impulse-example">
+<h1>4 Impulse example<a class="headerlink" href="#4-Impulse-example" title="Permalink to this heading"></a></h1>
+<p>In this example the torque response to an impulse is simulated. The simulation is similar to the previous step excitation case. However, the impulse_next method of the excitations instance should be called instead of step_next. This is implemented in the code block below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; The impulse example is made with the same model, controller and excitation parameters. &quot;&quot;&quot;</span>
+
+<span class="c1"># Defining necessary variables</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">u0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">states_impulse</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">rpms</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Calculating states</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterations</span><span class="p">:</span>
+    <span class="n">u0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">next_step</span><span class="p">(</span><span class="n">x0</span><span class="p">[</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">rpm</span><span class="p">)</span>
+    <span class="n">u0</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">excitations</span><span class="o">.</span><span class="n">impulse_next</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">Ad</span> <span class="o">@</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">Bd</span> <span class="o">@</span> <span class="n">u0</span>
+    <span class="n">states_impulse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="n">rpms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">[</span><span class="n">drivetrain</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">rpm</span><span class="p">)</span>
+<span class="n">states_impulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">states_impulse</span><span class="p">)</span>
+<span class="n">rpms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rpms</span><span class="p">)</span>
+
+<span class="c1"># Plotting rpm</span>
+<span class="n">plot_rpm</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">rpm</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+<span class="c1"># Calculating shaft torque for shaft 1, 2 and 3</span>
+<span class="n">torques_impulse</span> <span class="o">=</span> <span class="n">shaft_torque</span><span class="p">(</span><span class="n">states_impulse</span><span class="p">,</span> <span class="p">[</span><span class="n">k1</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+
+<span class="c1"># Plotting shaft torques</span>
+<span class="n">plot_torque</span><span class="p">(</span><span class="n">iterations</span><span class="p">,</span> <span class="n">torques_impulse</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_transient_simulation_35_0.png" src="../_images/notebooks_transient_simulation_35_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_transient_simulation_35_1.png" src="../_images/notebooks_transient_simulation_35_1.png" />
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ICE_example.html" class="btn btn-neutral float-left" title="Steady-state torsional vibration in the crankshaft of an internal combustion engine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aalto-Arotor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
