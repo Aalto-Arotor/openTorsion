@@ -44,6 +44,7 @@ class Assembly:
                 copy(shaft_element) for shaft_element in shaft_elements
             ]
 
+        self.minimal_shaft_elements = None
         if gear_elements is None:
             self.gear_elements = None
         else:
@@ -56,6 +57,8 @@ class Assembly:
         self.M = self.assemble_M()
         self.C = self.assemble_C()
         self.K = self.assemble_K()
+
+        self.S, self.D = self.vib_torque_transform()
 
     def assemble_M(self):
         """
@@ -256,6 +259,51 @@ class Assembly:
 
         return A, B
 
+    def vib_torque_transform(self, C=None):
+        '''
+        Calculates the S and D matrices needed to calculate vibratory torque
+        '''
+        if C is None:
+            C = self.C
+        S = np.zeros((self.M.shape[0]-1, self.M.shape[0]))
+        idx = []
+        self.minimal_shaft_elements = np.copy(self.shaft_elements)
+        if self.gear_elements is not None:
+            for element in self.gear_elements:
+                if element.parent is not None:
+                    idx.append(element.parent.node)
+            for element in self.minimal_shaft_elements:
+                for i in idx:
+                    if i <= element.nl:
+                        element.nl -= 1
+                        element.nr -= 1
+        if self.minimal_shaft_elements is not None:
+            for element in self.minimal_shaft_elements:
+                v = np.array([element.nl, element.nl])
+                h = np.array([element.nl, element.nr])
+                S[np.ix_(v, h)] += element.K()[0]
+        else:
+            raise ValueError("Something went wrong with the gear elements in vib_torque_transform function in ot.Assembly")
+
+        if self.gear_elements is not None:
+            s = 0
+            for element in self.gear_elements:
+                if element.parent is not None:
+                    node = element.parent.node
+                    left = S[node-s][node-s] * element.transform()[0]
+                    right = S[node-s][node-s] * element.transform()[1]
+                    h = np.array([node-s, node-s + 1])
+                    v = np.array([node-s, node-s])
+                    if element.R > element.parent.R:
+                        S[np.ix_(v, h)] = left + right
+                    else:
+                        S[np.ix_(v-1, h-1)] = left + right
+                    s += 1
+        D = None
+
+        return S, D
+
+
     def C_modal(self, M, K, xi=0.02):
         """
         Full damping matrix for mechanical system obtained from modal damping matrix
@@ -295,7 +343,7 @@ class Assembly:
 
         return C
 
-    def ss_response(self, excitations, omegas, C=None):
+    def ss_response(self, excitations, omegas, C=None, C_func=None):
         """
         Calculation of the steady-state torsional response.
 
@@ -316,13 +364,16 @@ class Assembly:
         complex ndarray
             Speed response
         """
-        if C is None:
+        if C is None and C_func is None:
             C = self.C
+
         N = self.M.shape[0]
         q_matrix = np.zeros((N, len(omegas)), dtype="complex128")
         w_matrix = np.zeros((N, len(omegas)), dtype="complex128")
 
         for i, w in enumerate(omegas):
+            if C_func is not None:
+                C = C_func(w)
             receptance = np.linalg.inv(-self.M * w ** 2 + w * 1.0j * C + self.K)
             q = receptance @ excitations[:, i]
             w = q * 1.0j * w
@@ -331,21 +382,18 @@ class Assembly:
 
         return q_matrix, w_matrix
 
-    def vibratory_torque(self, excitations, omegas, k_shafts, C=None):
+
+    def vibratory_torque(self, periodicExcitation, C=None, C_func=None):
         """
         Vibratory torque calculation at one rotating speed.
 
         Parameters
         ----------
-        excitations: complex ndarray
-            A numpy array containing the excitationse each row corresponds to
-            one node, and each column corresponds to one frequency.
-        omegas: ndarray
-            Angular frequencies of the excitations
-        k_shafts: ndarray
-            Stiffness values of the shafts
+        periodicExcitation: ot.PeriodicExcitation object
+            Excitation object containing the excitation information of the system
         C: ndarray, optional
-            Damping matrix, if not given, uses the default damping matrix
+            Damping matrix, if not given, uses the default damping matrix. Can be given
+            for custom damping models.
 
         Returns
         -------
@@ -354,11 +402,21 @@ class Assembly:
         """
         if C is None:
             C = self.C
-        q_res, _ = self.ss_response(excitations, omegas, C=C)
-        q_difference = (q_res.T[:, 1:] - q_res.T[:, :-1]).T
-        T_vib = q_difference * k_shafts[:, None]
+        else:
+            self.S, self.D = self.vib_torque_transform(C)
 
-        return T_vib
+        U = periodicExcitation.U
+        omegas = periodicExcitation.omegas
+        T_vib = np.zeros((U.shape[0]-1, U.shape[1]), dtype="complex128")
+
+        q_res, w_res = self.ss_response(U, omegas, C=C, C_func=C_func)
+        for i, column in enumerate(q_res.T):
+            VT_column = self.S @ column
+            T_vib[:, i] += VT_column
+
+        T_vib_sum = np.sum(np.abs(T_vib), axis=1)
+
+        return T_vib, T_vib_sum
 
     def undamped_modal_analysis(self):
         """
