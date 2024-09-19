@@ -73,7 +73,7 @@ class PeriodicExcitation:
         return self.U
 
 
-class TransientExcitation():
+class TransientExcitation:
   """
   This class is for creating transient excitations. The excitations
   currently availible are step and impulse.
