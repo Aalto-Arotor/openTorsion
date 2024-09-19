@@ -28,6 +28,7 @@ class Gear:
         self.node = node
         self.I = I
         self.R = R
+        self.parent = parent
 
         if parent is None:
             self.stages = None

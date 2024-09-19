@@ -38,13 +38,11 @@ class Assembly:
         """
         if shaft_elements is None:
             raise DOF_mismatch_error("Shaft elements == None")
-            self.shaft_elements = None
         else:
             self.shaft_elements = [
                 copy(shaft_element) for shaft_element in shaft_elements
             ]
 
-        self.minimal_shaft_elements = None
         if gear_elements is None:
             self.gear_elements = None
         else:
@@ -58,7 +56,7 @@ class Assembly:
         self.C = self.assemble_C()
         self.K = self.assemble_K()
 
-        self.S, self.D = self.vib_torque_transform()
+        self.S, self.D, self.X = self.transform_matrices()
 
     def assemble_M(self):
         """
@@ -259,50 +257,58 @@ class Assembly:
 
         return A, B
 
-    def vib_torque_transform(self, C=None):
+    def transform_matrices(self, C=None):
         '''
-        Calculates the S and D matrices needed to calculate vibratory torque
+        Calculates the transformation matrices S, D and X needed for calculating vibratory 
+        torque and converting state-space system into minimal form.
+        
+        Parameters
+        ----------
+        C : ndarray, optional
+            Damping matrix
+
+        Returns
+        -------
+        ndarray
+            Transformation matrix S
+        ndarray
+            Transformation matrix D
+        ndarray
+            Transformation matrix X
         '''
-        if C is None:
-            C = self.C
-        S = np.zeros((self.M.shape[0]-1, self.M.shape[0]))
-        idx = []
-        self.minimal_shaft_elements = np.copy(self.shaft_elements)
-        if self.gear_elements is not None:
-            for element in self.gear_elements:
-                if element.parent is not None:
-                    idx.append(element.parent.node)
-            for element in self.minimal_shaft_elements:
-                for i in idx:
-                    if i <= element.nl:
-                        element.nl -= 1
-                        element.nr -= 1
-        if self.minimal_shaft_elements is not None:
-            for element in self.minimal_shaft_elements:
-                v = np.array([element.nl, element.nl])
+        rows = self.M.shape[0] - 1
+        cols = self.M.shape[0]
+
+        S = np.zeros((rows, self.dofs))
+        D = np.zeros((rows, self.dofs))
+        X_down = np.eye(cols)
+        Z_down = np.zeros(X_down.shape)
+
+        # Assembling S matrix
+        if self.shaft_elements is not None:
+            for i, element in enumerate(self.shaft_elements):
                 h = np.array([element.nl, element.nr])
+                v = np.array([i, i])
                 S[np.ix_(v, h)] += element.K()[0]
-        else:
-            raise ValueError("Something went wrong with the gear elements in vib_torque_transform function in ot.Assembly")
+        
+        # Assembling D matrix
+        if self.shaft_elements is not None:
+            for i, element in enumerate(self.shaft_elements):
+                h = np.array([element.nl, element.nr])
+                v = np.array([i, i])
+                D[np.ix_(v, h)] += element.C()[0]
 
+        # Adding gear constraints to S and D
         if self.gear_elements is not None:
-            s = 0
-            for element in self.gear_elements:
-                if element.parent is not None:
-                    node = element.parent.node
-                    left = S[node-s][node-s] * element.transform()[0]
-                    right = S[node-s][node-s] * element.transform()[1]
-                    h = np.array([node-s, node-s + 1])
-                    v = np.array([node-s, node-s])
-                    if element.R > element.parent.R:
-                        S[np.ix_(v, h)] = left + right
-                    else:
-                        S[np.ix_(v-1, h-1)] = left + right
-                    s += 1
-        D = None
+            E = self.E()
+            T = self.T(E)
+            S = np.dot(S, T)
+            D = np.dot(D, T)
 
-        return S, D
+        # Forming transformation matrix X
+        X = np.vstack([np.hstack([S, D]), np.hstack([Z_down, X_down])])
 
+        return S, D, X
 
     def C_modal(self, M, K, xi=0.02):
         """
@@ -403,15 +409,15 @@ class Assembly:
         if C is None:
             C = self.C
         else:
-            self.S, self.D = self.vib_torque_transform(C)
+            self.S, self.D, self.X = self.transform_matrices(C)
 
         U = periodicExcitation.U
         omegas = periodicExcitation.omegas
         T_vib = np.zeros((U.shape[0]-1, U.shape[1]), dtype="complex128")
 
         q_res, w_res = self.ss_response(U, omegas, C=C, C_func=C_func)
-        for i, column in enumerate(q_res.T):
-            VT_column = self.S @ column
+        for i, (q, w) in enumerate(zip(q_res.T, w_res.T)):
+            VT_column = self.S @ q + self.D @ w
             T_vib[:, i] += VT_column
 
         T_vib_sum = np.sum(np.abs(T_vib), axis=1)
@@ -543,6 +549,35 @@ class Assembly:
         B_sys = np.vstack([Z, M_inv])
 
         return A_sys, B_sys
+
+    def state_space_minimal(self, C=None):
+        """
+        State space matrices of the second order system in minimal form. In minimal form
+        the angular rotation states are replaced with shaft torque.
+
+        Parameters
+        ----------
+        C: ndarray, optional
+            Damping matrix, if not given, uses the default damping matrix
+
+        Returns
+        -------
+        A_min: ndarray
+            State matrix A
+        B_min: ndarray
+            Input matrix B
+        """
+
+        if C is None:
+            C = self.C
+        
+        A_sys, B_sys = self.state_space(C)
+        X_inv = LA.pinv(self.X)
+
+        A_min = self.X @ A_sys @ X_inv
+        B_min = self.X @ B_sys
+
+        return A_min, B_min
 
     def continuous_2_discrete(self, A, B, ts):
         """
