@@ -74,7 +74,9 @@ def forced_response():
     shafts.append(ot.Shaft(1, 2, None, None, k=k2, I=0))
     disks.append(ot.Disk(2, J3))
 
-    assembly = ot.Assembly(shafts, disk_elements=disks)
+    assembly = ot.Assembly(
+        shaft_elements=shafts, disk_elements=disks
+    )
     ot.Plots(assembly).plot_assembly()
 
     M, K = assembly.M, assembly.K  # Mass and stiffness matrices
