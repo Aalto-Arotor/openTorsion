@@ -50,9 +50,12 @@ if __name__ == "__main__":
     D = np.zeros((C.shape[0], B.shape[1]))
 
     # apply excitations to both motors
-    U = np.zeros((Bd.shape[1], len(sim_time)))
-    U[-3,:] = np.ones(len(sim_time)) * 1100
-    U[-1,:] = np.ones(len(sim_time)) * 650
+    excitation = ot.TransientExcitation()
+    n_gears = 2  # 1 gear removes 1 dof
+    excitation.init_U(assembly.dofs-n_gears, sim_time)
+    excitation.add_transient(1, np.ones(len(sim_time)) * 1100)
+    excitation.add_transient(3, np.ones(len(sim_time)) * 650)
+    U = excitation.U
 
     tout, yout, _ = dlsim((Ad, Bd, C, D, dt), U.T, t=sim_time)
     angle, speed = np.split(yout, 2, axis=1)
