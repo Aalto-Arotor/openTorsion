@@ -41,8 +41,7 @@ def car_drivetrain_simulation():
     Ad, Bd = assembly.continuous_2_discrete(A, B, dt)
 
     # apply excitations to both motors
-    n_gears = 2  # 1 gear removes 1 DOF
-    excitation = ot.TransientExcitation(assembly.dofs-n_gears, sim_time)
+    excitation = ot.TransientExcitation(assembly.M.shape[1], sim_time)
     excitation.add_transient(1, np.ones(len(sim_time)) * 1100)
     excitation.add_transient(3, np.ones(len(sim_time)) * 650)
     U = excitation.excitation_matrix()
@@ -61,4 +60,4 @@ def car_drivetrain_simulation():
     plt.show()
 
 if __name__ == "__main__":
-    car_drivetrain_simulation
+    car_drivetrain_simulation()

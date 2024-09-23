@@ -5,7 +5,7 @@ import unittest
 # For imports when running tests locally
 # import sys
 # from pathlib import Path
-# sys.path.append('..')
+# sys.path.append('../..')
 
 from opentorsion import (
     Shaft,
@@ -366,10 +366,76 @@ class Test(unittest.TestCase):
 
         self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
 
+    def test_frequency_domain_excitation_matrix_shape_branched_system(self):
+        correct_U_shape = (4, 9)
+
+        # inertia values
+        Jv, Jc, Jg, Jm1, Jp, Jm2 = [3100, 50, 100, 300, 110, 172]
+        # damping values
+        Cs, C1, C2 = [150, 150, 150]
+        # stiffness values
+        ks, k1, k2 = [23470, 80000*6.4423, 80000*9.994]
+
+        shafts, disks, gears = [], [], []
+        disks.append(Disk(0, I=Jv))
+        shafts.append(Shaft(0, 1, None, None, I=0, k=ks, c=Cs))
+        gear_c = Gear(1, I=Jv, R=1, parent=None)
+        gears.append(gear_c)
+        gear_g = Gear(2, I=Jg, R=2, parent=gear_c)
+        gears.append(gear_g)
+        shafts.append(Shaft(2, 3, None, None, I=0, k=k1, c=C1))
+        disks.append(Disk(3, I=Jm1))
+        gear_p = Gear(4, I=Jp, R=2, parent=gear_c)
+        gears.append(gear_p)
+        shafts.append(Shaft(4, 5, None, None, I=0, k=k2, c=C2))
+        disks.append(Disk(5, I=Jm2))
+
+        assembly = Assembly(shaft_elements=shafts, disk_elements=disks, gear_elements=gears)
+
+        dofs = assembly.M.shape[1]
+        omegas = np.arange(1, 10, 1)
+        U = PeriodicExcitation(dofs, omegas)
+        U_shape = U.excitation_matrix().shape
+
+        self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
+
     def test_time_domain_excitation_matrix_shape(self):
         correct_U_shape = (4, 9)
 
         dofs = 4
+        times = np.arange(1, 10, 1)
+        U = TransientExcitation(dofs, times)
+        U_shape = U.excitation_matrix().shape
+
+        self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
+
+    def test_time_domain_excitation_matrix_shape_branched_system(self):
+        correct_U_shape = (4, 9)
+
+        # inertia values
+        Jv, Jc, Jg, Jm1, Jp, Jm2 = [3100, 50, 100, 300, 110, 172]
+        # damping values
+        Cs, C1, C2 = [150, 150, 150]
+        # stiffness values
+        ks, k1, k2 = [23470, 80000*6.4423, 80000*9.994]
+
+        shafts, disks, gears = [], [], []
+        disks.append(Disk(0, I=Jv))
+        shafts.append(Shaft(0, 1, None, None, I=0, k=ks, c=Cs))
+        gear_c = Gear(1, I=Jv, R=1, parent=None)
+        gears.append(gear_c)
+        gear_g = Gear(2, I=Jg, R=2, parent=gear_c)
+        gears.append(gear_g)
+        shafts.append(Shaft(2, 3, None, None, I=0, k=k1, c=C1))
+        disks.append(Disk(3, I=Jm1))
+        gear_p = Gear(4, I=Jp, R=2, parent=gear_c)
+        gears.append(gear_p)
+        shafts.append(Shaft(4, 5, None, None, I=0, k=k2, c=C2))
+        disks.append(Disk(5, I=Jm2))
+
+        assembly = Assembly(shaft_elements=shafts, disk_elements=disks, gear_elements=gears)
+
+        dofs = assembly.M.shape[1]
         times = np.arange(1, 10, 1)
         U = TransientExcitation(dofs, times)
         U_shape = U.excitation_matrix().shape
