@@ -75,88 +75,13 @@ class PeriodicExcitation:
 
 class TransientExcitation:
     """
-    This class is for creating transient excitations. The excitations
-    currently availible are step and impulse.
-
-    Attributes
-    ----------
-    ts : float
-        Time step size
-    t_excite : float
-        Time instance for applying the excitation
-    magnitude : float
-        Excitation magnitude
+    This class is for creating transient excitations used in time stepping simulations.
     """
 
-    def __init__(self, ts=0, t_excite=0, magnitude=0):
+    def __init__(self, n_dofs, times):
         """
-        Parameters
-        ----------
-        ts : float
-            Time step size
-        t_excite : float
-            Time instance for applying the excitation
-        magnitude : float
-            Excitation magnitude
-        """
-
-        self.ts = ts
-        self.excite = t_excite
-        self.magnitude = magnitude
-        self.impulse = 0
-        self.n_dofs = 0
-        self.times = None
-        self.U = None
-
-    def step_next(self, t):
-        """
-        Calculates the next step excitation.
-
-        Parameters
-        ----------
-        t : float
-            Current time step
-
-        Returns
-        -------
-        float
-            Torque magnitude of the next step excitation
-        """
-
-        if t >= self.excite:
-            return self.magnitude
-        return 0
-
-    def impulse_next(self, t):
-        """
-        Calculates the next impulse excitation.
-
-        Parameters
-        ----------
-        t : float
-            Current time step
-
-        Returns
-        -------
-        float
-            Torque magnitude of the next excitation
-        """
-
-        width = 0.1
-        if self.excite <= t <= self.excite + width:
-            self.impulse += self.magnitude * (self.ts / width)
-        elif self.excite + width <= t <= self.excite + 2 * width:
-            self.impulse -= self.magnitude * (self.ts / width)
-
-        return self.impulse
-
-    def init_U(self, n_dofs, times):
-        """
-        TODO: this should be in __init__ function.
-        Currently placed here to avoid breaking code.
-
         Initializes an excitation matrix used in time-stepping simulation.
-        Used when the excitation amplitudes are known for all time steps.
+        The excitation torque values are known for all time steps.
 
         Parameters
         ----------
@@ -169,16 +94,14 @@ class TransientExcitation:
         self.times = times
         self.U = np.zeros((n_dofs, len(self.times)))
 
-        return
-
-    def add_transient(self, node, amplitudes):
+    def add_transient(self, node, torques):
         """
         Parameters
         ----------
         node : int
             Node number where excitation is inputted
-        amplitudes : ndarray
-            Excitation amplitudes corresponding to time steps used in simulation
+        torques : ndarray
+            Excitation torque values corresponding to time steps used in simulation
         """
         if self.U is None:
             raise ValueError(f"Excitation matrix U: {self.U} has not been initialized using ot.TransientExcitation.init_U")
@@ -186,14 +109,14 @@ class TransientExcitation:
         if self.n_dofs < node or node < 0:
             raise ValueError(f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}")
 
-        if len(self.times) != len(amplitudes):
-            raise ValueError(f"Length of the time vector {len(self.times)} differs from the length of the amplitude vector: {len(amplitudes)}")
+        if len(self.times) != len(torques):
+            raise ValueError(f"Length of the time vector {len(self.times)} differs from the length of the torque vector: {len(torques)}")
 
-        self.U[node, :] += amplitudes
+        self.U[node, :] += torques
 
         return
 
-    def U(self):
+    def excitation_matrix(self):
         """
         Returns
         -------

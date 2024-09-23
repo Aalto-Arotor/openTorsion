@@ -5,19 +5,12 @@ import opentorsion as ot
 
 
 def drivetrain_4mass():
-    Jv = 3100
-    Jc = 50
-    Jg = 100
-    Jm1 = 300
-    Jp = 110
-    Jm2 = 172
-
-    ks = 23470
-    k1 = 80000*6.4423
-    k2 = 80000*9.994
-    Cs = 150
-    C1 = 150
-    C2 = 150
+    # inertia values
+    Jv, Jc, Jg, Jm1, Jp, Jm2 = [3100, 50, 100, 300, 110, 172]
+    # damping values
+    Cs, C1, C2 = [150, 150, 150]
+    # stiffness values
+    ks, k1, k2 = [23470, 80000*6.4423, 80000*9.994]
 
     shafts, disks, gears = [], [], []
     disks.append(ot.Disk(0, I=Jv))
@@ -35,7 +28,7 @@ def drivetrain_4mass():
 
     assembly = ot.Assembly(shaft_elements=shafts, disk_elements=disks, gear_elements=gears)
     wn, wd, r = assembly.modal_analysis()
-    print(wn)
+    print(wn.round(2))
 
     return assembly
 
@@ -44,18 +37,15 @@ if __name__ == "__main__":
     dt = 1e-3
     sim_time = np.arange(0, 10+dt, dt)
     assembly = drivetrain_4mass()
-    A, B = assembly.state_space()
+    A, B, C, D = assembly.state_space()
     Ad, Bd = assembly.continuous_2_discrete(A, B, dt)
-    C = np.eye(Ad.shape[1])
-    D = np.zeros((C.shape[0], B.shape[1]))
 
     # apply excitations to both motors
-    excitation = ot.TransientExcitation()
     n_gears = 2  # 1 gear removes 1 dof
-    excitation.init_U(assembly.dofs-n_gears, sim_time)
+    excitation = ot.TransientExcitation(assembly.dofs-n_gears, sim_time)
     excitation.add_transient(1, np.ones(len(sim_time)) * 1100)
     excitation.add_transient(3, np.ones(len(sim_time)) * 650)
-    U = excitation.U
+    U = excitation.excitation_matrix()
 
     tout, yout, _ = dlsim((Ad, Bd, C, D, dt), U.T, t=sim_time)
     angle, speed = np.split(yout, 2, axis=1)

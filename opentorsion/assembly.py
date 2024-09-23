@@ -38,11 +38,13 @@ class Assembly:
         """
         if shaft_elements is None:
             raise DOF_mismatch_error("Shaft elements == None")
+            self.shaft_elements = None
         else:
             self.shaft_elements = [
                 copy(shaft_element) for shaft_element in shaft_elements
             ]
 
+        self.minimal_shaft_elements = None
         if gear_elements is None:
             self.gear_elements = None
         else:
@@ -259,9 +261,9 @@ class Assembly:
 
     def transform_matrices(self, C=None):
         '''
-        Calculates the transformation matrices S, D and X needed for calculating vibratory 
+        Calculates the transformation matrices S, D and X needed for calculating vibratory
         torque and converting state-space system into minimal form.
-        
+
         Parameters
         ----------
         C : ndarray, optional
@@ -290,7 +292,7 @@ class Assembly:
                 h = np.array([element.nl, element.nr])
                 v = np.array([i, i])
                 S[np.ix_(v, h)] += element.K()[0]
-        
+
         # Assembling D matrix
         if self.shaft_elements is not None:
             for i, element in enumerate(self.shaft_elements):
@@ -409,15 +411,15 @@ class Assembly:
         if C is None:
             C = self.C
         else:
-            self.S, self.D, self.X = self.transform_matrices(C)
+            self.S, self.D = self.vib_torque_transform(C)
 
         U = periodicExcitation.U
         omegas = periodicExcitation.omegas
         T_vib = np.zeros((U.shape[0]-1, U.shape[1]), dtype="complex128")
 
         q_res, w_res = self.ss_response(U, omegas, C=C, C_func=C_func)
-        for i, (q, w) in enumerate(zip(q_res.T, w_res.T)):
-            VT_column = self.S @ q + self.D @ w
+        for i, column in enumerate(q_res.T):
+            VT_column = self.S @ column
             T_vib[:, i] += VT_column
 
         T_vib_sum = np.sum(np.abs(T_vib), axis=1)
@@ -538,6 +540,10 @@ class Assembly:
             State matrix A
         B_sys: ndarray
             Input matrix B
+        C_sys: ndarray
+            Observation matrix C
+        D_sys: ndarray
+            Feedthorugh matrix D
         """
         if C is None:
             C = self.C
@@ -547,41 +553,14 @@ class Assembly:
         M_inv = LA.inv(M)
         A_sys = np.vstack([np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])])
         B_sys = np.vstack([Z, M_inv])
+        C_sys = np.eye(A_sys.shape[1])
+        D_sys = np.zeros((C_sys.shape[0], B_sys.shape[1]))
 
-        return A_sys, B_sys
-
-    def state_space_minimal(self, C=None):
-        """
-        State space matrices of the second order system in minimal form. In minimal form
-        the angular rotation states are replaced with shaft torque.
-
-        Parameters
-        ----------
-        C: ndarray, optional
-            Damping matrix, if not given, uses the default damping matrix
-
-        Returns
-        -------
-        A_min: ndarray
-            State matrix A
-        B_min: ndarray
-            Input matrix B
-        """
-
-        if C is None:
-            C = self.C
-        
-        A_sys, B_sys = self.state_space(C)
-        X_inv = LA.pinv(self.X)
-
-        A_min = self.X @ A_sys @ X_inv
-        B_min = self.X @ B_sys
-
-        return A_min, B_min
+        return A_sys, B_sys, C_sys, D_sys
 
     def continuous_2_discrete(self, A, B, ts):
         """
-        C2D computes a discrete-time model of a system (A_c,B_c) with sample time
+        Computes a discrete-time model of a system (A, B) with sample time
         ts. The function returns matrices Ad, Bd of the discrete-time system.
 
         Parameters
