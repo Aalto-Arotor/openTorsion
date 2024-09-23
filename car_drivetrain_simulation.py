@@ -33,7 +33,7 @@ def drivetrain_4mass():
     return assembly
 
 
-if __name__ == "__main__":
+def car_drivetrain_simulation():
     dt = 1e-3
     sim_time = np.arange(0, 10+dt, dt)
     assembly = drivetrain_4mass()
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     Ad, Bd = assembly.continuous_2_discrete(A, B, dt)
 
     # apply excitations to both motors
-    n_gears = 2  # 1 gear removes 1 dof
+    n_gears = 2  # 1 gear removes 1 DOF
     excitation = ot.TransientExcitation(assembly.dofs-n_gears, sim_time)
     excitation.add_transient(1, np.ones(len(sim_time)) * 1100)
     excitation.add_transient(3, np.ones(len(sim_time)) * 650)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     tout, yout, _ = dlsim((Ad, Bd, C, D, dt), U.T, t=sim_time)
     angle, speed = np.split(yout, 2, axis=1)
 
-    k1 = 80000*6.4423
+    k1 = 80000*6.4423 # stiffness value used in shaft torque calculation
     plt.subplot(211)
     plt.plot(tout, k1*(angle[:,3]-angle[:,2]), 'b')
     plt.ylabel("Torque (Nm)")
@@ -59,3 +59,6 @@ if __name__ == "__main__":
     plt.ylabel("Speed (rad/s)")
     plt.xlabel("Time (s)")
     plt.show()
+
+if __name__ == "__main__":
+    car_drivetrain_simulation

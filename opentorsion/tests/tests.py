@@ -12,8 +12,8 @@ from opentorsion import (
     Disk,
     Gear,
     Assembly,
-    SystemExcitation,
-    TransientExcitations,
+    PeriodicExcitation,
+    TransientExcitation,
     Plots,
 )
 
@@ -361,8 +361,18 @@ class Test(unittest.TestCase):
 
         dofs = 4
         omegas = np.arange(1, 10, 1)
-        U = SystemExcitation(dofs, omegas)
-        U_shape = U.excitation_amplitudes().shape
+        U = PeriodicExcitation(dofs, omegas)
+        U_shape = U.excitation_matrix().shape
+
+        self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
+
+    def test_time_domain_excitation_matrix_shape(self):
+        correct_U_shape = (4, 9)
+
+        dofs = 4
+        times = np.arange(1, 10, 1)
+        U = TransientExcitation(dofs, times)
+        U_shape = U.excitation_matrix().shape
 
         self.assertEqual(U_shape, correct_U_shape, "Excitation matrix not correct")
 
@@ -386,7 +396,7 @@ class Test(unittest.TestCase):
         )
         shafts = [Shaft(0, 1, k=400, c=1),
                   Shaft(2, 3, k=800, c=0.5)]
-       
+
         disks = [Disk(0, I=1, c=0.5),
                 Disk(1, I=1e-1, c=0.1),
                 Disk(2, I=1e-1, c=0.1),
@@ -399,7 +409,7 @@ class Test(unittest.TestCase):
         shaftline = Assembly(shafts, disks, gear_elements=gears)
         A, B = shaftline.state_space()
 
-        
+
         correct_A = correct_A.round(6).tolist()
         correct_B = correct_B.round(6).tolist()
         A = A.round(6).tolist()
@@ -432,10 +442,10 @@ class Test(unittest.TestCase):
              [4.92768675e-08, 9.72437961e-04, -4.26851591e-09],
              [-1.41886052e-13, -4.26851591e-09, 9.99923671e-05]]
         )
-        
+
         shafts = [Shaft(0, 1, k=400, c=1),
                   Shaft(2, 3, k=800, c=0.5)]
-       
+
         disks = [Disk(0, I=1, c=0.5),
                 Disk(1, I=1e-1, c=0.1),
                 Disk(2, I=1e-1, c=0.1),
@@ -448,7 +458,7 @@ class Test(unittest.TestCase):
         shaftline = Assembly(shafts, disks, gear_elements=gears)
         A, B = shaftline.state_space()
         Ad, Bd = shaftline.continuous_2_discrete(A, B, ts=1e-4)
-        
+
         correct_Ad = correct_Ad.round(8).tolist()
         correct_Bd = correct_Bd.round(8).tolist()
         Ad = Ad.round(8).tolist()
