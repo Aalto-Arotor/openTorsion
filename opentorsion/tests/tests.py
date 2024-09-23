@@ -407,7 +407,7 @@ class Test(unittest.TestCase):
         gears = [gear1, gear2]
 
         shaftline = Assembly(shafts, disks, gear_elements=gears)
-        A, B = shaftline.state_space()
+        A, B, C, D = shaftline.state_space()
 
 
         correct_A = correct_A.round(6).tolist()
