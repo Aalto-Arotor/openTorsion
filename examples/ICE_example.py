@@ -15,14 +15,14 @@ import opentorsion as ot
 
 def pressure_curve():
     """Load digitized pressure curve from csv and pass it to interpolator"""
-    file_path = glob.glob("pressure_data.csv")[0]
+    file_path = glob.glob("ICE_data/pressure_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
 
 def peak_pressures():
     """Load digitized peak pressure from csv and pass it to interpolator"""
-    file_path = glob.glob("peak_data.csv")[0]
+    file_path = glob.glob("ICE_data/peak_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
