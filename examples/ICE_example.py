@@ -1,7 +1,7 @@
 """
-Calculates the steady-state torsional vibration in the crankshaft of an internal combustion engine.
+Calculates the steady-state torsional vibration in the assembly of an internal combustion engine.
 Torque produced by each cylinder is calculated from the force produced by the pressure from ignition
-which is scaled according to the rotation speed of the crankshaft.
+which is scaled according to the rotation speed of the assembly.
 Torsional vibration analysis based on https://doi.org/10.1243/14644193JMBD126
 The model is based on Fig.4 of the original article.
 """
@@ -10,22 +10,19 @@ import matplotlib.pyplot as plt
 import glob
 import numpy as np
 import scipy
-import opentorsion
-from opentorsion import Shaft
-from opentorsion import Disk
-from opentorsion import Assembly
+import opentorsion as ot
 
 
 def pressure_curve():
     """Load digitized pressure curve from csv and pass it to interpolator"""
-    file_path = glob.glob("opentorsion/examples/ICE_example/pressure_data.csv")[0]
+    file_path = glob.glob("ICE_data/pressure_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
 
 def peak_pressures():
     """Load digitized peak pressure from csv and pass it to interpolator"""
-    file_path = glob.glob("opentorsion/examples/ICE_example/peak_data.csv")[0]
+    file_path = glob.glob("ICE_data/peak_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
@@ -65,7 +62,7 @@ def calculate_cylinder_torque(speed_rpm, num_points=500):
     """
     Calculates the torque produced by a single cylinder at given rpm.
     Torque is based on the tangential force caused by the pressure in the cylinder and the tangential component
-    of the oscillating inertial force from the crankshaft spinning.
+    of the oscillating inertial force from the assembly spinning.
 
     Parameters
     ----------
@@ -87,7 +84,7 @@ def calculate_cylinder_torque(speed_rpm, num_points=500):
 
     l_rod = 0.207  # m
     d_piston = 0.105  # m
-    r = 0.137 / 2  # m (piston stroke / 2) crankshaft radius
+    r = 0.137 / 2  # m (piston stroke / 2) assembly radius
     m_a = 2.521  # kg
 
     alpha_deg, p_curve = scaled_cylinder_pressure(speed_rpm, num_points)
@@ -142,9 +139,9 @@ def calculate_dft_components(signal, t, num_harmonics):
     return [dft[:num_harmonics], omegas[:num_harmonics]]
 
 
-def crankshaft_assembly():
+def assembly_assembly():
     """
-    A shaft-line Finite Element Model of a crankshaft based on model presented
+    A shaft-line Finite Element Model of a assembly based on model presented
     in https://doi.org/10.1243/14644193JMBD126 Fig.4.
 
     Returns
@@ -173,28 +170,32 @@ def crankshaft_assembly():
 
     c_a = 2  # absolute damping
     shafts, disks = [], []
-    disks.append(Disk(0, J2))
-    shafts.append(Shaft(0, 1, None, None, k=k2, I=0))
-    disks.append(Disk(1, J3))
-    shafts.append(Shaft(1, 2, None, None, k=k3, I=0))
-    disks.append(Disk(2, J4, c=c_a))  # cylinder 1
-    shafts.append(Shaft(2, 3, None, None, k=k4, I=0))
-    disks.append(Disk(3, J5, c=c_a))
-    shafts.append(Shaft(3, 4, None, None, k=k5, I=0))
-    disks.append(Disk(4, J6, c=c_a))
-    shafts.append(Shaft(4, 5, None, None, k=k6, I=0))
-    disks.append(Disk(5, J7, c=c_a))
-    shafts.append(Shaft(5, 6, None, None, k=k7, I=0))
-    disks.append(Disk(6, J8, c=c_a))
-    shafts.append(Shaft(6, 7, None, None, k=k8, I=0))
-    disks.append(Disk(7, J9, c=c_a))  # cylinder 6
-    shafts.append(Shaft(7, 8, None, None, k=k9, I=0))
-    disks.append(Disk(8, J10))  # flywheel
-    assembly = Assembly(shafts, disk_elements=disks)
+    disks.append(ot.Disk(0, J2))
+    shafts.append(ot.Shaft(0, 1, None, None, k=k2, I=0))
+    disks.append(ot.Disk(1, J3))
+    shafts.append(ot.Shaft(1, 2, None, None, k=k3, I=0))
+    disks.append(ot.Disk(2, J4, c=c_a))  # cylinder 1
+    shafts.append(ot.Shaft(2, 3, None, None, k=k4, I=0))
+    disks.append(ot.Disk(3, J5, c=c_a))
+    shafts.append(ot.Shaft(3, 4, None, None, k=k5, I=0))
+    disks.append(ot.Disk(4, J6, c=c_a))
+    shafts.append(ot.Shaft(4, 5, None, None, k=k6, I=0))
+    disks.append(ot.Disk(5, J7, c=c_a))
+    shafts.append(ot.Shaft(5, 6, None, None, k=k7, I=0))
+    disks.append(ot.Disk(6, J8, c=c_a))
+    shafts.append(ot.Shaft(6, 7, None, None, k=k8, I=0))
+    disks.append(ot.Disk(7, J9, c=c_a))  # cylinder 6
+    shafts.append(ot.Shaft(7, 8, None, None, k=k9, I=0))
+    disks.append(ot.Disk(8, J10))  # flywheel
+    assembly = ot.Assembly(shafts, disk_elements=disks)
+
+    plots = ot.Plots(assembly)
+    plots.plot_assembly()
+
     return assembly
 
 
-def relative_damping_C(assembly, d, w):
+def relative_damping_C(assembly, d):
     """
     Updates the damping matrix C of assembly when using frequency dependent relative damping.
 
@@ -204,49 +205,39 @@ def relative_damping_C(assembly, d, w):
         The assembly of whose damping matrix is to be updated
     d: float
         Loss factor property, used to calculate relative damping
-    w: float
-        Angular frequency of the system, used to calculate relative damping
 
     Returns
     -------
     C: ndarray
         The damping matrix assembled with new component specific damping coefficients
     """
-    if w != 0:
-        c_r = d / w
-    else:
-        c_r = 0
-    C = np.zeros((assembly.check_dof(), assembly.check_dof()))
+    def C_func(w):
+        C = np.zeros((assembly.check_dof(), assembly.check_dof()))
+        if w != 0:
+            c_r = d / w
+        else:
+            c_r = 0
 
-    if assembly.shaft_elements is not None:
-        for element in assembly.shaft_elements:
-            dof = np.array([element.nl, element.nr])
-            C[np.ix_(dof, dof)] += c_r * element.K()
+        if assembly.shaft_elements is not None:
+            for element in assembly.shaft_elements:
+                dof = np.array([element.nl, element.nr])
+                C[np.ix_(dof, dof)] += c_r * element.K()
 
-    if assembly.disk_elements is not None:
-        for element in assembly.disk_elements:
-            C[element.node, element.node] += element.C()
-
-    if assembly.gear_elements is not None:
-        for element in assembly.gear_elements:
-            C[element.node, element.node] += element.C()
-
-        # Build transformation matrix
-        E = assembly.E()
-        transform = assembly.T(E)
-        # Calculate transformed mass matrix
-        C = np.dot(np.dot(transform.T, C), transform)
-    return C
+        if assembly.disk_elements is not None:
+            for element in assembly.disk_elements:
+                C[element.node, element.node] += element.C()
+        return C
+    return C_func
 
 
-def calculate_response(crankshaft, rpm):
+def calculate_response(assembly, rpm):
     """
-    Calculates the crankshaft's response to excitation at given rpm.
+    Calculates the assembly's response to excitation at given rpm.
 
     Parameters
     ----------
-    crankshaft: openTorsion Assembly class instance
-        Opentorsion Assembly of the crankshaft
+    assembly: openTorsion Assembly class instance
+        Opentorsion Assembly of the assembly
     rpm: float
         Current rotation speed in rpm
 
@@ -256,41 +247,32 @@ def calculate_response(crankshaft, rpm):
         Array containing maximum vibratory torque at current rotation speed for each shaft
     """
     dof = 9
+    n_harmonics = 25
     cylinder_torque, alpha = calculate_cylinder_torque(rpm)
-    dft_parameters, harmonics = calculate_dft_components(cylinder_torque, alpha, 25)
+    dft_parameters, harmonics = calculate_dft_components(cylinder_torque, alpha, n_harmonics)
     q = np.zeros([dof, len(harmonics)], dtype="complex128")
-    M = crankshaft.M
-    K = crankshaft.K
-    d = 0.035
-    for i in range(len(harmonics)):
-        # build T vector
-        offset = 2  # offset to the first cylinder
-        phase_shift = 2 / 3 * np.pi
-        T = np.zeros(dof, dtype="complex128")
-        T[offset] = dft_parameters[i]
-        T[offset + 1] = dft_parameters[i] * np.exp(2.0j * phase_shift * harmonics[i])
-        T[offset + 2] = dft_parameters[i] * np.exp(-2.0j * phase_shift * harmonics[i])
-        T[offset + 3] = dft_parameters[i] * np.exp(1.0j * phase_shift * harmonics[i])
-        T[offset + 4] = dft_parameters[i] * np.exp(-1.0j * phase_shift * harmonics[i])
-        T[offset + 5] = dft_parameters[i] * np.exp(3.0j * phase_shift * harmonics[i])
-        w = harmonics[i] * rpm * 2 * np.pi / 60
-        C = relative_damping_C(crankshaft, d, w)
-        receptance = np.linalg.inv(-(w ** 2) * M + 1.0j * w * C + K)
-        q.T[i] = receptance @ T
-    # Calculate the angle difference between two consecutive disks
-    q_difference = (q.T[:, 1:] - q.T[:, :-1]).T
-    shaft_list = crankshaft.shaft_elements
-    shaft_ks = np.array([shaft.k for shaft in shaft_list])
-    # Multiply the angle difference between two disks with the connecting shaft stiffness to get
-    # the torque in the shaft
-    q_response = (shaft_ks * q_difference.T).T
-    for i in range(dof - 1):
-        shaft_i = q_response[i]
-        sum_wave = np.zeros_like(alpha)
-        for i in range(len(shaft_i)):
-            this_wave = np.real(shaft_i[i] * np.exp(1.0j * harmonics[i] * alpha))
-            sum_wave += this_wave
-    sum_response = np.sum(np.abs(q_response), axis=1)
+    M, K = assembly.M, assembly.K
+    relative_damping_coefficient = 0.035
+
+    T = np.zeros(dof, dtype="complex128")
+    firing_order = np.array([0, 4, 2, 5, 1, 3]) + 2 # +2 to have the firing order in node coordinates
+    phase_shift = 2/3 * np.pi
+
+    w_ex = harmonics*rpm*2*np.pi/60
+    excitation = ot.PeriodicExcitation(assembly.dofs, w_ex)
+
+    for node_ex in range(2, 8):
+        amplitudes, phases, omegas = [], [], []
+        for i in range(len(harmonics)):
+            omegas.append(harmonics[i]*rpm*2*np.pi/60)
+            amplitudes.append(np.abs(dft_parameters[i]))
+            phase = np.angle(dft_parameters[i])+firing_order[node_ex-2]*phase_shift*harmonics[i]
+            phases.append(phase)
+        excitation.add_sines(node_ex, omegas, amplitudes, phases)
+
+    C_rel_func = relative_damping_C(assembly, relative_damping_coefficient)
+    _, sum_response = assembly.vibratory_torque(excitation, C_func=C_rel_func)
+
     return sum_response
 
 
@@ -313,7 +295,7 @@ def plot_results(rpms, vibratory_torque):
         between flywheel and 6th cylinder
     shaft_1: ndarray
         Array containing maximum vibratory torque at all considered engine speeds for shaft
-        between crankshaft pulley and gear train
+        between assembly pulley and gear train
     """
     shaft_8 = [shaft[7] for shaft in vibratory_torque]
     plt.plot(rpms, shaft_8, c="red", label="calculated")
@@ -325,13 +307,13 @@ def plot_results(rpms, vibratory_torque):
     plt.plot(rpms, shaft_1, c="red", label="calculated")
     plt.xlabel("Engine speed (rpm)")
     plt.ylabel("Vibratory torque (Nm)")
-    plt.title("Torque between the crankshaft pulley and the gear train (Fig.32)")
+    plt.title("Torque between the assembly pulley and the gear train (Fig.32)")
     plt.figure()
     return shaft_8, shaft_1
 
 
 if __name__ == "__main__":
-    assembly = crankshaft_assembly()
+    assembly = assembly_assembly()
     rpms = np.arange(1000, 2575, 25)
     # Vibratory torque for every shaft and every considered engine speed
     vibratory_torque = []
@@ -340,5 +322,5 @@ if __name__ == "__main__":
 
     shaft_8, shaft_1 = plot_results(rpms, vibratory_torque)
     # Same plots but using openTorsions Plots class
-    plots = opentorsion.Plots(assembly)
+    plots = ot.Plots(assembly)
     plots.torque_response_plot(rpms, [np.array(shaft_8), np.array(shaft_1)], True)

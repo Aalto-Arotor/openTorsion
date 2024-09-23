@@ -1,6 +1,6 @@
-""" Simulates the transient torque response in a lumped element model. The model is 
-simulated using discerete-time state-space form. The shaft torque is calculated by 
-multilpying the rotational stiffness of the shaft with the difference in angular 
+""" Simulates the transient torque response in a lumped element model. The model is
+simulated using discerete-time state-space form. The shaft torque is calculated by
+multilpying the rotational stiffness of the shaft with the difference in angular
 displacement of its disks. """
 import matplotlib.pylab as plt
 import numpy as np
@@ -16,10 +16,84 @@ I5, d5 = 1, 5
 z1, z2 = 10, 80   # Number of teeth in gear elements
 
 
+class TransientExcitation:
+    """
+    This class is used for creating impulse and step excitations.
+
+    Attributes
+    ----------
+    ts : float
+        Time step size
+    t_excite : float
+        Time instance for applying the excitation
+    magnitude : float
+        Excitation magnitude
+    """
+
+    def __init__(self, ts=0, t_excite=0, magnitude=0):
+        """
+        Parameters
+        ----------
+        ts : float
+            Time step size
+        t_excite : float
+            Time instance for applying the excitation
+        magnitude : float
+            Excitation magnitude
+        """
+
+        self.ts = ts
+        self.excite = t_excite
+        self.magnitude = magnitude
+        self.impulse = 0
+
+    def step_next(self, t):
+        """
+        Calculates the next step excitation.
+
+        Parameters
+        ----------
+        t : float
+            Current time step
+
+        Returns
+        -------
+        float
+            Torque magnitude of the next step excitation
+        """
+
+        if t >= self.excite:
+            return self.magnitude
+        return 0
+
+    def impulse_next(self, t):
+        """
+        Calculates the next impulse excitation.
+
+        Parameters
+        ----------
+        t : float
+            Current time step
+
+        Returns
+        -------
+        float
+            Torque magnitude of the next excitation
+        """
+
+        width = 0.1
+        if self.excite <= t <= self.excite + width:
+            self.impulse += self.magnitude * (self.ts / width)
+        elif self.excite + width <= t <= self.excite + 2 * width:
+            self.impulse -= self.magnitude * (self.ts / width)
+
+        return self.impulse
+
+
 class PI():
 
   def __init__(self, Kp, Ki, dt, setpoint, limit):
-    
+
     self.Kp = Kp
     self.Ki = Ki
     self.dt = dt
@@ -28,7 +102,7 @@ class PI():
     self.integral_error = 0
 
   def next_step(self, x):
-    
+
     error = self.setpoint - x
     self.integral_error += error*self.Ki*self.dt
     out = self.integral_error + error*self.Kp
@@ -43,9 +117,9 @@ class PI():
 
 
 def drivetrain_assembly():
-    """ 
-    Creates an assembly of a drivetrain. 
-    
+    """
+    Creates an assembly of a drivetrain.
+
     Returns
     -------
     openTorsion Assembly class instance
@@ -83,7 +157,7 @@ def drivetrain_assembly():
 
 
 def shaft_torque(states, k_list, idx_list, ratio_list):
-    """ Calculates the shaft torque between the given indices. 
+    """ Calculates the shaft torque between the given indices.
 
     Parameters
     ----------
@@ -113,7 +187,7 @@ def shaft_torque(states, k_list, idx_list, ratio_list):
 
 def plot_rpm(t, rpm, target):
     """ Plots the angular velocity of a model.
-  
+
     Parameters
     ----------
     t : array
@@ -165,9 +239,9 @@ def transient_simulation():
     # Syntax is: self.continuous_2_discrete(state matrix, input matrix, time step)
     Ad, Bd = drivetrain.continuous_2_discrete(A, B, ts=0.001)
 
-    """ The model can be controlled with a simple PI controller. A PI controller calculates the error, i.e. the 
-    diffrence between the desired model output and the real model output also referred to as a negative feedback 
-    loop. This error is passed to the proportional and intergal part of the controller. In this part, the signal 
+    """ The model can be controlled with a simple PI controller. A PI controller calculates the error, i.e. the
+    diffrence between the desired model output and the real model output also referred to as a negative feedback
+    loop. This error is passed to the proportional and intergal part of the controller. In this part, the signal
     is turned into a more suitable input to the model. We use the controller PI defined above. """
     # Parameters
     Kp = 3
@@ -177,23 +251,23 @@ def transient_simulation():
     # Syntax is: ot.PI(Proportional gain, Integral gain, Time step [s], Target velocity [RPM], Limit [Nm])
     controller = PI(Kp, Ki, ts, target, limit)
 
-    """ Transient excitations for the model can be created using the TransientExcitations class. The instance 
-    can currently be used to simulate step and impulse excitations. The step and impulse excitations are obtained 
-    by calling step_next and impulse_next. They both take the current time as parameter and returns the excitation 
+    """ Transient excitations for the model can be created using the TransientExcitations class. The instance
+    can currently be used to simulate step and impulse excitations. The step and impulse excitations are obtained
+    by calling step_next and impulse_next. They both take the current time as parameter and returns the excitation
     torque. """
     # Parameters
     t_excite = 3    # Time (s)
     magnitude = 30  # Torque (Nm)
-    # Syntax is: ot.TransientExcitations(Time step [s], Time for applying excitation [s], Magnitude [Nm])
-    excitations = ot.TransientExcitations(ts, t_excite, magnitude)
+    # Syntax is: TransientExcitation(Time step [s], Time for applying excitation [s], Magnitude [Nm])
+    excitations = TransientExcitation(ts, t_excite, magnitude)
 
     """ Calculating the states of the model for a step excitation. The next state is calculated by adding the product
-    of the discrete state matrix and the state vector with the product of the discrete input matrix and the input vector. 
+    of the discrete state matrix and the state vector with the product of the discrete input matrix and the input vector.
     The input torque at the first index is obtained from the controller and the excitation torque at the last index is
     obtained from the excitation instance. """
     # Defining necessary variables
     t_end = 6                                             # Simulation time
-    x0 = np.zeros(2 * drivetrain.M.shape[0])              # Initial state 
+    x0 = np.zeros(2 * drivetrain.M.shape[0])              # Initial state
     u0 = np.zeros(drivetrain.M.shape[0])                  # Input vector
     iterations = np.linspace(0, t_end, int(t_end/ts))     # Iterations based on simulation time and time step
     rpm = 60 / (2 * np.pi)                                # Conversion from rad/s to RPM

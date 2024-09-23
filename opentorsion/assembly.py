@@ -44,6 +44,7 @@ class Assembly:
                 copy(shaft_element) for shaft_element in shaft_elements
             ]
 
+        self.minimal_shaft_elements = None
         if gear_elements is None:
             self.gear_elements = None
         else:
@@ -56,6 +57,8 @@ class Assembly:
         self.M = self.assemble_M()
         self.C = self.assemble_C()
         self.K = self.assemble_K()
+
+        self.S, self.D, self.X = self.transform_matrices()
 
     def assemble_M(self):
         """
@@ -256,6 +259,59 @@ class Assembly:
 
         return A, B
 
+    def transform_matrices(self, C=None):
+        '''
+        Calculates the transformation matrices S, D and X needed for calculating vibratory
+        torque and converting state-space system into minimal form.
+
+        Parameters
+        ----------
+        C : ndarray, optional
+            Damping matrix
+
+        Returns
+        -------
+        ndarray
+            Transformation matrix S
+        ndarray
+            Transformation matrix D
+        ndarray
+            Transformation matrix X
+        '''
+        rows = self.M.shape[0] - 1
+        cols = self.M.shape[0]
+
+        S = np.zeros((rows, self.dofs))
+        D = np.zeros((rows, self.dofs))
+        X_down = np.eye(cols)
+        Z_down = np.zeros(X_down.shape)
+
+        # Assembling S matrix
+        if self.shaft_elements is not None:
+            for i, element in enumerate(self.shaft_elements):
+                h = np.array([element.nl, element.nr])
+                v = np.array([i, i])
+                S[np.ix_(v, h)] += element.K()[0]
+
+        # Assembling D matrix
+        if self.shaft_elements is not None:
+            for i, element in enumerate(self.shaft_elements):
+                h = np.array([element.nl, element.nr])
+                v = np.array([i, i])
+                D[np.ix_(v, h)] += element.C()[0]
+
+        # Adding gear constraints to S and D
+        if self.gear_elements is not None:
+            E = self.E()
+            T = self.T(E)
+            S = np.dot(S, T)
+            D = np.dot(D, T)
+
+        # Forming transformation matrix X
+        X = np.vstack([np.hstack([S, D]), np.hstack([Z_down, X_down])])
+
+        return S, D, X
+
     def C_modal(self, M, K, xi=0.02):
         """
         Full damping matrix for mechanical system obtained from modal damping matrix
@@ -295,7 +351,7 @@ class Assembly:
 
         return C
 
-    def ss_response(self, excitations, omegas, C=None):
+    def ss_response(self, excitations, omegas, C=None, C_func=None):
         """
         Calculation of the steady-state torsional response.
 
@@ -316,13 +372,16 @@ class Assembly:
         complex ndarray
             Speed response
         """
-        if C is None:
+        if C is None and C_func is None:
             C = self.C
+
         N = self.M.shape[0]
         q_matrix = np.zeros((N, len(omegas)), dtype="complex128")
         w_matrix = np.zeros((N, len(omegas)), dtype="complex128")
 
         for i, w in enumerate(omegas):
+            if C_func is not None:
+                C = C_func(w)
             receptance = np.linalg.inv(-self.M * w ** 2 + w * 1.0j * C + self.K)
             q = receptance @ excitations[:, i]
             w = q * 1.0j * w
@@ -331,21 +390,18 @@ class Assembly:
 
         return q_matrix, w_matrix
 
-    def vibratory_torque(self, excitations, omegas, k_shafts, C=None):
+
+    def vibratory_torque(self, periodicExcitation, C=None, C_func=None):
         """
         Vibratory torque calculation at one rotating speed.
 
         Parameters
         ----------
-        excitations: complex ndarray
-            A numpy array containing the excitationse each row corresponds to
-            one node, and each column corresponds to one frequency.
-        omegas: ndarray
-            Angular frequencies of the excitations
-        k_shafts: ndarray
-            Stiffness values of the shafts
+        periodicExcitation: ot.PeriodicExcitation object
+            Excitation object containing the excitation information of the system
         C: ndarray, optional
-            Damping matrix, if not given, uses the default damping matrix
+            Damping matrix, if not given, uses the default damping matrix. Can be given
+            for custom damping models.
 
         Returns
         -------
@@ -354,11 +410,21 @@ class Assembly:
         """
         if C is None:
             C = self.C
-        q_res, _ = self.ss_response(excitations, omegas, C=C)
-        q_difference = (q_res.T[:, 1:] - q_res.T[:, :-1]).T
-        T_vib = q_difference * k_shafts[:, None]
+        else:
+            self.S, self.D = self.vib_torque_transform(C)
 
-        return T_vib
+        U = periodicExcitation.U
+        omegas = periodicExcitation.omegas
+        T_vib = np.zeros((U.shape[0]-1, U.shape[1]), dtype="complex128")
+
+        q_res, w_res = self.ss_response(U, omegas, C=C, C_func=C_func)
+        for i, column in enumerate(q_res.T):
+            VT_column = self.S @ column
+            T_vib[:, i] += VT_column
+
+        T_vib_sum = np.sum(np.abs(T_vib), axis=1)
+
+        return T_vib, T_vib_sum
 
     def undamped_modal_analysis(self):
         """
@@ -474,6 +540,10 @@ class Assembly:
             State matrix A
         B_sys: ndarray
             Input matrix B
+        C_sys: ndarray
+            Observation matrix C
+        D_sys: ndarray
+            Feedthorugh matrix D
         """
         if C is None:
             C = self.C
@@ -483,12 +553,14 @@ class Assembly:
         M_inv = LA.inv(M)
         A_sys = np.vstack([np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])])
         B_sys = np.vstack([Z, M_inv])
+        C_sys = np.eye(A_sys.shape[1])
+        D_sys = np.zeros((C_sys.shape[0], B_sys.shape[1]))
 
-        return A_sys, B_sys
+        return A_sys, B_sys, C_sys, D_sys
 
     def continuous_2_discrete(self, A, B, ts):
         """
-        C2D computes a discrete-time model of a system (A_c,B_c) with sample time
+        Computes a discrete-time model of a system (A, B) with sample time
         ts. The function returns matrices Ad, Bd of the discrete-time system.
 
         Parameters

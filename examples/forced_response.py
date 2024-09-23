@@ -46,8 +46,9 @@ def get_windmill_excitation(rpm):
         [0.0018, 0.0179, 0.0024, 0.0034, 0.0117, 0.0018, 0.0011]
     ) * generator_torque(rpm)
     amplitudes[4] += rated_T * 0.0176
+    phases = np.zeros_like(amplitudes)
 
-    return omegas, amplitudes
+    return omegas, amplitudes, phases
 
 
 def forced_response():
@@ -56,6 +57,8 @@ def forced_response():
     connected by two shafts. The assembly is given harmonic excitation as
     input. Finally, the system response is calculated and plotted.
     """
+    n_steps = 5000
+
     # Parameters of the mechanical model
     k1 = 3.67e8  # Nm/rad
     k2 = 5.496e9  # Nm/rad
@@ -71,7 +74,9 @@ def forced_response():
     shafts.append(ot.Shaft(1, 2, None, None, k=k2, I=0))
     disks.append(ot.Disk(2, J3))
 
-    assembly = ot.Assembly(shafts, disk_elements=disks)
+    assembly = ot.Assembly(
+        shaft_elements=shafts, disk_elements=disks
+    )
     ot.Plots(assembly).plot_assembly()
 
     M, K = assembly.M, assembly.K  # Mass and stiffness matrices
@@ -81,33 +86,22 @@ def forced_response():
     A, B = assembly.state_matrix(C)
     lam, vec = assembly.undamped_modal_analysis()
 
-    VT_element1 = []
-    VT_element2 = []
+    VT_sum_result = np.zeros((2, n_steps))
 
-    # The excitation depends on the rotational speed of the system.
-    # Here the response is calculated at each rotational speed.
-    # The responses at each rotational speed are summed to get the total response.
-    for rpm in np.linspace(0.1, 25, 5000):
-        omegas, amplitudes = get_windmill_excitation(rpm)
-        excitations = np.zeros((M.shape[0], omegas.shape[0]), dtype="complex128")
-        excitations[2] = amplitudes  # Excitation acts on the generator side
-
-        T_vib = assembly.vibratory_torque(
-            excitations, omegas, k_shafts=np.array([k1, k2]), C=C
-        )
-
-        VT_element1.append(np.sum(np.abs(T_vib[0])))
-        VT_element2.append(np.sum(np.abs(T_vib[1])))
-
-    T_e = np.array(
-        [np.array(VT_element1), np.array(VT_element2)]
-    )  # Total response (shaft torque)
+    # Calculate response for each rotating speed
+    for i, rpm in enumerate(np.linspace(0.1, 25, n_steps)):
+        omegas, amplitudes, phases = get_windmill_excitation(rpm)
+        excitation = ot.PeriodicExcitation(assembly.dofs, omegas)
+        excitation.add_sines(2, omegas, amplitudes, phases)
+        _, T_vib_sum = assembly.vibratory_torque(excitation, C=C)
+        VT_sum_result[:, i] = T_vib_sum
 
     plot_tools = ot.Plots(assembly)
-    plot_tools.torque_response_plot(np.linspace(0.1, 25, 5000), T_e, show_plot=True)
+    plot_tools.torque_response_plot(np.linspace(0.1, 25, n_steps), VT_sum_result, show_plot=True)
 
     return
 
 
 if __name__ == "__main__":
     forced_response()
+
