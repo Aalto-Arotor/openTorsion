@@ -411,7 +411,7 @@ class Assembly:
         if C is None:
             C = self.C
         else:
-            self.S, self.D = self.vib_torque_transform(C)
+            self.S, self.D, _ = self.transform_matrices(C)
 
         U = periodicExcitation.U
         omegas = periodicExcitation.omegas
