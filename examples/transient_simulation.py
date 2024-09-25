@@ -234,7 +234,7 @@ def plot_torque(t, torques):
 def transient_simulation():
     """ Creating model assembly and calculating the discrete state and input matrices. """
     drivetrain = drivetrain_assembly()
-    A, B = drivetrain.state_space()
+    A, B, _, _ = drivetrain.state_space()
     ts = 0.001  # Time step
     # Syntax is: self.continuous_2_discrete(state matrix, input matrix, time step)
     Ad, Bd = drivetrain.continuous_2_discrete(A, B, ts=0.001)
