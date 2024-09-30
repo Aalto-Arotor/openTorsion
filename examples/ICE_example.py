@@ -15,14 +15,14 @@ import opentorsion as ot
 
 def pressure_curve():
     """Load digitized pressure curve from csv and pass it to interpolator"""
-    file_path = glob.glob("ICE_data/pressure_data.csv")[0]
+    file_path = glob.glob("examples/ICE_data/pressure_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
 
 def peak_pressures():
     """Load digitized peak pressure from csv and pass it to interpolator"""
-    file_path = glob.glob("ICE_data/peak_data.csv")[0]
+    file_path = glob.glob("examples/ICE_data/peak_data.csv")[0]
     curve = np.genfromtxt(file_path, delimiter=";")
     return scipy.interpolate.interp1d(curve[:, 0], curve[:, 1])
 
@@ -136,7 +136,7 @@ def calculate_dft_components(signal, t, num_harmonics):
     dft = np.fft.rfft(signal) / len(signal)
     dft[1:] *= 2
     omegas = np.fft.rfftfreq(len(signal)) * 1 / (t[1] - t[0]) * 2 * np.pi
-    return [dft[:num_harmonics], omegas[:num_harmonics]]
+    return [dft[1:num_harmonics], omegas[1:num_harmonics]]
 
 
 def assembly_assembly():
@@ -225,7 +225,7 @@ def relative_damping_C(assembly, d):
 
         if assembly.disk_elements is not None:
             for element in assembly.disk_elements:
-                C[element.node, element.node] += element.C()
+                C[element.node, element.node] += element.C()[0]
         return C
     return C_func
 
