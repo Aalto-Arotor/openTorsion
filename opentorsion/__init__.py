@@ -6,4 +6,5 @@ from opentorsion.plots import Plots
 from opentorsion.excitation import PeriodicExcitation
 from opentorsion.excitation import TransientExcitation
 from opentorsion.utils import DOF_mismatch_error
+from opentorsion.parser import Parser
 
