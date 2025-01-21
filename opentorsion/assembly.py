@@ -59,6 +59,24 @@ class Assembly:
         self.K = self.assemble_K()
 
         self.S, self.D, self.X = self.transform_matrices()
+    
+    @classmethod
+    def from_tors(cls, json_data):
+        """
+        Create an Assembly instance from a JSON string or dictionary adhering to the TORS format.
+
+        Parameters
+        ----------
+        json_data: dict
+            JSON dictionary with assembly data in the TORS format
+
+        Returns
+        ----------
+        Assembly: An instance of the Assembly class.
+        """
+        from opentorsion.parser import Parser
+        
+        return Parser.from_tors(json_data)[0]
 
     def assemble_M(self):
         """
