@@ -109,13 +109,15 @@ def generator_torque(rpm):
 
     return (rated_T * 15 / rpm ) if rpm < 22 else 0
 
+
 def get_windmill_excitation(rpm):
     """ 18 Cogging torque and torque ripple as harmonic excitation.
     (Table III from https://doi.org/10.1109/TIE .2010.2087301) """
     vs = np.array([4, 6, 8, 10, 12, 14, 16])
-    rated_T, amplitudes = 2.9e6, generator_torque(rpm) * np.array([0.0018, 0.0179, 0.0024, 0.0034, 0.117, 0.0018, 0.0011])
+    rated_T, amplitudes = 2.9e6, generator_torque(rpm) * np.array([0.0018, 0.0179, 0.0024, 0.0034, 0.0117, 0.0018, 0.0011])
     amplitudes[4] += rated_T * 0.0176
     return 2*np.pi*vs*rpm, amplitudes, np.zeros_like(amplitudes)
+
 
 def calculation_sopanen():
     n_steps = 5000
@@ -123,20 +125,12 @@ def calculation_sopanen():
     for i, rpm in enumerate(np.linspace(0.1, 25, n_steps)):
         omegas, amplitudes, phases = get_windmill_excitation(rpm)
         exc = np.zeros([3, len(amplitudes)])
-        # print(exc)
         exc[2] = amplitudes
-        # print(exc)
-        # print("\n")
-        # print(exc)
         T_v, T_e = vibratory_torque(M, C, K, exc, omegas)
-        # res[:, i] = np.abs(np.sum(T_e, axis=1))
         res[:, i] = T_e
 
     plt.plot(np.linspace(0.1, 25, n_steps), res[0]/1000, c="b")
     plt.plot(np.linspace(0.1, 25, n_steps), res[1]/1000, c="r")
-    # plt.plot(np.linspace(0.1, 25, n_steps), res[2]/1000)
-    
-    
     
 
 if __name__ == "__main__":
