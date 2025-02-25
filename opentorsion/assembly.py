@@ -25,6 +25,7 @@ class Assembly:
         shaft_elements,
         disk_elements=None,
         gear_elements=None,
+        elastic_gear_elements=None
     ):
         """
         Parameters
@@ -44,11 +45,17 @@ class Assembly:
                 copy(shaft_element) for shaft_element in shaft_elements
             ]
 
-        self.minimal_shaft_elements = None
         if gear_elements is None:
             self.gear_elements = None
         else:
             self.gear_elements = [copy(gear_element) for gear_element in gear_elements]
+
+        if elastic_gear_elements is None:
+            self.elastic_gear_elements = None
+        else:
+            self.elastic_gear_elements = [
+                copy(elastic_gear_element) for elastic_gear_element in elastic_gear_elements
+            ]
 
         self.disk_elements = disk_elements
 
@@ -99,6 +106,10 @@ class Assembly:
             for element in self.disk_elements:
                 M[element.node, element.node] += element.M()
 
+        if self.elastic_gear_elements is not None:
+            for element in self.elastic_gear_elements:
+                M[element.node, element.node] += element.M()
+
         if self.gear_elements is not None:
             for element in self.gear_elements:
                 M[element.node, element.node] += element.M()
@@ -131,6 +142,12 @@ class Assembly:
         if self.disk_elements is not None:
             for element in self.disk_elements:
                 K[element.node, element.node] += element.K()
+
+        if self.elastic_gear_elements is not None:
+            for element in self.elastic_gear_elements:
+                if element.parent is not None:
+                    dofs = np.array([element.parent.node, element.node])
+                    K[np.ix_(dofs, dofs)] += element.K()
 
         if self.gear_elements is not None:
             # Build transformation matrix
