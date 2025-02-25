@@ -3,34 +3,34 @@ import opentorsion as ot
 
 # MODEL PARAMETERS
 # Shafts
-k1 = 1.2e6
-k2 = 5.3e5
-k3 = 3.4e6
-k4_gear = 2.1e8
+k1 = 4.1e6
+k2 = 3.3e5
+k3 = 1.4e5
+k4_gear = 1.5e8
 k5 = 3.1e5
-k6 = 3.8e5
-k8 = 1.3e5
-k9 = 1.7e5
-k11 = 8.5e4
+k6 = 7.4e5
+k8 = 1.3e6
+k9 = 8.7e5
+k11 = 1.5e6
 
 # Inertias
-I1 = 25
-I2 = 0.8
+I1 = 41
+I2 = 1.5
 I3 = 0.6
-I4 = 73
-I5 = 0.2
-I6 = 0.5
-I7 = 0.6
-I8 = 0.01
-I9 = 0.08
-I10 = 0.01
-I11 = 0.06
-I12 = 0.008
+I4 = 34
+I5 = 0.8
+I6 = 3.5
+I7 = 1.2
+I8 = 0.09
+I9 = 1.2
+I10 = 0.8
+I11 = 0.4
+I12 = 0.05
 
 # Gear ratios
-r5 = 1/5
-r8 = 1/10
-r11 = 1/13
+r5 = 1/8
+r8 = 1/3
+r11 = 1/20
 
 def model():
     # Shaft elements

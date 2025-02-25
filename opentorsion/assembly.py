@@ -65,8 +65,11 @@ class Assembly:
         self.C = self.assemble_C()
         self.K = self.assemble_K()
 
-        self.S, self.D, self.X = self.transform_matrices()
-    
+        if gear_elements is not None and elastic_gear_elements is not None:
+            raise NotImplementedError("Support for assmeblies with both rigid and elastic gear elements is not implemented.")
+        else:
+            self.S, self.D, self.X = self.transform_matrices()
+
     @classmethod
     def from_tors(cls, json_data):
         """
@@ -321,26 +324,39 @@ class Assembly:
         X_down = np.eye(cols)
         Z_down = np.zeros(X_down.shape)
 
-        # Assembling S matrix
-        if self.shaft_elements is not None:
-            for i, element in enumerate(self.shaft_elements):
-                h = np.array([element.nl, element.nr])
-                v = np.array([i, i])
-                S[np.ix_(v, h)] += element.K()[0]
+        if self.elastic_gear_elements is not None:
+            # Assembling S and D matrix (with elastic gear elements)
+            if self.shaft_elements is not None:
+                for i, element in enumerate(self.shaft_elements):
+                    h = np.array([element.nl, element.nr])
+                    v = np.array([element.nl, element.nl])
+                    S[np.ix_(v, h)] += element.K()[0]
+                    D[np.ix_(v, h)] += element.C()[0]
+            
+            # Adding elastic gears to S and D
+            if self.elastic_gear_elements is not None:
+                for element in self.elastic_gear_elements:
+                    if element.parent is not None:
+                        h = np.array([element.parent.node, element.node])
+                        v = np.array([element.parent.node, element.parent.node])
+                        S[np.ix_(v, h)] += element.K()[0]
+                        D[np.ix_(v, h)] += element.C()[0]
 
-        # Assembling D matrix
-        if self.shaft_elements is not None:
-            for i, element in enumerate(self.shaft_elements):
-                h = np.array([element.nl, element.nr])
-                v = np.array([i, i])
-                D[np.ix_(v, h)] += element.C()[0]
+        else:
+            # Assembling S and D matrix (without elastic gear elements)
+            if self.shaft_elements is not None:
+                for i, element in enumerate(self.shaft_elements):
+                    h = np.array([element.nl, element.nr])
+                    v = np.array([i, i])
+                    S[np.ix_(v, h)] += element.K()[0]
+                    D[np.ix_(v, h)] += element.C()[0]
 
-        # Adding gear constraints to S and D
-        if self.gear_elements is not None:
-            E = self.E()
-            T = self.T(E)
-            S = np.dot(S, T)
-            D = np.dot(D, T)
+            # Adding gear constraints to S and D
+            if self.gear_elements is not None:
+                E = self.E()
+                T = self.T(E)
+                S = np.dot(S, T)
+                D = np.dot(D, T)
 
         # Forming transformation matrix X
         X = np.vstack([np.hstack([S, D]), np.hstack([Z_down, X_down])])
