@@ -117,7 +117,7 @@ class Plots:
         modes : int
             Number of eigenodes to be plotted
         """
-        if self.assembly.gear_elements is not None:
+        if self.assembly.gear_elements is not None or self.assembly.elastic_gear_elements is not None:
             raise NotImplementedError("Support for geared assemblies not implemented")
         if self.assembly.dofs < modes:
             modes = self.assembly.dofs
@@ -179,8 +179,13 @@ class Plots:
 
     def plot_assembly(self):
         """
-        Plots the given assembly as disk and spring elements
+        Plots the given assembly as disk and spring elements. Systems with elastic gears 
+        are not supported. 
         """
+        
+        if self.assembly.elastic_gear_elements is not None:
+            raise NotImplementedError("Support for elastic geared assemblies not implemented")
+
         fig, ax = plt.subplots(figsize=(5, 4))
         self.plot_on_ax(self.assembly, ax)
         ax.set_xticks(np.arange(0, self.assembly.dofs, step=1))
