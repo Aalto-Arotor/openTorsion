@@ -1,4 +1,6 @@
+# flake8: noqa
 from copy import copy
+
 import numpy as np
 from scipy import linalg as LA
 
@@ -48,14 +50,16 @@ class Assembly:
         if gear_elements is None:
             self.gear_elements = None
         else:
-            self.gear_elements = [copy(gear_element) for gear_element in gear_elements]
+            self.gear_elements = [
+                copy(gear_element) for gear_element in gear_elements
+            ]
 
         if elastic_gear_elements is None:
             self.elastic_gear_elements = None
         else:
             self.elastic_gear_elements = [
-              copy(elastic_gear_element) 
-              for elastic_gear_element in elastic_gear_elements
+                copy(elastic_gear_element)
+                for elastic_gear_element in elastic_gear_elements
             ]
 
         self.disk_elements = disk_elements
@@ -387,7 +391,9 @@ class Assembly:
         M_modal = phi.T @ M @ phi
 
         # Nondiagonal elements are removed to prevent floating point error and inverse square root is applied
-        M_modal_inv = LA.fractional_matrix_power(np.diag(np.diag(M_modal)), -0.5)
+        M_modal_inv = LA.fractional_matrix_power(
+            np.diag(np.diag(M_modal)), -0.5
+        )
 
         # The mode shape matrix is normalized by multiplying with the inverse modal matrix
         phi_norm = phi @ M_modal_inv
@@ -600,7 +606,9 @@ class Assembly:
         Z = np.zeros(M.shape)
         I_mat = np.eye(M.shape[0])
         M_inv = LA.inv(M)
-        A_sys = np.vstack([np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])])
+        A_sys = np.vstack(
+            [np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])]
+        )
         B_sys = np.vstack([Z, M_inv])
         C_sys = np.eye(A_sys.shape[1])
         D_sys = np.zeros((C_sys.shape[0], B_sys.shape[1]))

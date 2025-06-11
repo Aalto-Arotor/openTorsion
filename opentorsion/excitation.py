@@ -1,3 +1,4 @@
+# flake8: noqa
 import numpy as np
 
 
@@ -26,12 +27,11 @@ class PeriodicExcitation:
         if n_dofs <= 0 or len(omegas) <= 0:
             raise ValueError("Number of dofs and components must be positive")
         self.n_dofs = n_dofs
-        self.n_components  = len(omegas)
+        self.n_components = len(omegas)
         # Angular frequencies of the excitations (rad/s)
         self.omegas = omegas
         # Excitation matrix of shape (n_dofs, n_excitation_components)
         self.U = np.zeros([self.n_dofs, self.n_components], dtype=complex)
-
 
     def add_sines(self, node, angular_frequency, amplitude, phase):
         """
@@ -48,15 +48,25 @@ class PeriodicExcitation:
         amplitudes : ndarray
             Amplitudes corresponding to the frequencies [Nm]
         """
-        angular_frequency, amplitude, phase = np.array(angular_frequency), np.array(amplitude), np.array(phase)
+        angular_frequency, amplitude, phase = (
+            np.array(angular_frequency),
+            np.array(amplitude),
+            np.array(phase),
+        )
         if self.n_dofs < node or node < 0:
-            raise ValueError(f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}")
+            raise ValueError(
+                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"
+            )
 
-        if len(angular_frequency) != len(amplitude) or len(angular_frequency) != len(phase):
-            raise ValueError(f"Length of the angular frequency vector {len(angular_frequency)} differs from the length of the amplitude vector: {len(amplitude)} or phase vector: {len(phase)}")
+        if len(angular_frequency) != len(amplitude) or len(
+            angular_frequency
+        ) != len(phase):
+            raise ValueError(
+                f"Length of the angular frequency vector {len(angular_frequency)} differs from the length of the amplitude vector: {len(amplitude)} or phase vector: {len(phase)}"
+            )
 
         for i, (a, p) in enumerate(zip(amplitude, phase)):
-            self.U[node, i] += a*np.exp(1j*p)
+            self.U[node, i] += a * np.exp(1j * p)
 
         return
 
@@ -104,13 +114,19 @@ class TransientExcitation:
             Excitation torque values corresponding to time steps used in simulation
         """
         if self.U is None:
-            raise ValueError(f"Excitation matrix U: {self.U} has not been initialized using ot.TransientExcitation.init_U")
+            raise ValueError(
+                f"Excitation matrix U: {self.U} has not been initialized using ot.TransientExcitation.init_U"
+            )
 
         if self.n_dofs < node or node < 0:
-            raise ValueError(f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}")
+            raise ValueError(
+                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"
+            )
 
         if len(self.times) != len(torques):
-            raise ValueError(f"Length of the time vector {len(self.times)} differs from the length of the torque vector: {len(torques)}")
+            raise ValueError(
+                f"Length of the time vector {len(self.times)} differs from the length of the torque vector: {len(torques)}"
+            )
 
         self.U[node, :] += torques
 

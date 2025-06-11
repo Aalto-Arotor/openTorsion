@@ -1,6 +1,8 @@
-import numpy as np
+# flake8: noqa
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.signal import dlsim
+
 import opentorsion as ot
 
 
@@ -10,7 +12,7 @@ def drivetrain_4mass():
     # damping values
     Cs, C1, C2 = [150, 150, 150]
     # stiffness values
-    ks, k1, k2 = [23470, 80000*6.4423, 80000*9.994]
+    ks, k1, k2 = [23470, 80000 * 6.4423, 80000 * 9.994]
 
     shafts, disks, gears = [], [], []
     disks.append(ot.Disk(0, I=Jv))
@@ -26,7 +28,9 @@ def drivetrain_4mass():
     shafts.append(ot.Shaft(4, 5, None, None, I=0, k=k2, c=C2))
     disks.append(ot.Disk(5, I=Jm2))
 
-    assembly = ot.Assembly(shaft_elements=shafts, disk_elements=disks, gear_elements=gears)
+    assembly = ot.Assembly(
+        shaft_elements=shafts, disk_elements=disks, gear_elements=gears
+    )
     wn, wd, r = assembly.modal_analysis()
     print(wn.round(2))
 
@@ -35,7 +39,7 @@ def drivetrain_4mass():
 
 def car_drivetrain_simulation():
     dt = 1e-3
-    sim_time = np.arange(0, 10+dt, dt)
+    sim_time = np.arange(0, 10 + dt, dt)
     assembly = drivetrain_4mass()
     A, B, C, D = assembly.state_space()
     Ad, Bd = assembly.continuous_2_discrete(A, B, dt)
@@ -49,15 +53,16 @@ def car_drivetrain_simulation():
     tout, yout, _ = dlsim((Ad, Bd, C, D, dt), U.T, t=sim_time)
     angle, speed = np.split(yout, 2, axis=1)
 
-    k1 = 80000*6.4423 # stiffness value used in shaft torque calculation
+    k1 = 80000 * 6.4423  # stiffness value used in shaft torque calculation
     plt.subplot(211)
-    plt.plot(tout, k1*(angle[:,3]-angle[:,2]), 'b')
+    plt.plot(tout, k1 * (angle[:, 3] - angle[:, 2]), "b")
     plt.ylabel("Torque (Nm)")
     plt.subplot(212)
-    plt.plot(tout, -speed[:,2], 'b')
+    plt.plot(tout, -speed[:, 2], "b")
     plt.ylabel("Speed (rad/s)")
     plt.xlabel("Time (s)")
     plt.show()
+
 
 if __name__ == "__main__":
     car_drivetrain_simulation()

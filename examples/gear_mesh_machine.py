@@ -1,4 +1,5 @@
 import numpy as np
+
 import opentorsion as ot
 
 # MODEL PARAMETERS
@@ -28,9 +29,10 @@ I11 = 0.4
 I12 = 0.05
 
 # Gear ratios
-r5 = 1/8
-r8 = 1/3
-r11 = 1/20
+r5 = 1 / 8
+r8 = 1 / 3
+r11 = 1 / 20
+
 
 def model():
     # Shaft elements
@@ -57,7 +59,20 @@ def model():
     disk10 = ot.Disk(9, I=I10)
     disk11 = ot.Disk(10, I=I11)
     disk12 = ot.Disk(11, I=I12)
-    disks = [disk1, disk2, disk3, disk4, disk5, disk6, disk7, disk8, disk9, disk10, disk11, disk12]
+    disks = [
+        disk1,
+        disk2,
+        disk3,
+        disk4,
+        disk5,
+        disk6,
+        disk7,
+        disk8,
+        disk9,
+        disk10,
+        disk11,
+        disk12,
+    ]
 
     # Elastic gear elements
     gear4 = ot.ElasticGear(3, I=0, R=1)
@@ -75,10 +90,13 @@ if __name__ == "__main__":
     machine_train = model()
 
     # Perform undamped modal analysis and sort eigen frequencies
-    wn, _, = machine_train.undamped_modal_analysis()
+    (
+        wn,
+        _,
+    ) = machine_train.undamped_modal_analysis()
     wn = sorted(wn, key=np.abs)
 
     # Print natural frequencies of machine train
-    print('Natural frequencies')
+    print("Natural frequencies")
     for i, f in enumerate(np.real(wn[1:])):
         print(f"{i+1}: {np.sqrt(f)/(2*np.pi)*60}")
