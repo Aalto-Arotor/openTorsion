@@ -11,6 +11,9 @@ coverage = "*"
 
 [dev-packages]
 pre-commit = "*"
+isort = "*"
+black = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.11"
