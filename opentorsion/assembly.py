@@ -105,15 +105,15 @@ class Assembly:
 
         if self.disk_elements is not None:
             for element in self.disk_elements:
-                M[element.node, element.node] += element.M()
+                M[np.ix_([element.node], [element.node])] += element.M()
 
         if self.elastic_gear_elements is not None:
             for element in self.elastic_gear_elements:
-                M[element.node, element.node] += element.M()
+                M[np.ix_([element.node], [element.node])] += element.M()
 
         if self.gear_elements is not None:
             for element in self.gear_elements:
-                M[element.node, element.node] += element.M()
+                M[np.ix_([element.node], [element.node])] += element.M()
 
             # Build transformation matrix
             E = self.E()
@@ -142,7 +142,7 @@ class Assembly:
 
         if self.disk_elements is not None:
             for element in self.disk_elements:
-                K[element.node, element.node] += element.K()
+                K[np.ix_([element.node], [element.node])] += element.K()
 
         if self.elastic_gear_elements is not None:
             for element in self.elastic_gear_elements:
@@ -192,7 +192,7 @@ class Assembly:
 
         if self.disk_elements is not None:
             for element in self.disk_elements:
-                C[element.node, element.node] += element.C()
+                C[np.ix_([element.node], [element.node])] += element.C()
 
         if self.elastic_gear_elements is not None:
             for element in self.elastic_gear_elements:
@@ -202,7 +202,7 @@ class Assembly:
 
         if self.gear_elements is not None:
             for element in self.gear_elements:
-                C[element.node, element.node] += element.C()
+                C[np.ix_([element.node], [element.node])] += element.C()
 
             # Build transformation matrix
             E = self.E()
