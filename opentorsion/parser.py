@@ -1,4 +1,3 @@
-# flake8: noqa
 class Parser:
     """
     This class includes methods for parsing different types of input files into
@@ -11,12 +10,14 @@ class Parser:
     @staticmethod
     def from_tors(json):
         """
-        Parse a JSON object adhering to the TORS format into an assembly and a list of exciations.
+        Parse a JSON object adhering to the TORS format into an assembly and a
+        list of excitations.
 
         Parameters
         ----------
         json: dict
-            JSON object containing the assembly and excitation data in TORS format
+            JSON object containing the assembly and excitation data in TORS
+            format
 
         Returns
         ----------
@@ -54,7 +55,7 @@ class Parser:
             for connection in structure:
                 if connection[0].split(".")[0] == component["name"]:
                     output_element = connection[0].split(".")[1]
-                    # assumes input element of a component is always its starting element
+                    # assumes input element of a component is always its starting element  # noqa: E501
                     connected_components[output_element] = connection[1].split(
                         "."
                     )[0]
@@ -62,7 +63,7 @@ class Parser:
             for element in component["elements"]:
                 elem_name = f"{component['name']}.{element['name']}"
 
-                # add element and excitation to elements and excitations variables
+                # add element and excitation to elements and excitations variables  # noqa: E501
                 if element["type"] == "Disk":
                     # if there's already a disk on the same node, combine them
                     last_disk_key = (
@@ -159,7 +160,7 @@ class Parser:
 
         if len(starting_components) > 1:
             raise ValueError(
-                "Tors file contains more than one group of connected components."
+                "Tors file contains more than one group of connected components."  # noqa: E501
             )
         elif len(starting_components) == 0:
             if len(components) == 1:

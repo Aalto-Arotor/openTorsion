@@ -1,4 +1,3 @@
-# flake8: noqa
 import numpy as np
 
 
@@ -55,14 +54,14 @@ class PeriodicExcitation:
         )
         if self.n_dofs < node or node < 0:
             raise ValueError(
-                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"
+                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"  # noqa: E501
             )
 
         if len(angular_frequency) != len(amplitude) or len(
             angular_frequency
         ) != len(phase):
             raise ValueError(
-                f"Length of the angular frequency vector {len(angular_frequency)} differs from the length of the amplitude vector: {len(amplitude)} or phase vector: {len(phase)}"
+                f"Length of the angular frequency vector {len(angular_frequency)} differs from the length of the amplitude vector: {len(amplitude)} or phase vector: {len(phase)}"  # noqa: E501
             )
 
         for i, (a, p) in enumerate(zip(amplitude, phase)):
@@ -85,7 +84,8 @@ class PeriodicExcitation:
 
 class TransientExcitation:
     """
-    This class is for creating transient excitations used in time stepping simulations.
+    This class is for creating transient excitations used in time stepping
+    simulations.
     """
 
     def __init__(self, n_dofs, times):
@@ -111,21 +111,22 @@ class TransientExcitation:
         node : int
             Node number where excitation is inputted
         torques : ndarray
-            Excitation torque values corresponding to time steps used in simulation
+            Excitation torque values corresponding to time steps used in
+            simulation
         """
         if self.U is None:
             raise ValueError(
-                f"Excitation matrix U: {self.U} has not been initialized using ot.TransientExcitation.init_U"
+                f"Excitation matrix U: {self.U} has not been initialized using ot.TransientExcitation.init_U"  # noqa: E501
             )
 
         if self.n_dofs < node or node < 0:
             raise ValueError(
-                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"
+                f"Input dof: {node} outside the number of dofs of the system: {self.n_dofs}"  # noqa: E501
             )
 
         if len(self.times) != len(torques):
             raise ValueError(
-                f"Length of the time vector {len(self.times)} differs from the length of the torque vector: {len(torques)}"
+                f"Length of the time vector {len(self.times)} differs from the length of the torque vector: {len(torques)}"  # noqa: E501
             )
 
         self.U[node, :] += torques

@@ -1,4 +1,3 @@
-# flake8: noqa
 from copy import copy
 
 import numpy as np
@@ -75,7 +74,8 @@ class Assembly:
     @classmethod
     def from_tors(cls, json_data):
         """
-        Create an Assembly instance from a JSON string or dictionary adhering to the TORS format.
+        Create an Assembly instance from a JSON string or dictionary adhering
+        to the TORS format.
 
         Parameters
         ----------
@@ -92,7 +92,7 @@ class Assembly:
 
     def assemble_M(self):
         """
-        Assembles the mass matrix
+        Assembles the mass matrix.
 
         Returns
         -------
@@ -129,7 +129,7 @@ class Assembly:
 
     def assemble_K(self):
         """
-        Assembles the stiffness matrix
+        Assembles the stiffness matrix.
 
         Returns
         -------
@@ -165,7 +165,7 @@ class Assembly:
 
     def nongearK(self):
         """
-        Assembles the stiffness matrix when gears are not considered
+        Assembles the stiffness matrix when gears are not considered.
         """
 
         K = np.zeros((self.dofs, self.dofs))
@@ -179,12 +179,13 @@ class Assembly:
 
     def assemble_C(self):
         """
-        Assembles the damping matrix
+        Assembles the damping matrix.
 
         Returns
         -------
         ndarray
-            The damping matrix assembled with component specific damping coefficients
+            The damping matrix assembled with component specific damping
+            coefficients.
         """
 
         C = np.zeros((self.dofs, self.dofs))
@@ -218,7 +219,7 @@ class Assembly:
 
     def E(self):
         """
-        Assembles the gear constraint matrix
+        Assembles the gear constraint matrix.
 
         Returns
         -------
@@ -240,7 +241,7 @@ class Assembly:
 
     def T(self, E):
         """
-        Method for determining gear constraint transformation matrix
+        Method for determining gear constraint transformation matrix.
 
         Parameters
         ----------
@@ -261,10 +262,10 @@ class Assembly:
             # (1) Set T_i = I(n+1) (The identity matrix of dimension (n_i + 1))
             T_i = np.eye(r)
 
-            # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1
+            # (2) Define k as the position of the entry having the largest absolute value in the ith column of E_i-1  # noqa: E501
             k = np.argmax(np.abs(E_i[:, i]))
 
-            # (3) Replace row k of T_i with the transpose of column i from E_(i-1)
+            # (3) Replace row k of T_i with the transpose of column i from E_(i-1)  # noqa: E501
             T_i[k] = E_i[:, i]
 
             # (4) Divide this row by the negative of its kth element
@@ -280,7 +281,7 @@ class Assembly:
 
     def state_matrix(self, C=None):
         """
-        Assembles the state matrices for eigenvalue calculation
+        Assembles the state matrices for eigenvalue calculation.
 
         Parameters
         ----------
@@ -307,8 +308,9 @@ class Assembly:
 
     def transform_matrices(self, C=None):
         """
-        Calculates the transformation matrices S, D and X needed for calculating vibratory
-        torque and converting state-space system into minimal form.
+        Calculates the transformation matrices S, D and X, which are needed for
+        calculating vibratory torque and converting state-space system into
+        minimal form.
 
         Parameters
         ----------
@@ -368,7 +370,7 @@ class Assembly:
 
     def C_modal(self, M, K, xi=0.02):
         """
-        Full damping matrix for mechanical system obtained from modal damping matrix
+        Modal damping matrix.
 
         Parameters
         ----------
@@ -390,15 +392,15 @@ class Assembly:
         # Modal mass matrix is calculated using the eigenvectors
         M_modal = phi.T @ M @ phi
 
-        # Nondiagonal elements are removed to prevent floating point error and inverse square root is applied
+        # Nondiagonal elements are removed to prevent floating point error and inverse square root is applied # noqa: E501
         M_modal_inv = LA.fractional_matrix_power(
             np.diag(np.diag(M_modal)), -0.5
         )
 
-        # The mode shape matrix is normalized by multiplying with the inverse modal matrix
+        # The mode shape matrix is normalized by multiplying with the inverse modal matrix  # noqa: E501
         phi_norm = phi @ M_modal_inv
 
-        # The diagonal modal damping matrix is achieved by applying the modal damping
+        # The diagonal modal damping matrix is achieved by applying the modal damping  # noqa: E501
         C_modal_elements = 2 * xi * np.sqrt(omegas)
         C_modal_diag = np.diag(C_modal_elements)
 
@@ -453,10 +455,10 @@ class Assembly:
         Parameters
         ----------
         periodicExcitation: ot.PeriodicExcitation object
-            Excitation object containing the excitation information of the system
+            Instance of PeriodicExcitation.
         C: ndarray, optional
-            Damping matrix, if not given, uses the default damping matrix. Can be given
-            for custom damping models.
+            Damping matrix, if not given, uses the default damping matrix.
+            Can be given for custom damping models.
 
         Returns
         -------
@@ -483,7 +485,7 @@ class Assembly:
 
     def undamped_modal_analysis(self):
         """
-        Calculates the undamped eigenvalues and eigenvectors of the assembly
+        Calculates the undamped eigenvalues and eigenvectors of the assembly.
 
         Returns
         -------
@@ -499,7 +501,7 @@ class Assembly:
 
     def modal_analysis(self, C=None):
         """
-        Calculates the eigenvalues and eigenfrequencies of the assembly
+        Calculates the eigenvalues and eigenfrequencies of the assembly.
 
         Returns
         -------
@@ -532,7 +534,7 @@ class Assembly:
 
     def eigenmodes(self):
         """
-        Solve system eigenmodes
+        Solve system eigenmodes.
 
         Returns
         -------
@@ -556,7 +558,7 @@ class Assembly:
 
     def check_dof(self):
         """
-        Returns the number of degrees of freedom in the model
+        Returns the number of degrees of freedom in the model.
 
         Returns
         -------
@@ -617,8 +619,8 @@ class Assembly:
 
     def continuous_2_discrete(self, A, B, ts):
         """
-        Computes a discrete-time model of a system (A, B) with sample time
-        ts. The function returns matrices Ad, Bd of the discrete-time system.
+        Computes a discrete-time model of a system (A, B) with sample time ts.
+        The function returns matrices Ad, Bd of the discrete-time system.
 
         Parameters
         -------
@@ -642,6 +644,6 @@ class Assembly:
         s = np.concatenate([s, np.zeros((nb, n + nb))], axis=0)
         S = LA.expm(s * ts)
         Ad = S[0:n, 0:n]
-        Bd = S[0:n, n : n + nb + 1]
+        Bd = S[0:n, n : n + nb + 1]  # noqa: E203
 
         return Ad, Bd
