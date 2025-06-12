@@ -1,11 +1,13 @@
-""" Simulates the transient torque response in a lumped element model. The model is
+# flake8: noqa
+"""Simulates the transient torque response in a lumped element model. The model is
 simulated using discerete-time state-space form. The shaft torque is calculated by
 multilpying the rotational stiffness of the shaft with the difference in angular
-displacement of its disks. """
+displacement of its disks."""
+
 import matplotlib.pylab as plt
 import numpy as np
-import opentorsion as ot
 
+import opentorsion as ot
 
 # MODEL PARAMETERS
 I1, k1, c1 = 0.5, 5000, 10
@@ -13,7 +15,7 @@ I2, k2, c2 = 0.1, 500, 0.8
 I3, k3, c3, d3 = 0.5, 1000, 5, 0.2
 I4, d4 = 0.1, 0.2
 I5, d5 = 1, 5
-z1, z2 = 10, 80   # Number of teeth in gear elements
+z1, z2 = 10, 80  # Number of teeth in gear elements
 
 
 class TransientExcitation:
@@ -90,30 +92,30 @@ class TransientExcitation:
         return self.impulse
 
 
-class PI():
+class PI:
 
-  def __init__(self, Kp, Ki, dt, setpoint, limit):
+    def __init__(self, Kp, Ki, dt, setpoint, limit):
 
-    self.Kp = Kp
-    self.Ki = Ki
-    self.dt = dt
-    self.setpoint = setpoint
-    self.limit = limit
-    self.integral_error = 0
+        self.Kp = Kp
+        self.Ki = Ki
+        self.dt = dt
+        self.setpoint = setpoint
+        self.limit = limit
+        self.integral_error = 0
 
-  def next_step(self, x):
+    def next_step(self, x):
 
-    error = self.setpoint - x
-    self.integral_error += error*self.Ki*self.dt
-    out = self.integral_error + error*self.Kp
+        error = self.setpoint - x
+        self.integral_error += error * self.Ki * self.dt
+        out = self.integral_error + error * self.Kp
 
-    if self.integral_error > self.limit:
-        self.integral_error = self.limit
+        if self.integral_error > self.limit:
+            self.integral_error = self.limit
 
-    if out > self.limit:
-        return self.limit
+        if out > self.limit:
+            return self.limit
 
-    return out
+        return out
 
 
 def drivetrain_assembly():
@@ -150,14 +152,13 @@ def drivetrain_assembly():
     gear2 = ot.Gear(3, 0, z2, parent=gear1)
     gears = [gear1, gear2]
 
-
     # Creating an assembly of the elements
     drivetrain = ot.Assembly(shafts, disks, gear_elements=gears)
     return drivetrain
 
 
 def shaft_torque(states, k_list, idx_list, ratio_list):
-    """ Calculates the shaft torque between the given indices.
+    """Calculates the shaft torque between the given indices.
 
     Parameters
     ----------
@@ -177,16 +178,22 @@ def shaft_torque(states, k_list, idx_list, ratio_list):
     torques = []
     for i, k in enumerate(k_list):
         if ratio_list[i] >= 1:
-            T = k * (np.abs(states[:, idx_list[i]]) / ratio_list[i] - np.abs(states[:, idx_list[i] + 1]))
+            T = k * (
+                np.abs(states[:, idx_list[i]]) / ratio_list[i]
+                - np.abs(states[:, idx_list[i] + 1])
+            )
         else:
-            T = k * (np.abs(states[:, idx_list[i]]) - np.abs(states[:, idx_list[i] + 1]) * ratio_list[i])
+            T = k * (
+                np.abs(states[:, idx_list[i]])
+                - np.abs(states[:, idx_list[i] + 1]) * ratio_list[i]
+            )
         torques.append(T)
 
     return torques
 
 
 def plot_rpm(t, rpm, target):
-    """ Plots the angular velocity of a model.
+    """Plots the angular velocity of a model.
 
     Parameters
     ----------
@@ -198,19 +205,19 @@ def plot_rpm(t, rpm, target):
         Target velocity
     """
     plt.figure(figsize=(6, 4))
-    plt.plot(t, rpm, label='Model velocity')
-    plt.axhline(target, color='g', linestyle='--', label='Target velocity')
+    plt.plot(t, rpm, label="Model velocity")
+    plt.axhline(target, color="g", linestyle="--", label="Target velocity")
 
-    plt.title('Angular velocity')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Velocity (RPM)')
+    plt.title("Angular velocity")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Velocity (RPM)")
     plt.legend()
     plt.tight_layout()
     plt.show()
 
 
 def plot_torque(t, torques):
-    """ Plots the shaft torques in a model.
+    """Plots the shaft torques in a model.
 
     Parameters
     ----------
@@ -219,11 +226,11 @@ def plot_torque(t, torques):
     torques : array
         Torque vector
     """
-    plt.figure(figsize=(7,4))
+    plt.figure(figsize=(7, 4))
     for i, torque in enumerate(torques):
-        plt.plot(t, torque, label=f'Shaft {i+1}')
+        plt.plot(t, torque, label=f"Shaft {i+1}")
 
-    plt.title('Simulated torque response')
+    plt.title("Simulated torque response")
     plt.xlabel("Time (s)")
     plt.ylabel("Torque (Nm)")
     plt.legend()
@@ -232,7 +239,7 @@ def plot_torque(t, torques):
 
 
 def transient_simulation():
-    """ Creating model assembly and calculating the discrete state and input matrices. """
+    """Creating model assembly and calculating the discrete state and input matrices."""
     drivetrain = drivetrain_assembly()
     A, B, _, _ = drivetrain.state_space()
     ts = 0.001  # Time step
@@ -246,8 +253,8 @@ def transient_simulation():
     # Parameters
     Kp = 3
     Ki = 3
-    target = 200 # RPM
-    limit = 20   # Torque (Nm)
+    target = 200  # RPM
+    limit = 20  # Torque (Nm)
     # Syntax is: ot.PI(Proportional gain, Integral gain, Time step [s], Target velocity [RPM], Limit [Nm])
     controller = PI(Kp, Ki, ts, target, limit)
 
@@ -256,7 +263,7 @@ def transient_simulation():
     by calling step_next and impulse_next. They both take the current time as parameter and returns the excitation
     torque. """
     # Parameters
-    t_excite = 3    # Time (s)
+    t_excite = 3  # Time (s)
     magnitude = 30  # Torque (Nm)
     # Syntax is: TransientExcitation(Time step [s], Time for applying excitation [s], Magnitude [Nm])
     excitations = TransientExcitation(ts, t_excite, magnitude)
@@ -266,11 +273,13 @@ def transient_simulation():
     The input torque at the first index is obtained from the controller and the excitation torque at the last index is
     obtained from the excitation instance. """
     # Defining necessary variables
-    t_end = 6                                             # Simulation time
-    x0 = np.zeros(2 * drivetrain.M.shape[0])              # Initial state
-    u0 = np.zeros(drivetrain.M.shape[0])                  # Input vector
-    iterations = np.linspace(0, t_end, int(t_end/ts))     # Iterations based on simulation time and time step
-    rpm = 60 / (2 * np.pi)                                # Conversion from rad/s to RPM
+    t_end = 6  # Simulation time
+    x0 = np.zeros(2 * drivetrain.M.shape[0])  # Initial state
+    u0 = np.zeros(drivetrain.M.shape[0])  # Input vector
+    iterations = np.linspace(
+        0, t_end, int(t_end / ts)
+    )  # Iterations based on simulation time and time step
+    rpm = 60 / (2 * np.pi)  # Conversion from rad/s to RPM
     states_step = []
     rpms = []
 
@@ -285,9 +294,11 @@ def transient_simulation():
     rpms = np.array(rpms)
 
     """ Calculating torque responses. """
-    i = z2 / z1   # Gear ratio
+    i = z2 / z1  # Gear ratio
     # Syntax is: shaft_torque(states matrix, stiffnesses list, indices list, ratios list)
-    torques_step = shaft_torque(states_step, [k1, k2, k3], [0, 1, 2], [1, 1, i])
+    torques_step = shaft_torque(
+        states_step, [k1, k2, k3], [0, 1, 2], [1, 1, i]
+    )
 
     """ Plotting model velocity and shaft torques. """
     # Syntax is: plot_rmp(time vector, velocity vector, target velocity)
@@ -298,5 +309,5 @@ def transient_simulation():
 
 if __name__ == "__main__":
 
-    """ Simulate the transient torque response in a model. """
+    """Simulate the transient torque response in a model."""
     transient_simulation()

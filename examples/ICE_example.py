@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Calculates the steady-state torsional vibration in the assembly of an internal combustion engine.
 Torque produced by each cylinder is calculated from the force produced by the pressure from ignition
@@ -6,10 +7,12 @@ Torsional vibration analysis based on https://doi.org/10.1243/14644193JMBD126
 The model is based on Fig.4 of the original article.
 """
 
-import matplotlib.pyplot as plt
 import glob
+
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy
+
 import opentorsion as ot
 
 
@@ -91,7 +94,7 @@ def calculate_cylinder_torque(speed_rpm, num_points=500):
     alpha = alpha_deg / 180 * np.pi
     w = speed_rpm / 60 * 2 * np.pi
 
-    F_g = p_curve * 0.25 * np.pi * d_piston ** 2
+    F_g = p_curve * 0.25 * np.pi * d_piston**2
     beta = alpha_to_beta(alpha, r, l_rod)
     F_tg = F_g * np.sin(alpha + beta) * 1 / np.cos(beta)  # Tangential gas load
     lambda_rl = r / l_rod
@@ -101,12 +104,14 @@ def calculate_cylinder_torque(speed_rpm, num_points=500):
         * (
             np.cos(alpha)
             + lambda_rl * np.cos(2 * alpha)
-            - lambda_rl ** 3 * 1 / 4 * np.cos(4 * alpha)
-            + 9 * lambda_rl ** 5 * np.cos(6 * alpha) / 128
+            - lambda_rl**3 * 1 / 4 * np.cos(4 * alpha)
+            + 9 * lambda_rl**5 * np.cos(6 * alpha) / 128
         )
-        * w ** 2
+        * w**2
     )  # Oscillating inertial force
-    F_ta = F_ia * np.sin(alpha + beta) * 1 / np.cos(beta)  # Tangential inertial force
+    F_ta = (
+        F_ia * np.sin(alpha + beta) * 1 / np.cos(beta)
+    )  # Tangential inertial force
     F_t = F_tg + F_ta  # Total tangential force
     M_t = F_t * r
     return M_t, alpha
@@ -211,6 +216,7 @@ def relative_damping_C(assembly, d):
     C: ndarray
         The damping matrix assembled with new component specific damping coefficients
     """
+
     def C_func(w):
         C = np.zeros((assembly.check_dof(), assembly.check_dof()))
         if w != 0:
@@ -227,6 +233,7 @@ def relative_damping_C(assembly, d):
             for element in assembly.disk_elements:
                 C[element.node, element.node] += element.C()[0]
         return C
+
     return C_func
 
 
@@ -249,24 +256,31 @@ def calculate_response(assembly, rpm):
     dof = 9
     n_harmonics = 25
     cylinder_torque, alpha = calculate_cylinder_torque(rpm)
-    dft_parameters, harmonics = calculate_dft_components(cylinder_torque, alpha, n_harmonics)
+    dft_parameters, harmonics = calculate_dft_components(
+        cylinder_torque, alpha, n_harmonics
+    )
     q = np.zeros([dof, len(harmonics)], dtype="complex128")
     M, K = assembly.M, assembly.K
     relative_damping_coefficient = 0.035
 
     T = np.zeros(dof, dtype="complex128")
-    firing_order = np.array([0, 4, 2, 5, 1, 3]) + 2 # +2 to have the firing order in node coordinates
-    phase_shift = 2/3 * np.pi
+    firing_order = (
+        np.array([0, 4, 2, 5, 1, 3]) + 2
+    )  # +2 to have the firing order in node coordinates
+    phase_shift = 2 / 3 * np.pi
 
-    w_ex = harmonics*rpm*2*np.pi/60
+    w_ex = harmonics * rpm * 2 * np.pi / 60
     excitation = ot.PeriodicExcitation(assembly.dofs, w_ex)
 
     for node_ex in range(2, 8):
         amplitudes, phases, omegas = [], [], []
         for i in range(len(harmonics)):
-            omegas.append(harmonics[i]*rpm*2*np.pi/60)
+            omegas.append(harmonics[i] * rpm * 2 * np.pi / 60)
             amplitudes.append(np.abs(dft_parameters[i]))
-            phase = np.angle(dft_parameters[i])+firing_order[node_ex-2]*phase_shift*harmonics[i]
+            phase = (
+                np.angle(dft_parameters[i])
+                + firing_order[node_ex - 2] * phase_shift * harmonics[i]
+            )
             phases.append(phase)
         excitation.add_sines(node_ex, omegas, amplitudes, phases)
 
@@ -323,4 +337,6 @@ if __name__ == "__main__":
     shaft_8, shaft_1 = plot_results(rpms, vibratory_torque)
     # Same plots but using openTorsions Plots class
     plots = ot.Plots(assembly)
-    plots.torque_response_plot(rpms, [np.array(shaft_8), np.array(shaft_1)], True)
+    plots.torque_response_plot(
+        rpms, [np.array(shaft_8), np.array(shaft_1)], True
+    )

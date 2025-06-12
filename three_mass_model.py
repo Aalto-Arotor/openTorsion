@@ -1,7 +1,6 @@
 import numpy as np
-import opentorsion as ot
-import matplotlib.pyplot as plt
 
+import opentorsion as ot
 
 # Shafts parameters
 k1, c1 = 50000, 0
@@ -18,7 +17,7 @@ def ThreeMassModel():
     """Create a three-mass model with two elastic gears."""
 
     # Creating shaft elements
-    # Syntax is: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad], damping[Nms/rad])
+    # Syntax is: ot.Shaft(node 1, node 2, Length [mm], outer diameter [mm], stiffness [Nm/rad], damping[Nms/rad])  # noqa: E501
     shaft1 = ot.Shaft(0, 1, L=None, odl=None, k=k1, c=c1)
     shafts = [shaft1]
 
@@ -30,14 +29,14 @@ def ThreeMassModel():
     disks = [disk1, disk2, disk3]
 
     # Creating elastic gear elements
-    # Syntax is ot.ElasticGear(node, Inertia [kgm^2], radius/teeth, stiffness [Nm/rad], damping[Nms/rad], parent)
-    # Note: stiffness and damping should only be added to child gears, not to parent gears.
+    # Syntax is ot.ElasticGear(node, Inertia [kgm^2], radius/teeth, stiffness [Nm/rad], damping[Nms/rad], parent)  # noqa: E501
+    # Note: stiffness and damping should only be added to child gears, not to parent gears.  # noqa: E501
     gear1 = ot.ElasticGear(1, 0, r1)
     gear2 = ot.ElasticGear(2, 0, r2, k=k_gear, c=c_gear, parent=gear1)
     gears = [gear1, gear2]
 
     # Creating the assembly
-    # Syntax is ot.Assembly(shaft_elements, disk_elements, gear_elements, elastic_gear_elements)
+    # Syntax is ot.Assembly(shaft_elements, disk_elements, gear_elements, elastic_gear_elements)  # noqa: E501
     assembly = ot.Assembly(
         shaft_elements=shafts, disk_elements=disks, elastic_gear_elements=gears
     )

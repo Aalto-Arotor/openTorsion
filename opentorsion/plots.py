@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Plots:
@@ -91,7 +91,9 @@ class Plots:
                     0.95 * harmonic * (frequency_range_rpm[1]) / 60,
                     harmonic_labels[i],
                     bbox=dict(
-                        facecolor="white", edgecolor="white", boxstyle="round,pad=0"
+                        facecolor="white",
+                        edgecolor="white",
+                        boxstyle="round,pad=0",
                     ),
                 )
             else:
@@ -123,7 +125,9 @@ class Plots:
             self.assembly.gear_elements is not None
             or self.assembly.elastic_gear_elements is not None
         ):
-            raise NotImplementedError("Support for geared assemblies not implemented")
+            raise NotImplementedError(
+                "Support for geared assemblies not implemented"
+            )
         if self.assembly.dofs < modes:
             modes = self.assembly.dofs
         lam, eigenmodes = self.assembly.eigenmodes()
@@ -135,7 +139,9 @@ class Plots:
         for i in range(modes):
             eigenvector = eigenmodes[:, i]
             max_disp = np.argmax(np.abs(eigenvector))
-            eigenvector_rotated = eigenvector * np.exp(-1.0j * phases[max_disp, i])
+            eigenvector_rotated = eigenvector * np.exp(
+                -1.0j * phases[max_disp, i]
+            )
             self.plot_on_ax(self.assembly, axs[i], lighter=True)
             axs[i].plot(
                 nodes,
@@ -272,15 +278,17 @@ class Plots:
                     y_values[i] += amplitude
                 else:
                     y_values[i] -= amplitude
-            ax.plot(x_values, y_values, color=spring_color, linewidth=spring_lw)
+            ax.plot(
+                x_values, y_values, color=spring_color, linewidth=spring_lw
+            )
 
         def draw_disk(disk, i, color="darkgrey"):
             if max_I_value == min_I_value:
                 height = disk_max
             else:
-                height = disk_min + (disk.I - min_I_value) * (disk_max - disk_min) / (
-                    max_I_value - min_I_value
-                )
+                height = disk_min + (disk.I - min_I_value) * (
+                    disk_max - disk_min
+                ) / (max_I_value - min_I_value)
             pos = (disk.node - width / 2, -height / 2 - 2 * i)
             ax.add_patch(
                 patches.Rectangle(
@@ -347,10 +355,14 @@ class Plots:
                 prev_nr = shaft.nr
             else:
                 if shaft.nl - 1 in gear_pos:
-                    draw_disk(gear_pos[shaft.nl - 1][0], y_height, gear_face_color)
+                    draw_disk(
+                        gear_pos[shaft.nl - 1][0], y_height, gear_face_color
+                    )
                     gear_pos[shaft.nl - 1][1] = [shaft.nl - 1, -2 * y_height]
                 elif shaft.nl - 1 in disk_pos:
-                    draw_disk(disk_pos[shaft.nl - 1], y_height, disk_face_color)
+                    draw_disk(
+                        disk_pos[shaft.nl - 1], y_height, disk_face_color
+                    )
                 y_height += 1
                 draw_spring(shaft, y_height)
                 prev_nr = shaft.nr
@@ -373,7 +385,12 @@ class Plots:
                 pass
             else:
                 plt.plot(
-                    [pos[0], pos[0], gear.stages[0][0][0], gear.stages[0][0][0]],
+                    [
+                        pos[0],
+                        pos[0],
+                        gear.stages[0][0][0],
+                        gear.stages[0][0][0],
+                    ],
                     [
                         pos[1],
                         pos[1] + 1,

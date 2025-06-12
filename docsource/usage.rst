@@ -7,7 +7,7 @@ Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram wi
 .. code:: bash
 
     import opentorsion as ot
-    
+
     k1 = 3.67e8  # Turbine shaft stiffness
     k2 = 5.496e9  # Rotor stiffness
     J1 = 1e7  # Turbine inertia
@@ -24,7 +24,7 @@ Example: Calculating the eigenfrequencies, mode shapes and a Campbell diagram wi
 
     # An assembly is initiated with the lists of powertrain elements
     assembly = ot.Assembly(shafts, disk_elements=disks)
-    
+
     # Calculation of the eigenfrequencies of the powertrain
     omegas_undamped, omegas_damped, damping_ratios = assembly.modal_analysis()
 
