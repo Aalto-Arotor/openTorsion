@@ -1,4 +1,6 @@
+# flake8: noqa
 import numpy as np
+
 import opentorsion as ot
 
 
@@ -11,7 +13,9 @@ def back_to_back_testbench():
     J_IM = 0.196  # Induction motor inertia (kgm^2)
     J_SRM = 0.575  # Synchronous reluctance motor inertia (kgm^2)
     Ig = 0  # Gear inertia
-    J_coupling = 17e-3 + 17e-3 + 37e-3 * (0.55 - 2 * 0.128)  # Coupling inertia (kgm^2)
+    J_coupling = (
+        17e-3 + 17e-3 + 37e-3 * (0.55 - 2 * 0.128)
+    )  # Coupling inertia (kgm^2)
     K_coupling = 1 / (1 / 41300 + 1 / 41300)  # Coupling stiffness (Nm/rad)
 
     # A list for each powertrain element type
@@ -26,7 +30,9 @@ def back_to_back_testbench():
 
     # Shaft element inputs: left node number, right node number, length, outer diameter.
     # Alternatively, material parameters such as stiffness and and inertia can be inputted instead.
-    shafts.append(ot.Shaft(0, 1, None, None, k=K_coupling, I=J_coupling))  # Coupling
+    shafts.append(
+        ot.Shaft(0, 1, None, None, k=K_coupling, I=J_coupling)
+    )  # Coupling
 
     # Roll with varying dimensions as shaft elements
     shafts.append(ot.Shaft(1, 2, 185, 100))
@@ -39,7 +45,9 @@ def back_to_back_testbench():
     shafts.append(ot.Shaft(8, 9, 335, 119))
     shafts.append(ot.Shaft(9, 10, 185, 100))
 
-    shafts.append(ot.Shaft(10, 11, None, None, k=K_coupling, I=J_coupling))  # Coupling
+    shafts.append(
+        ot.Shaft(10, 11, None, None, k=K_coupling, I=J_coupling)
+    )  # Coupling
 
     # Gear element, inputs: node number, gear inertia and gear ratio
     gears.append(gear1 := ot.Gear(11, Ig, 1))  # Gear pinion

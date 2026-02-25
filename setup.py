@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.3.2",
     author="Aalto ARotor",
     author_email="arotor.software@aalto.fi",
-    description="Open source library for creating torsional finite element models",
+    description="Open source library for creating torsional finite element models",  # noqa: E501
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Aalto-Arotor/openTorsion",
@@ -23,9 +23,5 @@ setuptools.setup(
     package_dir={"opentorsion": "opentorsion"},
     packages=setuptools.find_packages(),
     python_requires=">=3.11",
-    install_requires=[
-        "matplotlib",
-        "numpy",
-        "scipy"
-    ]
+    install_requires=["matplotlib", "numpy", "scipy"],
 )

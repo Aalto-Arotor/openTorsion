@@ -1,4 +1,5 @@
 import numpy as np
+
 import opentorsion as ot
 
 """
@@ -74,9 +75,7 @@ def forced_response():
     shafts.append(ot.Shaft(1, 2, None, None, k=k2, I=0))
     disks.append(ot.Disk(2, J3))
 
-    assembly = ot.Assembly(
-        shaft_elements=shafts, disk_elements=disks
-    )
+    assembly = ot.Assembly(shaft_elements=shafts, disk_elements=disks)
     ot.Plots(assembly).plot_assembly()
 
     M, K = assembly.M, assembly.K  # Mass and stiffness matrices
@@ -97,11 +96,12 @@ def forced_response():
         VT_sum_result[:, i] = T_vib_sum
 
     plot_tools = ot.Plots(assembly)
-    plot_tools.torque_response_plot(np.linspace(0.1, 25, n_steps), VT_sum_result, show_plot=True)
+    plot_tools.torque_response_plot(
+        np.linspace(0.1, 25, n_steps), VT_sum_result, show_plot=True
+    )
 
     return
 
 
 if __name__ == "__main__":
     forced_response()
-
