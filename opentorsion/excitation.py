@@ -102,6 +102,7 @@ class TransientExcitation:
         """
         self.n_dofs = n_dofs
         self.times = times
+        self.ts = np.mean(np.diff(times))
         self.U = np.zeros((n_dofs, len(self.times)))
 
     def add_transient(self, node, torques):

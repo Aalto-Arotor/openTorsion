@@ -40,7 +40,6 @@ class Assembly:
         """
         if shaft_elements is None:
             raise DOF_mismatch_error("Shaft elements == None")
-            self.shaft_elements = None
         else:
             self.shaft_elements = [
                 copy(shaft_element) for shaft_element in shaft_elements
@@ -582,7 +581,7 @@ class Assembly:
 
         return max(nodes) + 1
 
-    def state_space(self, C=None):
+    def state_space(self, C=None, minimal_representation=False):
         """
         State space matrices of the second order system.
 
@@ -612,6 +611,12 @@ class Assembly:
             [np.hstack([Z, I_mat]), np.hstack([-M_inv @ K, -M_inv @ C])]
         )
         B_sys = np.vstack([Z, M_inv])
+
+        if minimal_representation:
+            X_inv = LA.pinv(self.X)
+            A_sys = self.X @ A_sys @ X_inv
+            B_sys = self.X @ B_sys
+
         C_sys = np.eye(A_sys.shape[1])
         D_sys = np.zeros((C_sys.shape[0], B_sys.shape[1]))
 
@@ -647,3 +652,45 @@ class Assembly:
         Bd = S[0:n, n : n + nb + 1]  # noqa: E203
 
         return Ad, Bd
+
+    def dsim(self, transientExcitation, x0=None):
+        """
+        Computes the transient system response for an excitation.
+
+        Parameters
+        -------
+        transientExcitation: ot.TransientExcitation object
+            excitation object containing transient excitations for the system
+
+        Returns
+        -------
+        torques: ndarray
+            Shaft torque array
+        speeds: ndarray
+            Disk speed array
+        """
+
+        t_arr = transientExcitation.times
+        ts = transientExcitation.ts
+
+        A, B, _, _ = self.state_space(minimal_representation=True)
+        Ad, Bd = self.continuous_2_discrete(A, B, ts)
+
+        if x0 is None:
+            x0 = np.zeros(A.shape[0])
+        elif x0.shape[0] != A.shape[0]:
+            raise DOF_mismatch_error(
+                f"Initial state `x0` has length {x0.shape[0]} but system has {A.shape[0]} DOF"  # noqa: E501
+            )
+
+        x = np.zeros((A.shape[0], t_arr.shape[0]))
+        x[:, 0] = x0
+        u = transientExcitation.excitation_matrix()
+
+        for i in range(t_arr.shape[0] - 1):
+            x[:, i + 1] = Ad @ x[:, i] + Bd @ u[:, i]
+
+        torques = x[: self.M.shape[0] - 1, :]
+        speeds = x[self.M.shape[0] - 1 :, :]  # noqa: E203
+
+        return torques, speeds, t_arr

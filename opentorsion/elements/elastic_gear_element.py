@@ -52,7 +52,7 @@ class ElasticGear:
         """
 
         I = self.I
-        M = np.array([[I]], dtype=np.float64)
+        M = np.float64(I)
 
         return M
 
